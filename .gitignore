@@ -26,7 +26,16 @@
 *.a
 *.lib
 
+/__history
+/__recovery
+*.odt
+*.docx
+*.doc
+*.local
+*.res
+*.stat
+*.~*
+
 # Executables
-*.exe
 *.out
 *.app
