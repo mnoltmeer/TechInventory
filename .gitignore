@@ -29,7 +29,12 @@
 /__astcache/*
 /__history/*
 /__recovery/*
+<<<<<<< HEAD
 /Win32/*
+=======
+/Debug/*
+/Release/*
+>>>>>>> 310e45c347130929a58084685c6c974ffcac747a
 /AESCrypt/*
 /AESCryptTest/*
 /build/*
