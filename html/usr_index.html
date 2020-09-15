@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>Сервер Тех. Інвентаризації</title>
+</head>
+<style>
+body
+{
+background-color:#FFFFFF;
+max-width:800px;
+padding:0px;
+margin:0px auto;
+}
+</style>
+
+<body>
+	<center>
+		<p><h1>Сервер Інвентаризації</h1></p>
+	
+		<h2>Оберіть опцію</h2>
+		
+	<table>
+		<tbody>		
+			<tr style="text-align:center">
+				<td>
+					<form method="post" action="items.html">
+						<p><button style="width:200px;height:25px" type="submit">Перегляд пристроїв</button></p>
+					</form>
+					<form method="post" action="new.html">
+						<p><button style="width:200px;height:25px" type="submit">Додати пристрій</button></p>
+					</form>
+					<form method="post" action="history.html">
+						<p><button style="width:200px;height:25px" type="submit">Перегляд подій</button></p>
+					</form>
+				</td>
+			</tr>		
+		</tbody>
+	</table>
+	</center>
+	
+	<br></br>
+	<center><a href="change_pwd.html"><b>Змінити пароль</b></center>
+	<br></br>
+	<center><a href="logout.html"><b>Вийти з системи</b></a></center>
+	<br></br>
+	
+	<center>$ServerName версія: $ServerVersion</center>
+</body>
+</html>

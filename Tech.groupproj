@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{E570836B-3EC8-4C88-B2A9-E82452F47C58}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="AESCrypt\AESCrypt.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="AESCryptTest\AESTest.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="TIService.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="AESCrypt">
+        <MSBuild Projects="AESCrypt\AESCrypt.cbproj"/>
+    </Target>
+    <Target Name="AESCrypt:Clean">
+        <MSBuild Projects="AESCrypt\AESCrypt.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AESCrypt:Make">
+        <MSBuild Projects="AESCrypt\AESCrypt.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="AESTest">
+        <MSBuild Projects="AESCryptTest\AESTest.cbproj"/>
+    </Target>
+    <Target Name="AESTest:Clean">
+        <MSBuild Projects="AESCryptTest\AESTest.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AESTest:Make">
+        <MSBuild Projects="AESCryptTest\AESTest.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="TIService">
+        <MSBuild Projects="TIService.cbproj"/>
+    </Target>
+    <Target Name="TIService:Clean">
+        <MSBuild Projects="TIService.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TIService:Make">
+        <MSBuild Projects="TIService.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="AESCrypt;AESTest;TIService"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="AESCrypt:Clean;AESTest:Clean;TIService:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="AESCrypt:Make;AESTest:Make;TIService:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>Сервер Тех. Інвентаризації</title>
+</head>
+<style>
+body
+{
+background-color:#FFFFFF;
+max-width:800px;
+padding:0px;
+margin:0px auto;
+}
+</style>
+
+<body>
+	<center>
+		<p><h1>Сервер Інвентаризації</h1></p>
+		
+		<h2>Оберіть опцію</h2>
+		
+	<table>
+		<tbody>		
+			<tr style="text-align:center">
+				<td>
+					<form method="post" action="/">
+						<p><button style="width:150px;height:25px" type="submit">На головну</button></p>
+					</form>
+				</td>
+			</tr>		
+		</tbody>
+	</table>
+		
+	
+	<form method="post" action="history_request.html">
+		<table style="width:800px;font-size:12pt" border="2" bordercolor="steelblue" cellpadding="2" cellspacing="1">
+			<tbody>
+				<tr style="text-align:center" bgcolor="22b0a0">
+					<td>
+						<h3>Інвентарний №</h3>
+						<p><input type="text" name="inn"></input></p>
+						<h3>Серійний №</h3>
+						<p><input type="text" name="sn"></input></p>
+
+						<h3>Від дати</h3>
+						<p><input type="date" name="datefrom"></input></p>
+						<h3>По дату</h3>
+						<p><input type="date" name="dateto"></input></p>
+
+						<h3>Сортувати по</h3>
+						<p>
+							<select size="1" name="sortby">
+								<option selected="selected">Нічого</option>
+								<option value="inn">Інвентарному №</option>
+								<option value="sn">Серійному №</option>
+								<option value="agent">Імені Агента</option>
+								<option value="dateadd">Даті події</option>
+							</select>
+						</p>
+
+						<p><input type="submit" value="Запит даних"></input></p>
+					</td>
+				</tr>
+			<tbody>
+		</table>
+	</form>
+
+	</center>
+	
+	<br></br>
+	
+	<center>$ServerName версія: $ServerVersion</center>
+</body>
+</html>
