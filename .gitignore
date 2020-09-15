@@ -29,8 +29,7 @@
 /__astcache/*
 /__history/*
 /__recovery/*
-/Debug/*
-/Release/*
+/Win32/*
 /AESCrypt/*
 /AESCryptTest/*
 /build/*
