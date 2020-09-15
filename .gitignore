@@ -26,14 +26,13 @@
 *.a
 *.lib
 
-/__astcache
-/__history
-/__recovery
-/Debug
-/Release
-/AESCrypt
-/AESCryptTest
-/build
+/__astcache/*
+/__history/*
+/__recovery/*
+/Win32/*
+/AESCrypt/*
+/AESCryptTest/*
+/build/*
 *.odt
 *.docx
 *.doc
