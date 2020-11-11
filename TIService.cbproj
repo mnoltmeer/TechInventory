@@ -59,10 +59,10 @@
         <Icns_MainIcns>$(BDS)\bin\cbuilder_PROJECTICNS.icns</Icns_MainIcns>
         <AllPackageLibs>vcl.lib;rtl.lib;dbrtl.lib;IndySystem.lib;IndyProtocols.lib;IndyCore.lib;vclFireDAC.lib;FireDAC.lib;FireDACSqliteDriver.lib;FireDACCommonDriver.lib;FireDACCommon.lib;xmlrtl.lib;vcldb.lib;vclx.lib;FireDACIBDriver.lib</AllPackageLibs>
         <SanitizedProjectName>TIService</SanitizedProjectName>
-        <IncludePath>..\..\work-functions\;$(IncludePath)</IncludePath>
+        <IncludePath>..\work-functions\;..\..\work-functions\;$(IncludePath)</IncludePath>
         <VerInfo_Locale>1058</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <ILINK_LibraryPath>..\..\work-functions\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>..\work-functions\;..\..\work-functions\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
     </PropertyGroup>
@@ -145,9 +145,9 @@
             <BuildOrder>1</BuildOrder>
         </ResFiles>
         <None Include="TODO.txt"/>
-        <CppCompile Include="D:\work-functions\MyFunc.cpp">
-            <DependentOn>D:\work-functions\MyFunc.h</DependentOn>
-            <BuildOrder>4</BuildOrder>
+        <CppCompile Include="..\work-functions\MyFunc.cpp">
+            <DependentOn>..\work-functions\MyFunc.h</DependentOn>
+            <BuildOrder>6</BuildOrder>
         </CppCompile>
         <FormResources Include="serv.dfm"/>
         <BuildConfiguration Include="Release">
