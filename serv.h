@@ -49,7 +49,8 @@ RT_ITEM = 0,
 RT_HIST = 1,
 RT_EDIT = 2,
 RT_USER = 3,
-RT_SESS = 4
+RT_SESS = 4,
+RT_LOCS = 5
 };
 
 enum OperationType {
@@ -104,7 +105,8 @@ private:        // User declarations
 										   const String &ind);
 	TStringStream* __fastcall RequestUsers(TStringStream *ms);
 	TStringStream* __fastcall RequestSessions(TStringStream *ms);
-    TStringStream* __fastcall RequestLog(const String &date, TStringStream *ms);
+	TStringStream* __fastcall RequestLog(const String &date, TStringStream *ms);
+	TStringStream* __fastcall RequestLocations(TStringStream *ms);
 
 //додає дані пристрою у БД
 	int __fastcall AddItem(const String &inn, const String &sn,
@@ -147,6 +149,11 @@ private:        // User declarations
 	void __fastcall RemoveSessionID(const String &session_hash, int user_id);
 //просто видаляє сесію з БД (для адміна)
 	void __fastcall RemoveSessionID(const String &session_id);
+	void __fastcall RemoveLocationID(const String &loc_id);
+//генерує форму для редагування даних локації
+	void __fastcall EditLocationID(const String &loc_id);
+	void __fastcall SetLocationID(const String &id, const String &index, const String &addr);
+	int __fastcall AddLocationID(const String &index, const String &addr);
 //генерує хеш сесії - символьний рядок довжиною 32 символу
 //за базу для хешу береться поточне значення дати (включно з мілісекундами)
 	String __fastcall GenerateSessionHash();

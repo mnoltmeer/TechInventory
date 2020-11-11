@@ -719,6 +719,7 @@ void __fastcall TTechService::HttpServerCommandGet(TIdContext *AContext, TIdHTTP
 		   if (pwd_ind > -1)
 			 {
 			   p_pwd = ARequestInfo->Params->Strings[pwd_ind];
+			   p_pwd = TIdURI::URLDecode(p_pwd, IndyTextEncoding_UTF8());
 			   p_pwd.Delete(1, p_pwd.Pos("="));
 			 }
 
@@ -825,6 +826,114 @@ void __fastcall TTechService::HttpServerCommandGet(TIdContext *AContext, TIdHTTP
 
 		   if (CheckAuth(ROLE_ADMIN, ARequestInfo, ms))
 			 RequestLog(p_date, ms);
+
+		   ms->Position = 0;
+		   AResponseInfo->ContentText = ms->ReadString(ms->Size);
+		 }
+	  __finally {delete ms;}
+	}
+  else if (ARequestInfo->Document == "/locations.html") //вивід всіх локацій з можливістю редагувати
+	{
+//перевірити
+	  TStringStream *ms = new TStringStream("", TEncoding::UTF8, true);
+
+	  try
+		 {
+		   if (CheckAuth(ROLE_ADMIN, ARequestInfo, ms))
+			 RequestLocations(ms);
+
+		   ms->Position = 0;
+		   AResponseInfo->ContentText = ms->ReadString(ms->Size);
+		 }
+	  __finally {delete ms;}
+	}
+  else if (ARequestInfo->Document == "/remove_loc.html") //видалення локації та вивід результату
+	{
+//перевірити
+	  TStringStream *ms = new TStringStream("", TEncoding::UTF8, true);
+
+	  try
+		 {
+		   int id_ind = ARequestInfo->Params->IndexOfName("id");
+
+		   String p_id;
+
+		   if (id_ind > -1)
+			 {
+			   p_id = ARequestInfo->Params->Strings[id_ind];
+			   p_id.Delete(1, p_id.Pos("="));
+			 }
+
+		   if (CheckAuth(ROLE_ADMIN, ARequestInfo, ms))
+			 {
+			   RemoveLocationID(p_id);
+			   GenerateSuccessPage("Локацію видалено", ms);
+			 }
+
+		   ms->Position = 0;
+		   AResponseInfo->ContentText = ms->ReadString(ms->Size);
+		 }
+	  __finally {delete ms;}
+	}
+  else if (ARequestInfo->Document == "/edit_loc.html") //вивід форми редагування локації
+	{
+//перевірити
+	  TStringStream *ms = new TStringStream("", TEncoding::UTF8, true);
+
+	  try
+		 {
+		   int id_ind = ARequestInfo->Params->IndexOfName("id");
+
+		   String p_id;
+
+		   if (id_ind > -1)
+			 {
+			   p_id = ARequestInfo->Params->Strings[id_ind];
+			   p_id.Delete(1, p_id.Pos("="));
+			 }
+
+		   if (CheckAuth(ROLE_ADMIN, ARequestInfo, ms))
+			 EditLocationID(p_id);
+
+		   ms->Position = 0;
+		   AResponseInfo->ContentText = ms->ReadString(ms->Size);
+		 }
+	  __finally {delete ms;}
+	}
+  else if (ARequestInfo->Document == "/set_loc.html") //вивід форми редагування локації
+	{
+//перевірити
+	  TStringStream *ms = new TStringStream("", TEncoding::UTF8, true);
+
+	  try
+		 {
+		   int id_ind = ARequestInfo->Params->IndexOfName("id"),
+			   ind_ind = ARequestInfo->Params->IndexOfName("index"),
+			   adr_ind = ARequestInfo->Params->IndexOfName("id");
+
+		   String p_id, p_ind, p_adr;
+
+		   if (id_ind > -1)
+			 {
+			   p_id = ARequestInfo->Params->Strings[id_ind];
+			   p_id.Delete(1, p_id.Pos("="));
+			 }
+
+		   if (ind_ind > -1)
+			 {
+			   p_ind = ARequestInfo->Params->Strings[ind_ind];
+			   p_ind.Delete(1, p_pwd.Pos("="));
+			 }
+
+		   if (adr_ind > -1)
+			 {
+			   p_adr = ARequestInfo->Params->Strings[adr_ind];
+			   p_adr = TIdURI::URLDecode(p_pass, IndyTextEncoding_UTF8());
+			   p_adr.Delete(1, p_adr.Pos("="));
+			 }
+
+		   if (CheckAuth(ROLE_ADMIN, ARequestInfo, ms))
+			 SetLocationID(id, index, addr);
 
 		   ms->Position = 0;
 		   AResponseInfo->ContentText = ms->ReadString(ms->Size);
@@ -1190,6 +1299,36 @@ TStringStream* __fastcall TTechService::RequestLog(const String &date, TStringSt
 		   GenerateErrorPage("Помилка відкриття логу", ms);
 		 }
 	}
+
+  return ms;
+}
+//---------------------------------------------------------------------------
+
+TStringStream* __fastcall TTechService::RequestLocations(TStringStream *ms)
+{
+  String sqltext = "SELECT * FROM LOCATIONS";
+  TFDTransaction *tmp_tr = CreateNewTransactionObj();
+  TFDQuery *tmp_query = CreateNewQueryObj(tmp_tr);
+
+  try
+	 {
+	   try
+		  {
+			tmp_tr->StartTransaction();
+			tmp_query->SQL->Add(sqltext);
+			tmp_query->Open();
+			tmp_tr->Commit();
+
+			GenerateResultPage(RT_LOCS, tmp_query, ms);
+		  }
+		catch (Exception &e)
+		  {
+			tmp_tr->Rollback();
+			SendLogToConsole("RequestLocations(): " + e.ToString());
+			GenerateErrorPage("Помилка запиту переліку локацій", ms);
+		  }
+	 }
+  __finally {DeleteTransactionObj(tmp_tr); DeleteQueryObj(tmp_query);}
 
   return ms;
 }
@@ -2076,6 +2215,146 @@ void __fastcall TTechService::RemoveSessionID(const String &session_id)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TTechService::RemoveLocationID(const String &loc_id)
+{
+  String sqltext = "DELETE FROM LOCATIONS WHERE ID = :id";
+
+  TFDTransaction *tmp_tr = CreateNewTransactionObj();
+  TFDQuery *tmp_query = CreateNewQueryObj(tmp_tr);
+
+  try
+	 {
+	   try
+		  {
+			tmp_tr->StartTransaction();
+
+			tmp_query->SQL->Add(sqltext);
+
+			tmp_query->ParamByName("id")->AsInteger = loc_id.ToInt();
+
+			tmp_query->Prepare();
+			tmp_query->Execute();
+			tmp_tr->Commit();
+		  }
+		catch (Exception &e)
+		  {
+			tmp_tr->Rollback();
+			SendLogToConsole("RemoveLocationID(): " + e.ToString());
+		  }
+	 }
+  __finally {DeleteTransactionObj(tmp_tr); DeleteQueryObj(tmp_query);}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TTechService::EditLocationID(const String &loc_id)
+{
+  String sqltext = "SELECT * FROM LOCATIONS WHERE ID = :id";
+  TFDTransaction *tmp_tr = CreateNewTransactionObj();
+  TFDQuery *tmp_query = CreateNewQueryObj(tmp_tr);
+
+  try
+	 {
+	   try
+		  {
+			tmp_tr->StartTransaction();
+			tmp_query->SQL->Add(sqltext);
+
+			tmp_query->ParamByName("id")->AsInteger = loc_id.ToInt();
+
+            tmp_query->Prepare();
+			tmp_query->Open();
+			tmp_tr->Commit();
+
+			GenerateResultPage(RT_LOC, tmp_query, ms);
+		  }
+		catch (Exception &e)
+		  {
+			tmp_tr->Rollback();
+			SendLogToConsole("RequestLocations(): " + e.ToString());
+			GenerateErrorPage("Помилка запиту переліку локацій", ms);
+		  }
+	 }
+  __finally {DeleteTransactionObj(tmp_tr); DeleteQueryObj(tmp_query);}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TTechService::SetLocationID(const String &id, const String &index, const String &addr)
+{
+  String sqltext = "UPDATE LOCATIONS SET INDEX = :index, ADDRESS = :addr WHERE ID = :id";
+
+  TFDTransaction *tmp_tr = CreateNewTransactionObj();
+  TFDQuery *tmp_query = CreateNewQueryObj(tmp_tr);
+
+  try
+	 {
+	   try
+		  {
+			tmp_tr->StartTransaction();
+
+			tmp_query->SQL->Add(sqltext);
+
+			tmp_query->ParamByName("id")->AsInteger = id.ToInt();
+			tmp_query->ParamByName("index")->AsString = index;
+			tmp_query->ParamByName("addr")->AsString = addr;
+
+			tmp_query->Prepare();
+			tmp_query->Execute();
+			tmp_tr->Commit();
+		  }
+		catch (Exception &e)
+		  {
+			tmp_tr->Rollback();
+			SendLogToConsole("SetLocationID(): " + e.ToString());
+		  }
+	 }
+  __finally {DeleteTransactionObj(tmp_tr); DeleteQueryObj(tmp_query);}
+}
+//---------------------------------------------------------------------------
+
+int __fastcall TTechService::AddLocationID(const String &index, const String &addr)
+{
+  String sqltext = "INSERT INTO LOCATIONS VALUES (:id, :index, :addr)";
+  int id;
+
+  TFDTransaction *tmp_tr = CreateNewTransactionObj();
+  TFDQuery *tmp_query = CreateNewQueryObj(tmp_tr);
+
+  try
+	 {
+	   try
+		  {
+			tmp_tr->StartTransaction();
+			tmp_query->Open("SELECT GEN_ID(GEN_LOCATION_ID, 1) AS ID FROM RDB$DATABASE");
+			tmp_query->First();
+
+			id = tmp_query->FieldByName("ID")->AsInteger;
+
+			tmp_query->Close();
+
+			tmp_query->SQL->Clear();
+			tmp_query->SQL->Add(sqltext);
+
+			tmp_query->ParamByName("id")->AsInteger = id;
+			tmp_query->ParamByName("index")->AsString = index;
+			tmp_query->ParamByName("addr")->AsString = addr;
+
+			tmp_query->Prepare();
+			tmp_query->Execute();
+			tmp_tr->Commit();
+		  }
+		catch (Exception &e)
+		  {
+			id = -1;
+			tmp_tr->Rollback();
+			SendLogToConsole("AddLocationID(): " + e.ToString());
+		  }
+	 }
+  __finally {DeleteTransactionObj(tmp_tr); DeleteQueryObj(tmp_query);}
+
+  return id;
+}
+//---------------------------------------------------------------------------
+
 String __fastcall TTechService::GetUserPwd(int user_id)
 {
   String res;
@@ -2490,6 +2769,75 @@ void __fastcall TTechService::GenerateResultPage(ResultPageType type,
 	  catch (Exception &e)
 		 {
 		   GenerateErrorPage("GenerateResultPage(): RT_SESS: " + e.ToString(), output);
+		 }
+	}
+  else if (type == RT_LOCS)
+	{
+	  try
+		 {
+		   output->Clear();
+		   output->Position = 0;
+		   output->WriteString(locations_hdr);
+
+		   dataset->First();
+
+		   while (!dataset->Eof)
+			 {
+			   output->WriteString("<tr>");
+			   output->WriteString("<td>" + dataset->FieldByName("ID")->AsString + "</td>");
+			   output->WriteString("<td>" + dataset->FieldByName("INDEX")->AsString + "</td>");
+			   output->WriteString("<td>" + dataset->FieldByName("ADDRESS")->AsString + "</td>");
+			   output->WriteString("<td><form method=\"post\" action=\"/remove_loc.html?id=");
+			   output->WriteString(dataset->FieldByName("ID")->AsString);
+			   output->WriteString("\">");
+			   output->WriteString("<p><button style=\"width:180px;height:25px\" type=\"submit\">Видалити</button></p>");
+			   output->WriteString("</form></td>");
+			   output->WriteString("<td><form method=\"post\" action=\"/edit_loc.html?id=");
+			   output->WriteString(dataset->FieldByName("ID")->AsString);
+			   output->WriteString("\">");
+			   output->WriteString("<p><button style=\"width:180px;height:25px\" type=\"submit\">Редагувати</button></p>");
+			   output->WriteString("</form></td>");
+			   output->WriteString("</tr>\r\n");
+
+			   dataset->Next();
+			 }
+
+		   output->WriteString("<br>\r\n</table>\r\n");
+		   output->WriteString("<br>\r\n</center>\r\n");
+		   output->WriteString("<br>\r\n</body>\r\n</html>");
+		 }
+	  catch (Exception &e)
+		 {
+		   GenerateErrorPage("GenerateResultPage(): RT_LOCS: " + e.ToString(), output);
+		 }
+	}
+  else if (type == RT_LOC)
+	{
+	  try
+		 {
+		   output->Clear();
+		   output->Position = 0;
+		   output->WriteString(location_hdr);
+
+		   dataset->First();
+		   output->WriteString("<p><input type=\"hidden\" name=\"id\" value=\"");
+		   output->WriteString(dataset->FieldByName("ID")->AsString);
+		   output->WriteString("\"></input>");
+		   output->WriteString("<input type=\"text\" name=\"index\" value=\"");
+		   output->WriteString(dataset->FieldByName("INDEX")->AsString);
+		   output->WriteString("\"></input>");
+		   output->WriteString("<input type=\"text\" name=\"addr\" value=\"");
+		   output->WriteString(dataset->FieldByName("ADDRESS")->AsString);
+		   output->WriteString("\"></input>");
+		   output->WriteString("<p><button style=\"width:200px;height:25px\" ");
+		   output->WriteString("type=\"submit\">Застосувати</button></p>");
+		   output->WriteString("<br>\r\n</form>\r\n");
+		   output->WriteString("<br>\r\n</center>\r\n");
+		   output->WriteString("<br>\r\n</body>\r\n</html>");
+		 }
+	  catch (Exception &e)
+		 {
+		   GenerateErrorPage("GenerateResultPage(): RT_LOC: " + e.ToString(), output);
 		 }
 	}
 }

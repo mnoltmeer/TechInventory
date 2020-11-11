@@ -145,8 +145,8 @@
             <BuildOrder>1</BuildOrder>
         </ResFiles>
         <None Include="TODO.txt"/>
-        <CppCompile Include="..\..\work-functions\MyFunc.cpp">
-            <DependentOn>..\..\work-functions\MyFunc.h</DependentOn>
+        <CppCompile Include="D:\work-functions\MyFunc.cpp">
+            <DependentOn>D:\work-functions\MyFunc.h</DependentOn>
             <BuildOrder>4</BuildOrder>
         </CppCompile>
         <FormResources Include="serv.dfm"/>

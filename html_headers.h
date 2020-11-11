@@ -269,5 +269,61 @@ margin:0px auto;\
 </body>\
 <br>\
 </html>";
+
+const wchar_t *locations_hdr =
+L"<html>\
+<head><meta http-equiv=\"Content-Type\" content=\"text/html\" charset=\"utf-8\">\
+<title>Результат виборки</title></head>\
+<style>\
+body\
+{\
+background-color:#FFFFFF;\
+max-width:800px;\
+padding:0px;\
+margin:0px auto;\
+}\
+</style>\
+<br>\
+<body>\
+<center>\
+<form method=\"post\" action=\"/\">\
+<p><button style=\"width:200px;height:25px\" type=\"submit\">На головну</button></p>\
+</form>\
+<form method=\"post\" action=\"admin.html\">\
+<p><button style=\"width:200px;height:25px\" type=\"submit\">Адміністрування</button></p>\
+</form>\
+<br>\
+<table border=\"1\">\
+<caption><h2>Результат виборки</h2></caption>\
+<tr><th>ID</th><th>Індекс</th><th>Адреса</th><th></th><th></th></tr>";
+
+const wchar_t *location_hdr =
+L"<html>\
+<head><meta http-equiv=\"Content-Type\" content=\"text/html\" charset=\"utf-8\">\
+<title>Результат виборки</title></head>\
+<style>\
+body\
+{\
+background-color:#FFFFFF;\
+max-width:800px;\
+padding:0px;\
+margin:0px auto;\
+}\
+</style>\
+<br>\
+<body>\
+<center>\
+<form method=\"post\" action=\"/\">\
+<p><button style=\"width:200px;height:25px\" type=\"submit\">На головну</button></p>\
+</form>\
+<form method=\"post\" action=\"admin.html\">\
+<p><button style=\"width:200px;height:25px\" type=\"submit\">Адміністрування</button></p>\
+</form>\
+<form method=\"post\" action=\"locations.html\">\
+<p><button style=\"width:200px;height:25px\" type=\"submit\">Назад</button></p>\
+</form>\
+<br>\
+</form>\
+<form method=\"post\" action=\"set_loc.html\">\";
 //---------------------------------------------------------------------------
 #endif
