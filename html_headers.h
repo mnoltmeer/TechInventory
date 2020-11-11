@@ -324,6 +324,6 @@ margin:0px auto;\
 </form>\
 <br>\
 </form>\
-<form method=\"post\" action=\"set_loc.html\">\";
+<form method=\"post\" action=\"set_loc.html\">";
 //---------------------------------------------------------------------------
 #endif
