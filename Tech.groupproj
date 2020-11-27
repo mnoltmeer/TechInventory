@@ -12,6 +12,9 @@
         <Projects Include="TIService.cbproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Client\Windows\TIClient.cbproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +50,23 @@
     <Target Name="TIService:Make">
         <MSBuild Projects="TIService.cbproj" Targets="Make"/>
     </Target>
+    <Target Name="TIClient">
+        <MSBuild Projects="Client\Windows\TIClient.cbproj"/>
+    </Target>
+    <Target Name="TIClient:Clean">
+        <MSBuild Projects="Client\Windows\TIClient.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TIClient:Make">
+        <MSBuild Projects="Client\Windows\TIClient.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="AESCrypt;AESTest;TIService"/>
+        <CallTarget Targets="AESCrypt;AESTest;TIService;TIClient"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="AESCrypt:Clean;AESTest:Clean;TIService:Clean"/>
+        <CallTarget Targets="AESCrypt:Clean;AESTest:Clean;TIService:Clean;TIClient:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="AESCrypt:Make;AESTest:Make;TIService:Make"/>
+        <CallTarget Targets="AESCrypt:Make;AESTest:Make;TIService:Make;TIClient:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -52,4 +52,27 @@ object TechService: TTechService
     Left = 224
     Top = 8
   end
+  object MailSender: TIdSMTP
+    SASLMechanisms = <>
+    Left = 144
+    Top = 112
+  end
+  object ConnectionServer: TIdTCPServer
+    Bindings = <
+      item
+        IP = '0.0.0.0'
+        Port = 9874
+      end>
+    DefaultPort = 0
+    OnConnect = ConnectionServerConnect
+    OnDisconnect = ConnectionServerDisconnect
+    OnExecute = ConnectionServerExecute
+    Left = 240
+    Top = 112
+  end
+  object StoredProc: TFDStoredProc
+    Connection = StatConnection
+    Left = 128
+    Top = 192
+  end
 end

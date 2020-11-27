@@ -3148,3 +3148,254 @@ String __fastcall TTechService::CryptUserPassword(const String &pass)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TTechService::ConnectionServerExecute(TIdContext *AContext)
+{
+  String msg, cfg;
+  TStringStream *ms = new TStringStream("", TEncoding::UTF8, true);
+
+  AContext->Connection->IOHandler->ReadStream(ms);
+
+  try
+	 {
+	   try
+		  {
+			ms->Position = 0;
+			msg = ms->ReadString(ms->Size);
+			AContext->Connection->IOHandler->Write(ms, ms->Size, true);
+		  }
+	   catch (Exception &e)
+		  {
+			SendLogToConsole("ConnectionServerExecute: " + e.ToString());
+		  }
+	 }
+  __finally {delete ms;}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TTechService::ConnectionServerConnect(TIdContext *AContext)
+{
+  //клієнт під'єднався
+  SendLogToConsole("Підключився клієнт: " + AContext->Connection->Socket->BoundIP);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TTechService::ConnectionServerDisconnect(TIdContext *AContext)
+{
+  //клієнт від'єднався
+  SendLogToConsole("Відключився клієнт: " + AContext->Connection->Socket->BoundIP);
+}
+//---------------------------------------------------------------------------
+
+int __fastcall TTechService::SendToClient(const wchar_t *host, TStringStream *buffer)
+{
+  TIdTCPClient *TargetClient;
+  int res = 0;
+
+  try
+	 {
+	   TargetClient = CreateSimpleTCPSender(host, DEFAULT_CLIENT_PORT);
+
+	   try
+		  {
+			TargetClient->Connect();
+			TargetClient->IOHandler->Write(buffer, buffer->Size, true);
+		  }
+	   catch (Exception &e)
+		  {
+			SendLogToConsole(String(host) + ":" + e.ToString());
+			res = -1;
+		  }
+
+	   buffer->Clear();
+	 }
+  __finally
+	 {
+	   if (TargetClient)
+		 FreeSimpleTCPSender(TargetClient);
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TTechService::ConnectToSMTP()
+{
+  MailSender->Username = "noname@ukrposhta.com";
+  MailSender->Password = "noname";
+  MailSender->Host = "127.0.0.1";
+  MailSender->Port = 465;
+
+  try
+	{
+	  MailSender->Connect();
+	}
+  catch (Exception &e)
+	{
+	  SendLogToConsole("SMTP помилка: " + e.ToString());
+
+	  return false;
+	}
+
+  return MailSender->Connected();
+}
+//-------------------------------------------------------------------------
+
+void __fastcall TTechService::SendMsg(String mail_addr, String subject, String from, String log)
+{
+  if (MailSender->Connected())
+	{
+	  TIdMessage* msg = new TIdMessage(this);
+
+	  msg->CharSet = "UTF-8";
+	  msg->Body->Text = log;
+	  msg->From->Text = from;
+	  msg->Recipients->EMailAddresses = mail_addr;
+	  msg->Subject = subject;
+	  msg->Priority = TIdMessagePriority(mpHighest);
+
+	  MailSender->Send(msg);
+	  MailSender->Disconnect();
+
+	  delete msg;
+	}
+}
+//-------------------------------------------------------------------------
+
+TStringStream* __fastcall TTechService::CreateRequest(const String &command,
+													  const String &params)
+{
+  TStringStream *ms;
+
+  try
+	 {
+	   ms = new TStringStream("", TEncoding::UTF8, true);
+
+	   ms->WriteString("<Request>");
+	   ms->WriteString("<Command>" + command + "</Command>");
+	   ms->WriteString("<Params>");
+
+	   TStringList *lst = new TStringList();
+
+	   try
+		  {
+			StrToList(lst, params, ";");
+
+			for (int i = 0; i < lst->Count; i++)
+			   ms->WriteString("<Param>" + lst->Strings[i] + "</Param>");
+		  }
+	   __finally {delete lst;}
+
+	   ms->WriteString("</Params>");
+       ms->WriteString("</Request>");
+	 }
+  catch (Exception &e)
+	 {
+	   SendLogToConsole("CreateRequest(" + command + "): " + e.ToString());
+
+       if (ms) {delete ms;}
+
+	   ms = NULL;
+	 }
+
+  return ms;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TTechService::ParseXML(TXMLDocument *ixml)
+{
+  try
+	 {
+	   _di_IXMLNode Document = ixml->DocumentElement; //тип документу (запит/відповідь)
+
+	   if (Document->GetNodeName() == "Answer")
+		 {
+		   //оброблюємо відповідь
+		   ProcessAnswer(ixml);
+		 }
+	   else if (Document->GetNodeName() == "Request")
+		 {
+		   //оброблюємо запит
+		   ProcessRequest(ixml);
+		 }
+	   else
+		 {
+		   //прийшла якась фігня
+		   throw new Exception("Невідомий тип XML-документу");
+		 }
+	 }
+  catch (Exception &e)
+	 {
+	   SendLogToConsole("ParseXML: " + e.ToString());
+	 }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TTechService::ProcessAnswer(TXMLDocument *ixml)
+{
+  try
+	 {
+	   _di_IXMLNode Document = ixml->DocumentElement; //тип документу (запит/відповідь)
+	   _di_IXMLNode Command; //команда (вказує для чого призначені дані)
+
+	   _di_IXMLNode Data; //позначає секцію з даними
+	   _di_IXMLNode Row;
+	   _di_IXMLNode Field;
+
+	   Command = Document->ChildNodes->Nodes[0];
+	   Data = Document->ChildNodes->Nodes[1];
+
+	   String datatype, value;
+
+	   for (int i = 0; i < Data->ChildNodes->Count; i++)
+		  {
+			Row = Data->ChildNodes->Nodes[i];
+
+			for (int j = 0; j < Row->ChildNodes->Count; j++)
+			   {
+				 Field = Row->ChildNodes->Nodes[j];
+
+				 datatype = Field->GetAttribute("type");
+				 value = Field->NodeValue;
+			   }
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   SendLogToConsole("ProcessAnswer: " + e.ToString());
+	 }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TTechService::ProcessRequest(TXMLDocument *ixml)
+{
+  try
+	 {
+	   _di_IXMLNode Document = ixml->DocumentElement; //тип документу (запит/відповідь)
+	   _di_IXMLNode Command; //команда (вказує для чого призначені дані)
+
+	   _di_IXMLNode Params; //позначає секцію з даними
+	   _di_IXMLNode Param;
+
+	   Command = Document->ChildNodes->Nodes[0];
+	   Params = Document->ChildNodes->Nodes[1];
+
+	   String datatype, value;
+
+	   for (int i = 0; i < Params->ChildNodes->Count; i++)
+		  {
+			for (int j = 0; j < Params->ChildNodes->Count; j++)
+			   {
+				 Param = Params->ChildNodes->Nodes[j];
+
+				 datatype = Param->GetAttribute("type");
+				 value = Param->NodeValue;
+			   }
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   SendLogToConsole("ProcessRequest: " + e.ToString());
+	 }
+}
+//---------------------------------------------------------------------------
+

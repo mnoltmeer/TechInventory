@@ -32,17 +32,32 @@
 #include <IdCustomHTTPServer.hpp>
 #include <IdCustomTCPServer.hpp>
 #include <IdHTTPServer.hpp>
-#include <System.ImageList.hpp>
-#include <Vcl.Controls.hpp>
+//#include <System.ImageList.hpp>
+//#include <Vcl.Controls.hpp>
+//#include <Vcl.ExtCtrls.hpp>
+//#include <Vcl.ImgList.hpp>
+//#include <Vcl.Menus.hpp>
+#include <IdExplicitTLSClientServerBase.hpp>
+#include <IdMessageClient.hpp>
+#include <IdSMTP.hpp>
+#include <IdSMTPBase.hpp>
+#include <IdTCPClient.hpp>
+#include <IdTCPConnection.hpp>
+#include <IdTCPServer.hpp>
 #include <Vcl.ExtCtrls.hpp>
-#include <Vcl.ImgList.hpp>
-#include <Vcl.Menus.hpp>
+#include <Xml.adomxmldom.hpp>
+#include <Xml.XMLDoc.hpp>
+#include <Xml.xmldom.hpp>
+#include <Xml.XMLIntf.hpp>
+#include <Xml.Win.msxmldom.hpp>
 //---------------------------------------------------------------------------
 
 #define CookieValidDays 15
 #define BUILD_APP
 #define ROLE_ADMIN true
 #define ROLE_USER false
+#define DEFAULT_SERVER_PORT 9874
+#define DEFAULT_CLIENT_PORT 9875
 
 enum ResultPageType {
 RT_ITEM = 0,
@@ -78,12 +93,18 @@ __published:    // IDE-managed Components
 	TFDPhysFBDriverLink *StatFBDriverLink;
 	TIdHTTPServer *HttpServer;
 	TTimer *RemSessionTimer;
+	TIdSMTP *MailSender;
+	TIdTCPServer *ConnectionServer;
+	TFDStoredProc *StoredProc;
 	void __fastcall HttpServerCommandGet(TIdContext *AContext, TIdHTTPRequestInfo *ARequestInfo,
           TIdHTTPResponseInfo *AResponseInfo);
 	void __fastcall ServiceExecute(TService *Sender);
 	void __fastcall ServiceStop(TService *Sender, bool &Stopped);
 	void __fastcall RemSessionTimerTimer(TObject *Sender);
 	void __fastcall ServiceStart(TService *Sender, bool &Started);
+	void __fastcall ConnectionServerExecute(TIdContext *AContext);
+	void __fastcall ConnectionServerConnect(TIdContext *AContext);
+	void __fastcall ConnectionServerDisconnect(TIdContext *AContext);
 
 private:        // User declarations
 	void __fastcall ConnectToDB();
@@ -187,6 +208,16 @@ private:        // User declarations
 	void __fastcall UnLoadCryptoDLL();
 //шифрує ідентифікатор, отриманий від користувача
 	String __fastcall CryptUserPassword(const String &pass);
+
+
+
+    bool __fastcall ConnectToSMTP();
+	void __fastcall SendMsg(String mail_addr, String subject, String from, String log);
+	int __fastcall SendToClient(const wchar_t *host, TStringStream *buffer);
+    void __fastcall ParseXML(TXMLDocument *ixml);
+	void __fastcall ProcessAnswer(TXMLDocument *ixml);
+	void __fastcall ProcessRequest(TXMLDocument *ixml);
+	TStringStream* __fastcall CreateRequest(const String &command, const String &params);
 
 public:         // User declarations
 	__fastcall TTechService(TComponent* Owner);
