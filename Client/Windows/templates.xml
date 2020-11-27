@@ -1,0 +1,21 @@
+<Answer>
+	<Command>demo</Command>
+	<Titles>
+		<Title size="30">Перше поле</Title>
+		<Title size="50">Друге поле</Title>
+	</Titles>
+	<Data>
+		<Row>
+			<Field type="string">hello</Field>
+			<Field type="string">world</Field>
+		</Row>
+	</Data>
+</Answer>
+
+<Request>
+	<Command>demo</Command>
+	<Params>
+		<Param>hello</Param>
+		<Param>world</Param>
+	</Params>
+</Request>
