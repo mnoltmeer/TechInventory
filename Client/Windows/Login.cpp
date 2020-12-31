@@ -96,14 +96,13 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
 	   Server = ServerName->Text;
 	   User = UserName->Text;
 
-	   crypt_login = EncryptText(UserName->Text.c_str(), AccCryptKey);
 	   crypt_pwd = EncryptText(Password->Text.c_str(), AccCryptKey);
 
-	   TStringStream *data = ClientForm->CreateRequest("AUTH", crypt_login + ";" + crypt_pwd);
+	   TStringStream *data = ClientForm->CreateRequest("AUTH", User + ";" + crypt_pwd);
 
 	   try
 		  {
-			if (!ClientForm->AskToServer(Server.c_str(), data))
+			if (ClientForm->AskToServer(Server.c_str(), data) < 0)
 			  res = ConnectErr;
 			else
 			  {

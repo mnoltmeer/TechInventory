@@ -342,7 +342,7 @@ int __fastcall TClientForm::AskToServer(const wchar_t *host, TStringStream *buff
 			res = -1;
 		  }
 
-	   buffer->Clear();
+       buffer->Clear();
 	 }
   __finally
 	 {
@@ -929,16 +929,17 @@ void __fastcall TClientForm::ProcessRequest(TXMLDocument *ixml)
 	   Command = Document->ChildNodes->Nodes[0];
 	   Params = Document->ChildNodes->Nodes[1];
 
-	   String datatype, value;
+	   String command, params;
+
+	   command = Command->NodeValue;
 
 	   for (int i = 0; i < Params->ChildNodes->Count; i++)
 		  {
-			for (int j = 0; j < Params->ChildNodes->Count; j++)
-			   {
-				 Param = Params->ChildNodes->Nodes[j];
-				 value = Param->NodeValue;
-			   }
+			Param = Params->ChildNodes->Nodes[i];
+			params = params + Param->NodeValue + ";";
 		  }
+
+	   params.Delete(params.Length() - 1, 1);
 	 }
   catch (Exception &e)
 	 {
@@ -950,8 +951,8 @@ void __fastcall TClientForm::ProcessRequest(TXMLDocument *ixml)
 void __fastcall TClientForm::ListenerExecute(TIdContext *AContext)
 {
   String crypted_msg, uncrypted_msg;
+  TXMLDocument *ixml;
   TStringStream *ms = new TStringStream("", TEncoding::UTF8, true);
-  TXMLDocument *ixml = new TXMLDocument(Application);
 
   AContext->Connection->IOHandler->ReadStream(ms);
 
@@ -974,22 +975,20 @@ void __fastcall TClientForm::ListenerExecute(TIdContext *AContext)
 
 	   try
 		  {
-			ms->Position = 0;
+			ixml = CreatXMLStream(ms);
 
-			ixml->DOMVendor = GetDOMVendor("MSXML");
-			ixml->Active = true;
-			ixml->Encoding = "UTF-8";
-			ixml->Options = ixml->Options << doNodeAutoIndent;
-			ixml->LoadFromStream(ms, xetUTF_8);
-
-			ParseXML(ixml);
+            try
+			   {
+				 ParseXML(ixml);
+			   }
+			catch (Exception &e)
+			   {
+				 AddActionLog("Listener: Парсинг: " + e.ToString());
+			   }
 		  }
-	   catch (Exception &e)
-		  {
-			AddActionLog("Listener: Парсинг: " + e.ToString());
-		  }
+	   __finally {delete ixml;}
 	 }
-  __finally {delete ms; delete ixml;}
+  __finally {delete ms;}
 }
 //---------------------------------------------------------------------------
 

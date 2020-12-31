@@ -6,8 +6,8 @@
 	</Titles>
 	<Data>
 		<Row>
-			<Field type="string">hello</Field>
-			<Field type="string">world</Field>
+			<Field>hello</Field>
+			<Field>world</Field>
 		</Row>
 	</Data>
 </Answer>

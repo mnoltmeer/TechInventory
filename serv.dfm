@@ -39,19 +39,6 @@ object TechService: TTechService
     Left = 32
     Top = 64
   end
-  object HttpServer: TIdHTTPServer
-    Bindings = <>
-    OnCommandGet = HttpServerCommandGet
-    Left = 118
-    Top = 8
-  end
-  object RemSessionTimer: TTimer
-    Enabled = False
-    Interval = 86400000
-    OnTimer = RemSessionTimerTimer
-    Left = 224
-    Top = 8
-  end
   object MailSender: TIdSMTP
     SASLMechanisms = <>
     Left = 144

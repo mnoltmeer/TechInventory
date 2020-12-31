@@ -52,22 +52,13 @@
 #include <Xml.Win.msxmldom.hpp>
 //---------------------------------------------------------------------------
 
-#define CookieValidDays 15
-#define BUILD_APP
 #define ROLE_ADMIN true
 #define ROLE_USER false
 #define DEFAULT_SERVER_PORT 9874
 #define DEFAULT_CLIENT_PORT 9875
 
-enum ResultPageType {
-RT_ITEM = 0,
-RT_HIST = 1,
-RT_EDIT = 2,
-RT_USER = 3,
-RT_SESS = 4,
-RT_LOCS = 5,
-RT_LOC = 6
-};
+const char *AccCryptKey = "U$erHa$hK3y";
+const char *DataCryptKey = "D@t@Ha$hK3y";
 
 enum OperationType {
 OT_ADD = 1,	    //Ввод нового пристрою
@@ -76,6 +67,12 @@ OT_CH_INN = 3,  //Зміна інвентарного номеру
 OT_CH_SN = 4,   //Зміна серійного номеру
 OT_CH_MODEL = 5,//Зміна моделі пристрою
 OT_CH_LOC = 6   //Зміна локації пристрою
+};
+
+struct UserInfo
+{
+  int ID;
+  String Role;
 };
 
 typedef __stdcall const wchar_t *(*ENCRYPTTEXT)(const wchar_t*, const char*);
@@ -91,16 +88,11 @@ __published:    // IDE-managed Components
 	TFDTransaction *WriteTransaction;
 	TFDQuery *WriteQuery;
 	TFDPhysFBDriverLink *StatFBDriverLink;
-	TIdHTTPServer *HttpServer;
-	TTimer *RemSessionTimer;
 	TIdSMTP *MailSender;
 	TIdTCPServer *ConnectionServer;
 	TFDStoredProc *StoredProc;
-	void __fastcall HttpServerCommandGet(TIdContext *AContext, TIdHTTPRequestInfo *ARequestInfo,
-          TIdHTTPResponseInfo *AResponseInfo);
 	void __fastcall ServiceExecute(TService *Sender);
 	void __fastcall ServiceStop(TService *Sender, bool &Stopped);
-	void __fastcall RemSessionTimerTimer(TObject *Sender);
 	void __fastcall ServiceStart(TService *Sender, bool &Started);
 	void __fastcall ConnectionServerExecute(TIdContext *AContext);
 	void __fastcall ConnectionServerConnect(TIdContext *AContext);
@@ -109,8 +101,11 @@ __published:    // IDE-managed Components
 private:        // User declarations
 	void __fastcall ConnectToDB();
 	void __fastcall DisconnectFromDB();
-	void __fastcall StartHttpServer();
-	void __fastcall StopHttpServer();
+	void __fastcall StartServer();
+	void __fastcall StopServer();
+
+//авторизує користувача, якщо успішно повертає ІД Агента та роль, інакше повертає NULL
+	UserInfo __fastcall Authorisation(const String &login, const String &pass);
 
 	TStringStream* __fastcall RequestHistory(TStringStream *ms,
 											 String p_inn,
@@ -126,7 +121,6 @@ private:        // User declarations
 	TStringStream* __fastcall RequestItems(TStringStream *ms,
 										   const String &ind);
 	TStringStream* __fastcall RequestUsers(TStringStream *ms);
-	TStringStream* __fastcall RequestSessions(TStringStream *ms);
 	TStringStream* __fastcall RequestLog(const String &date, TStringStream *ms);
 	TStringStream* __fastcall RequestLocations(TStringStream *ms);
 
@@ -149,28 +143,8 @@ private:        // User declarations
 	void __fastcall SetChangingAgent(int itm_id, int user_id);
 	void __fastcall ReadSettings();
 	void __fastcall SendLogToConsole(const String &msg);
-
-	void __fastcall GenerateResultPage(ResultPageType type,
-									   TFDQuery *dataset,
-									   TStringStream *output);
-	void __fastcall GenerateErrorPage(String error, TStringStream *output);
-	void __fastcall GenerateSuccessPage(String msg, TStringStream *output);
 	void __fastcall GenerateLocationList(TStringStream *output);
-
 	void __fastcall AddHistoryRecord(int agent_id, OperationType operation_id, int item_id);
-
-//авторизує користувача, якщо успішно повертає ІД Агента, інакше повертає 0
-	int __fastcall Authorisation(const String &login, const String &pass, TStringStream *ms);
-//якщо Агент авторизований успішно повертає ІД Агента, інакше повертає 0
-	int __fastcall Authorised(TIdHTTPRequestInfo *RequestInfo);
-//якщо хеш сессії дійсний повертає ІД Агента, що прив'язаний до сесії, інакше повертає 0
-	int __fastcall IsValidSessionID(const String &cookie_hash);
-//додає нову сесію в БД, повертає ІД сесії (не хеш)
-	int __fastcall AddSessionID(const String &session_hash, int user_id);
-//видаляє сессію зі списку, коли користувач виходить з системи
-	void __fastcall RemoveSessionID(const String &session_hash, int user_id);
-//просто видаляє сесію з БД (для адміна)
-	void __fastcall RemoveSessionID(const String &session_id);
 	void __fastcall RemoveLocationID(const String &loc_id);
 //генерує форму для редагування даних локації
 	void __fastcall EditLocationID(const String &loc_id, TStringStream *ms);
@@ -179,19 +153,7 @@ private:        // User declarations
 								  const String &addr,
 								  TStringStream *ms);
 	int __fastcall AddLocationID(const String &index, const String &addr, TStringStream *ms);
-//генерує хеш сесії - символьний рядок довжиною 32 символу
-//за базу для хешу береться поточне значення дати (включно з мілісекундами)
-	String __fastcall GenerateSessionHash();
-//видаляє з БД сессії, старіші за CookieValidDays
-	void __fastcall RemoveOldSessions();
 	bool __fastcall IsAdmin(int user_id);
-	int __fastcall CheckAuthAndLoad(const String &page_file,
-                                    bool check_admin,
-									TIdHTTPRequestInfo *RequestInfo,
-									TStringStream *ms);
-	int __fastcall CheckAuth(bool check_admin,
-							 TIdHTTPRequestInfo *RequestInfo,
-							 TStringStream *ms);
 	void __fastcall AddUser(const String &login,
 							const String &pass,
                             const String &name,
@@ -209,15 +171,31 @@ private:        // User declarations
 //шифрує ідентифікатор, отриманий від користувача
 	String __fastcall CryptUserPassword(const String &pass);
 
-
-
     bool __fastcall ConnectToSMTP();
 	void __fastcall SendMsg(String mail_addr, String subject, String from, String log);
 	int __fastcall SendToClient(const wchar_t *host, TStringStream *buffer);
-    void __fastcall ParseXML(TXMLDocument *ixml);
+
+//парсить документ, що надійшов, перевіряє вміст і запускає ProcessAnswer() або ProcessRequest()
+//при потребі одразу повертає відповідь у вигляді xml-файлу
+	TStringStream* __fastcall ParseXML(TXMLDocument *ixml);
+//оброблює відповідь клієнта та виконує відповідні дії
 	void __fastcall ProcessAnswer(TXMLDocument *ixml);
-	void __fastcall ProcessRequest(TXMLDocument *ixml);
+//оброблює запит клієнта та виконує ExecuteCommand()
+//при потребі одразу повертає відповідь у вигляді xml-файлу
+	TStringStream* __fastcall ProcessRequest(TXMLDocument *ixml);
+//обробляє команду клієнта і виконує відповідний запит до БД
+//при потребі одразу повертає відповідь у вигляді xml-файлу
+	TStringStream* __fastcall ExecuteCommand(const String &command, TStringList *params);
+//оброблює результат виборки з БД та формує xml-файл
+	TStringStream* __fastcall CreateAnswer();
+//формує результат на основі набору даних
+	TStringStream* __fastcall CreateAnswer(const String &command, TStringList *data);
+//формує запит на базі строк. Сивол-роздільник стовпців - ; Символ-роздільик рядків - &&
+	TStringStream* __fastcall CreateAnswer(const String &headers, const String &data);
+//створює запит до клієнта
 	TStringStream* __fastcall CreateRequest(const String &command, const String &params);
+//створює об'єкт документу XML у пам'яті
+	TXMLDocument *__fastcall CreatXMLStream(TStringStream *ms);
 
 public:         // User declarations
 	__fastcall TTechService(TComponent* Owner);

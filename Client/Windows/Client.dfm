@@ -501,7 +501,7 @@ object ClientForm: TClientForm
     object Label23: TLabel
       Left = 1
       Top = 1
-      Width = 769
+      Width = 191
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -512,7 +512,6 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 191
     end
     object Panel9: TPanel
       Left = 1
@@ -609,7 +608,7 @@ object ClientForm: TClientForm
     object Label17: TLabel
       Left = 1
       Top = 1
-      Width = 769
+      Width = 340
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -620,7 +619,6 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 340
     end
     object Panel2: TPanel
       Left = 1
@@ -717,7 +715,7 @@ object ClientForm: TClientForm
     object Label18: TLabel
       Left = 1
       Top = 1
-      Width = 769
+      Width = 230
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -728,7 +726,6 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 230
     end
     object Panel5: TPanel
       Left = 1
@@ -806,7 +803,7 @@ object ClientForm: TClientForm
     object Label19: TLabel
       Left = 1
       Top = 1
-      Width = 769
+      Width = 189
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -817,7 +814,6 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 189
     end
     object Panel6: TPanel
       Left = 1
@@ -895,7 +891,7 @@ object ClientForm: TClientForm
     object Label3: TLabel
       Left = 1
       Top = 1
-      Width = 769
+      Width = 265
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -906,19 +902,17 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 265
     end
     object Label4: TLabel
       Left = 1
       Top = 48
-      Width = 769
+      Width = 441
       Height = 16
       Align = alTop
       Alignment = taCenter
       Caption = 
         #1042#1110#1076#1089#1082#1072#1085#1091#1081#1090#1077' '#1082#1086#1076', '#1072#1073#1086' '#1074#1074#1077#1076#1110#1090#1100' '#1074#1088#1091#1095#1085#1091' '#1110#1085#1074#1077#1085#1090#1072#1088#1085#1080#1081' '#1085#1086#1084#1077#1088' '#1090#1072' '#1085#1072#1090#1080#1089#1085#1110 +
         #1090#1100' Enter'
-      ExplicitWidth = 441
     end
     object CheckItemScannedCode: TEdit
       Left = 1
@@ -994,7 +988,7 @@ object ClientForm: TClientForm
     object Label5: TLabel
       Left = 1
       Top = 1
-      Width = 769
+      Width = 319
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -1005,7 +999,6 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 319
     end
     object Label7: TLabel
       Left = 6
