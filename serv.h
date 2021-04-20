@@ -31,7 +31,7 @@
 #include <IdContext.hpp>
 #include <IdCustomHTTPServer.hpp>
 #include <IdCustomTCPServer.hpp>
-#include <IdHTTPServer.hpp>
+//#include <IdHTTPServer.hpp>
 //#include <System.ImageList.hpp>
 //#include <Vcl.Controls.hpp>
 //#include <Vcl.ExtCtrls.hpp>

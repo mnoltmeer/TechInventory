@@ -44,3 +44,12 @@
 # Executables
 *.out
 *.app
+/MessageConsole/techconsole.layout
+/MessageConsole/bin
+/MessageConsole/obj
+/MessageConsole/techconsole.depend
+/TechConsole/TechConsolePCH1.h
+/TechConsole/__astcache
+/TechConsole/Win32
+/TechConsole/TechConsole.cbproj.local
+/TechConsole/TechConsole.res

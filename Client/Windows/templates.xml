@@ -1,8 +1,8 @@
 <Answer>
 	<Command>demo</Command>
 	<Titles>
-		<Title size="30">Перше поле</Title>
-		<Title size="50">Друге поле</Title>
+		<Title size='30'>Перше поле</Title>
+		<Title size='50'>Друге поле</Title>
 	</Titles>
 	<Data>
 		<Row>

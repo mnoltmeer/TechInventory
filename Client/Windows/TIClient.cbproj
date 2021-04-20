@@ -168,11 +168,11 @@
             <DependentOn>..\..\..\work-functions\MyFunc.h</DependentOn>
             <BuildOrder>3</BuildOrder>
         </CppCompile>
-        <FormResources Include="Client.dfm"/>
-        <FormResources Include="Login.dfm"/>
-        <FormResources Include="EditItem.dfm"/>
-        <FormResources Include="Registration.dfm"/>
         <FormResources Include="ChangePassword.dfm"/>
+        <FormResources Include="Client.dfm"/>
+        <FormResources Include="EditItem.dfm"/>
+        <FormResources Include="Login.dfm"/>
+        <FormResources Include="Registration.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

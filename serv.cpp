@@ -95,7 +95,7 @@ void __fastcall TTechService::ConnectToDB()
            StatFBDriverLink->VendorLib = ConfigPath + "\\fbclient.dll";
 
 		   StatConnection->Params->Clear();
-		   StatConnection->Params->Add("User_Name=sysdba");
+		   StatConnection->Params->Add("User_Name=SYSDBA");
 		   StatConnection->Params->Add("Password=masterkey");
 		   StatConnection->Params->Add("Port=3050");
 		   StatConnection->Params->Add("DriverID=myFB");
@@ -1319,17 +1319,35 @@ void __fastcall TTechService::SendLogToConsole(const String &msg)
 
   SaveLog(ConfigPath + "\\Logs\\" + DateToStr(Date()) + ".log", msg);
 
-  /* //відправка логу до консолей, локальної та віддаленної
-  String txt = "["
+  /*//відправка логу до консолей, локальної та віддаленної
+  String rec = "["
 			   + DateToStr(Date())
 			   + " "
 			   + TimeToStr(Time())
 			   + "]"
 			   + " : "
-			   + msg;
+			   + msg
+			   + "\r\n";
 
-  if (FindPIDByHandle(ConsoleHandle))
-	SendMessage(ConsoleHandle, LB_ADDSTRING, 0, (LPARAM)msg.c_str());
+  COPYDATASTRUCT cds;
+
+  HWND wnd = FindHandleByName(L"Server Console");
+
+  if (wnd)
+	{
+	  unsigned int len = rec.Length() + 1;
+	  wchar_t *buffer = new wchar_t[len];
+
+	  try
+		 {
+           wcscpy(buffer, rec.c_str());
+		   cds.dwData = 1;
+		   cds.lpData = buffer;
+		   cds.cbData = len * sizeof(wchar_t);
+		   SendMessage(wnd, WM_COPYDATA, (WPARAM)wnd, (LPARAM)&cds);
+		 }
+	  __finally {delete[] buffer;}
+    }
 
   TStringStream *ms = new TStringStream(msg, TEncoding::UTF8, true);
 
@@ -1643,14 +1661,14 @@ void __fastcall TTechService::ConnectionServerExecute(TIdContext *AContext)
 void __fastcall TTechService::ConnectionServerConnect(TIdContext *AContext)
 {
   //клієнт під'єднався
-  SendLogToConsole("Підключився клієнт: " + AContext->Connection->Socket->BoundIP);
+  SendLogToConsole("Підключився клієнт: " + AContext->Binding->PeerIP);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TTechService::ConnectionServerDisconnect(TIdContext *AContext)
 {
   //клієнт від'єднався
-  SendLogToConsole("Відключився клієнт: " + AContext->Connection->Socket->BoundIP);
+  SendLogToConsole("Відключився клієнт: " + AContext->Binding->PeerIP);
 }
 //---------------------------------------------------------------------------
 
@@ -2060,3 +2078,4 @@ void __fastcall TTechService::ProcessAnswer(TXMLDocument *ixml)
 	 }
 }
 //---------------------------------------------------------------------------
+

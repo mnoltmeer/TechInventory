@@ -28,6 +28,7 @@ extern int MainFormWidth, MainFormHeight;
 extern bool MainFormFullScreen;
 extern String Server, User; //поточний сервер та логін користувача
 extern String AppPath;
+extern TClientForm *ClientForm;
 //---------------------------------------------------------------------------
 __fastcall TLoginForm::TLoginForm(TComponent* Owner)
 	: TForm(Owner)
@@ -164,6 +165,8 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
 
 void __fastcall TLoginForm::FormShow(TObject *Sender)
 {
+  Left = ClientForm->ClientWidth / 2 - ClientWidth / 2;
+  Top = ClientForm->ClientHeight / 2 - ClientHeight / 2;
   ClientForm->LockUI();
   ServerName->Text = Server;
   UserName->Text = User;

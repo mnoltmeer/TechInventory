@@ -77,6 +77,7 @@ void __fastcall TClientForm::FormShow(TObject *Sender)
   SetUIImages();
 
   LoginForm->Show();
+  LoginForm->SetFocus();
 }
 //---------------------------------------------------------------------------
 

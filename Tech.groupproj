@@ -15,6 +15,12 @@
         <Projects Include="Client\Windows\TIClient.cbproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="TechConsole\TechConsole.cbproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -59,14 +65,32 @@
     <Target Name="TIClient:Make">
         <MSBuild Projects="Client\Windows\TIClient.cbproj" Targets="Make"/>
     </Target>
+    <Target Name="Project1">
+        <MSBuild Projects="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj"/>
+    </Target>
+    <Target Name="Project1:Clean">
+        <MSBuild Projects="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Project1:Make">
+        <MSBuild Projects="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="TechConsole">
+        <MSBuild Projects="TechConsole\TechConsole.cbproj"/>
+    </Target>
+    <Target Name="TechConsole:Clean">
+        <MSBuild Projects="TechConsole\TechConsole.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TechConsole:Make">
+        <MSBuild Projects="TechConsole\TechConsole.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="AESCrypt;AESTest;TIService;TIClient"/>
+        <CallTarget Targets="AESCrypt;AESTest;TIService;TIClient;Project1;TechConsole"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="AESCrypt:Clean;AESTest:Clean;TIService:Clean;TIClient:Clean"/>
+        <CallTarget Targets="AESCrypt:Clean;AESTest:Clean;TIService:Clean;TIClient:Clean;Project1:Clean;TechConsole:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="AESCrypt:Make;AESTest:Make;TIService:Make;TIClient:Make"/>
+        <CallTarget Targets="AESCrypt:Make;AESTest:Make;TIService:Make;TIClient:Make;Project1:Make;TechConsole:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

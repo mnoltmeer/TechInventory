@@ -36,6 +36,7 @@ object TechService: TTechService
   end
   object StatFBDriverLink: TFDPhysFBDriverLink
     DriverID = 'myFB'
+    Embedded = True
     Left = 32
     Top = 64
   end
@@ -45,11 +46,7 @@ object TechService: TTechService
     Top = 112
   end
   object ConnectionServer: TIdTCPServer
-    Bindings = <
-      item
-        IP = '0.0.0.0'
-        Port = 9874
-      end>
+    Bindings = <>
     DefaultPort = 0
     OnConnect = ConnectionServerConnect
     OnDisconnect = ConnectionServerDisconnect
