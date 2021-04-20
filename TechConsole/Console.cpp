@@ -21,17 +21,30 @@ __fastcall TConsoleForm::TConsoleForm(TComponent* Owner)
 
 void __fastcall TConsoleForm::FormCreate(TObject *Sender)
 {
-  ReadSettings();
-
   try
 	 {
+	   if (ReadSettings())
+		 {
+           ShowLog("Старт консолі", ConsoleWindow);
+		   ShowLog("Сервер: " + ServerName + ":" + String(ListenPort), ConsoleWindow);
+		   ShowLog("Версія серверу: " + ServerVersion, ConsoleWindow);
+		   ShowLog("Конфіг служби: " + ConfigPath, ConsoleWindow);
 
-     }
+		   Listener->DefaultPort = ListenPort;
+		   Listener->Active = true;
+		 }
+	 }
+  catch (Exception &e)
+	 {
+	   ShowLog("FormCreate: " + e.ToString(), ConsoleWindow);
+	 }
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TConsoleForm::ReadSettings()
+bool __fastcall TConsoleForm::ReadSettings()
 {
+  bool res = true;
+
   try
 	 {
 	   TRegistry *reg = new TRegistry();
@@ -66,13 +79,17 @@ void __fastcall TConsoleForm::ReadSettings()
   catch (Exception &e)
 	 {
 	   ShowLog("Помилка запуску консолі: " + e.ToString(), ConsoleWindow);
+	   res = false;
 	 }
+
+  return res;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TConsoleForm::ListenerExecute(TIdContext *AContext)
 {
   TStringStream *msg = new TStringStream("", TEncoding::UTF8, true);
+  String rec;
 
   try
 	 {
@@ -80,11 +97,13 @@ void __fastcall TConsoleForm::ListenerExecute(TIdContext *AContext)
 		  {
 			AContext->Connection->IOHandler->ReadStream(msg);
 			msg->Position = 0;
-            ShowLog(msg->ReadString(msg->Size), ConsoleWindow);
+			rec = msg->ReadString(msg->Size);
+			ConsoleWindow->Perform(LB_ADDSTRING, 0, (LPARAM)rec.c_str());
 		  }
 	   catch (Exception &e)
 		  {
-			ShowLog("ListenerExecute: " + e.ToString(), ConsoleWindow);
+			rec = "ListenerExecute: " + e.ToString();
+			ConsoleWindow->Perform(LB_ADDSTRING, 0, (LPARAM)rec.c_str());
 		  }
 	 }
   __finally {delete msg;}

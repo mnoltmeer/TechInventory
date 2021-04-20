@@ -26,7 +26,7 @@ __published:	// IDE-managed Components
 	void __fastcall ListenerExecute(TIdContext *AContext);
 
 private:	// User declarations
-	void __fastcall ReadSettings();
+	bool __fastcall ReadSettings();
 
 public:		// User declarations
 	__fastcall TConsoleForm(TComponent* Owner);

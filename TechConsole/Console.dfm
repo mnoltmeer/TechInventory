@@ -23,8 +23,6 @@ object ConsoleForm: TConsoleForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitTop = 227
-    ExplicitWidth = 537
     object CmdText: TEdit
       Left = 0
       Top = 0
@@ -32,8 +30,6 @@ object ConsoleForm: TConsoleForm
       Height = 25
       Align = alClient
       TabOrder = 0
-      ExplicitTop = 4
-      ExplicitWidth = 121
       ExplicitHeight = 21
     end
     object CmdSend: TButton
@@ -44,7 +40,6 @@ object ConsoleForm: TConsoleForm
       Align = alRight
       Caption = #1053#1072#1076#1110#1089#1083#1072#1090#1080
       TabOrder = 1
-      ExplicitLeft = 432
     end
   end
   object ConsoleWindow: TListBox
@@ -55,10 +50,6 @@ object ConsoleForm: TConsoleForm
     Align = alClient
     ItemHeight = 13
     TabOrder = 1
-    ExplicitLeft = 24
-    ExplicitTop = 16
-    ExplicitWidth = 121
-    ExplicitHeight = 97
   end
   object Listener: TIdTCPServer
     Bindings = <>
