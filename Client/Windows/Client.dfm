@@ -1121,21 +1121,21 @@ object ClientForm: TClientForm
     end
     object Label2: TLabel
       Left = 6
-      Top = 93
+      Top = 43
       Width = 215
       Height = 16
       Caption = #1055#1086#1090#1086#1095#1085#1072' '#1072#1076#1088#1077#1089#1072' '#1077#1083#1077#1082#1090#1088#1086#1085#1085#1086#1111' '#1087#1086#1096#1090#1080':'
     end
     object CurrentMail: TLabel
       Left = 230
-      Top = 93
+      Top = 43
       Width = 66
       Height = 16
       Caption = 'CurrentMail'
     end
     object UpdateClient: TButton
-      Left = 306
-      Top = 7
+      Left = 455
+      Top = 3
       Width = 75
       Height = 25
       Caption = #1054#1085#1086#1074#1080#1090#1080
@@ -1143,15 +1143,15 @@ object ClientForm: TClientForm
     end
     object ChangePassword: TButton
       Left = 6
-      Top = 165
+      Top = 81
       Width = 105
       Height = 25
       Caption = #1047#1084#1110#1085#1080#1090#1080' '#1087#1072#1088#1086#1083#1100
       TabOrder = 1
     end
     object ChangeMail: TButton
-      Left = 406
-      Top = 88
+      Left = 455
+      Top = 34
       Width = 75
       Height = 25
       Caption = #1047#1084#1110#1085#1080#1090#1080

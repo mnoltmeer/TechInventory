@@ -39,6 +39,7 @@ private:	// User declarations
 	AuthResult __fastcall Authorisation(const String &server,
 										const String &user,
 										const String &password);
+    void __fastcall ShowAuthError(const String &error);
 
 public:		// User declarations
 	__fastcall TLoginForm(TComponent* Owner);

@@ -15,10 +15,13 @@
         <Projects Include="Client\Windows\TIClient.cbproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj">
+        <Projects Include="Server\TIServer.cbproj">
             <Dependencies/>
         </Projects>
         <Projects Include="TechConsole\TechConsole.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -65,14 +68,14 @@
     <Target Name="TIClient:Make">
         <MSBuild Projects="Client\Windows\TIClient.cbproj" Targets="Make"/>
     </Target>
-    <Target Name="Project1">
-        <MSBuild Projects="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj"/>
+    <Target Name="TIServer">
+        <MSBuild Projects="Server\TIServer.cbproj"/>
     </Target>
-    <Target Name="Project1:Clean">
-        <MSBuild Projects="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj" Targets="Clean"/>
+    <Target Name="TIServer:Clean">
+        <MSBuild Projects="Server\TIServer.cbproj" Targets="Clean"/>
     </Target>
-    <Target Name="Project1:Make">
-        <MSBuild Projects="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj" Targets="Make"/>
+    <Target Name="TIServer:Make">
+        <MSBuild Projects="Server\TIServer.cbproj" Targets="Make"/>
     </Target>
     <Target Name="TechConsole">
         <MSBuild Projects="TechConsole\TechConsole.cbproj"/>
@@ -83,14 +86,23 @@
     <Target Name="TechConsole:Make">
         <MSBuild Projects="TechConsole\TechConsole.cbproj" Targets="Make"/>
     </Target>
+    <Target Name="Project1">
+        <MSBuild Projects="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj"/>
+    </Target>
+    <Target Name="Project1:Clean">
+        <MSBuild Projects="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Project1:Make">
+        <MSBuild Projects="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="AESCrypt;AESTest;TIService;TIClient;Project1;TechConsole"/>
+        <CallTarget Targets="AESCrypt;AESTest;TIService;TIClient;TIServer;TechConsole;Project1"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="AESCrypt:Clean;AESTest:Clean;TIService:Clean;TIClient:Clean;Project1:Clean;TechConsole:Clean"/>
+        <CallTarget Targets="AESCrypt:Clean;AESTest:Clean;TIService:Clean;TIClient:Clean;TIServer:Clean;TechConsole:Clean;Project1:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="AESCrypt:Make;AESTest:Make;TIService:Make;TIClient:Make;Project1:Make;TechConsole:Make"/>
+        <CallTarget Targets="AESCrypt:Make;AESTest:Make;TIService:Make;TIClient:Make;TIServer:Make;TechConsole:Make;Project1:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

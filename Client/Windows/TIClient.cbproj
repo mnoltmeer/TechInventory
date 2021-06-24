@@ -164,9 +164,17 @@
             <BuildOrder>4</BuildOrder>
         </CppCompile>
         <None Include="TODO.txt"/>
+        <CppCompile Include="..\..\..\work-functions\Cypher.cpp">
+            <DependentOn>..\..\..\work-functions\Cypher.h</DependentOn>
+            <BuildOrder>10</BuildOrder>
+        </CppCompile>
         <CppCompile Include="..\..\..\work-functions\MyFunc.cpp">
             <DependentOn>..\..\..\work-functions\MyFunc.h</DependentOn>
             <BuildOrder>3</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="..\..\..\work-functions\TCPRequester.cpp">
+            <DependentOn>..\..\..\work-functions\TCPRequester.h</DependentOn>
+            <BuildOrder>11</BuildOrder>
         </CppCompile>
         <FormResources Include="ChangePassword.dfm"/>
         <FormResources Include="Client.dfm"/>

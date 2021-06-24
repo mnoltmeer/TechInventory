@@ -28,18 +28,15 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include <IdContext.hpp>
 #include <IdCustomTCPServer.hpp>
 #include <IdTCPServer.hpp>
-#include <Xml.adomxmldom.hpp>
 #include <Xml.XMLDoc.hpp>
 #include <Xml.xmldom.hpp>
 #include <Xml.XMLIntf.hpp>
-#include <Xml.Win.msxmldom.hpp>
+#include <Xml.omnixmldom.hpp>
+//#include <Xml.Win.msxmldom.hpp>
 #include <Vcl.Menus.hpp>
 
 #define DEFAULT_SERVER_PORT 9874
 #define DEFAULT_CLIENT_PORT 9875
-
-typedef __stdcall const wchar_t *(*ENCRYPTTEXT)(const wchar_t*, const char*);
-typedef __stdcall const wchar_t *(*DECRYPTTEXT)(const wchar_t*, const char*);
 
 //---------------------------------------------------------------------------
 class TClientForm : public TForm
@@ -233,20 +230,17 @@ __published:	// IDE-managed Components
 	void __fastcall ChangeMailClick(TObject *Sender);
 
 private:	// User declarations
-	TIdTCPClient* __fastcall CreateSender(const wchar_t *host);
-	void __fastcall FreeSender(TIdTCPClient *sender);
 	void __fastcall AddActionLog(String status);
-	void __fastcall ClientConnected(TObject *Sender);
-	void __fastcall ClientDisconnected(TObject *Sender);
 	void __fastcall ShowLoadingImage();
 	void __fastcall HideLoadingImage();
 	void __fastcall HideAllPanels();
 	void __fastcall ParseXML(TXMLDocument *ixml);
 	void __fastcall WriteSettings();
 	void __fastcall ReadSettings();
-    bool __fastcall LoadCryptoDLL();
-	void __fastcall UnLoadCryptoDLL();
-    void __fastcall SetUIImages();
+	void __fastcall SetUIImages();
+    TMemoryStream* __fastcall CryptData(String data, const char *pass);
+	String __fastcall EncryptData(TMemoryStream *crypted_data, const char *pass);
+	void __fastcall GetServerVersion();
 
 public:		// User declarations
 	__fastcall TClientForm(TComponent* Owner);
@@ -257,10 +251,11 @@ public:		// User declarations
 //створює об'єкт документу XML у пам'яті
 	TXMLDocument *__fastcall CreatXMLStream(TStringStream *ms);
 	TStringStream* __fastcall CreateRequest(const String &command, const String &params);
+	TStringStream* __fastcall CreateRequest(const String &command);
 //відправка запиту на сервер
-	int __fastcall SendToServer(const wchar_t *host, TStringStream *buffer);
+	bool __fastcall SendToServer(const String &host, TStringStream *buffer);
 //відправка запиту та очікування відповіді у той самий контекст підключення
-	int __fastcall AskToServer(const wchar_t *host, TStringStream *buffer);
+	bool __fastcall AskToServer(const String &host, TStringStream *buffer);
     void __fastcall ProcessAnswer(TXMLDocument *ixml);
 	void __fastcall ProcessRequest(TXMLDocument *ixml);
 };

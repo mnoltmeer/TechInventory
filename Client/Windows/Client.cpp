@@ -7,6 +7,8 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 #pragma hdrstop
 
 #include "..\..\..\work-functions\MyFunc.h"
+#include "..\..\..\work-functions\Cypher.h"
+#include "..\..\..\work-functions\TCPRequester.h"
 #include "TICServiceThread.h"
 #include "Login.h"
 #include "Client.h"
@@ -15,16 +17,11 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 #pragma resource "*.dfm"
 TClientForm *ClientForm;
 
-ENCRYPTTEXT EncryptText;
-DECRYPTTEXT DecryptText;
-
-HINSTANCE dllhandle;
 String Server, User; //поточний сервер та логін користувача
 int UserID; //ID поточного користувача
 bool IsAdmin; //флаг, що визначає, чи є поточний юзер адміном
 String AppPath;
 String LogPath;
-const char *AccCryptKey = "U$erHa$hK3y";
 const char *DataCryptKey = "D@t@Ha$hK3y";
 int MainFormWidth, MainFormHeight;
 bool MainFormFullScreen;
@@ -49,16 +46,6 @@ __fastcall TClientForm::TClientForm(TComponent* Owner)
 
 void __fastcall TClientForm::FormShow(TObject *Sender)
 {
-  if (!LoadCryptoDLL())
-	{
-	  MessageBox(Application->Handle,
-				 L"Помилка підключення бібліотеки шифрування, робота неможлива",
-				 L"AESCrypt.dll",
-				 MB_OK|MB_ICONERROR);
-
-	  Application->Terminate();
-	}
-
   ClientHeight = MainFormHeight;
   ClientWidth = MainFormWidth;
 
@@ -84,7 +71,6 @@ void __fastcall TClientForm::FormShow(TObject *Sender)
 void __fastcall TClientForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
   WriteSettings();
-  UnLoadCryptoDLL();
 }
 //---------------------------------------------------------------------------
 
@@ -99,48 +85,44 @@ void __fastcall TClientForm::ReadSettings()
 {
   try
 	 {
-       TRegistry *reg = new TRegistry();
+	   std::unique_ptr<TRegistry> reg(new TRegistry());
 
-	   try
-		  {
-			reg->RootKey = HKEY_CURRENT_USER;
+	   reg->RootKey = HKEY_CURRENT_USER;
 
-			if (reg->OpenKey("Software\\TIClient\\Form", false))
-			  {
-				if (reg->ValueExists("FullScreen"))
-				  MainFormFullScreen = reg->ReadBool("FullScreen");
+	   if (reg->OpenKey("Software\\TIClient\\Form", false))
+		 {
+		   if (reg->ValueExists("FullScreen"))
+			 MainFormFullScreen = reg->ReadBool("FullScreen");
 
-				if (reg->ValueExists("Height"))
-				  MainFormHeight = reg->ReadInteger("Height");
-				else
-				  {
-					MainFormHeight = 600;
-					reg->WriteInteger("Height", 600);
-				  }
+			 if (reg->ValueExists("Height"))
+			   MainFormHeight = reg->ReadInteger("Height");
+			 else
+			   {
+				 MainFormHeight = 600;
+				 reg->WriteInteger("Height", 600);
+			   }
 
-				if (reg->ValueExists("Width"))
-				  MainFormWidth = reg->ReadInteger("Width");
-				else
-				  {
-					MainFormWidth = 800;
-					reg->WriteInteger("Width", 800);
-				  }
+			 if (reg->ValueExists("Width"))
+			   MainFormWidth = reg->ReadInteger("Width");
+			 else
+			   {
+				 MainFormWidth = 800;
+				 reg->WriteInteger("Width", 800);
+			   }
 
-				reg->CloseKey();
-			  }
+			 reg->CloseKey();
+		 }
 
-			if (reg->OpenKey("Software\\TIClient\\Params", false))
-			  {
-				if (reg->ValueExists("Server"))
-				  Server = reg->ReadString("Server");
+	   if (reg->OpenKey("Software\\TIClient\\Params", false))
+		 {
+		   if (reg->ValueExists("Server"))
+			 Server = reg->ReadString("Server");
 
-				if (reg->ValueExists("LastUser"))
-				  User = reg->ReadString("LastUser");
+		   if (reg->ValueExists("LastUser"))
+			 User = reg->ReadString("LastUser");
 
-                reg->CloseKey();
-			  }
-		  }
-	   __finally {delete reg;}
+			 reg->CloseKey();
+		 }
 	 }
   catch (Exception &e)
 	 {
@@ -153,40 +135,36 @@ void __fastcall TClientForm::WriteSettings()
 {
   try
 	 {
-       TRegistry *reg = new TRegistry();
+	   std::unique_ptr<TRegistry> reg(new TRegistry());
 
-	   try
-		  {
-			reg->RootKey = HKEY_CURRENT_USER;
+	   reg->RootKey = HKEY_CURRENT_USER;
 
-			if (!reg->KeyExists("Software\\TIClient\\Form"))
-			  reg->CreateKey("Software\\TIClient\\Form");
+	   if (!reg->KeyExists("Software\\TIClient\\Form"))
+		 reg->CreateKey("Software\\TIClient\\Form");
 
-			if (!reg->KeyExists("Software\\TIClient\\Params"))
-			  reg->CreateKey("Software\\TIClient\\Params");
+	   if (!reg->KeyExists("Software\\TIClient\\Params"))
+		 reg->CreateKey("Software\\TIClient\\Params");
 
-			if (reg->OpenKey("Software\\TIClient\\Form", false))
-			  {
-				reg->WriteInteger("Height", ClientHeight);
-				reg->WriteInteger("Width", ClientWidth);
+	   if (reg->OpenKey("Software\\TIClient\\Form", false))
+		 {
+		   reg->WriteInteger("Height", ClientHeight);
+		   reg->WriteInteger("Width", ClientWidth);
 
-				if (ClientForm->WindowState == wsMaximized)
-				  reg->WriteBool("FullScreen", true);
-				else
-				  reg->WriteBool("FullScreen", false);
+		   if (ClientForm->WindowState == wsMaximized)
+			 reg->WriteBool("FullScreen", true);
+		   else
+			 reg->WriteBool("FullScreen", false);
 
-				reg->CloseKey();
-			  }
+		   reg->CloseKey();
+		 }
 
-			if (reg->OpenKey("Software\\TIClient\\Params", false))
-			  {
-				reg->WriteString("Server", Server);
-				reg->WriteString("LastUser", User);
+	   if (reg->OpenKey("Software\\TIClient\\Params", false))
+		 {
+		   reg->WriteString("Server", Server);
+		   reg->WriteString("LastUser", User);
 
-				reg->CloseKey();
-			  }
-		  }
-	   __finally {delete reg;}
+		   reg->CloseKey();
+		 }
 	 }
   catch (Exception &e)
 	 {
@@ -195,40 +173,33 @@ void __fastcall TClientForm::WriteSettings()
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TClientForm::LoadCryptoDLL()
+bool __fastcall TClientForm::SendToServer(const String &host, TStringStream *buffer)
 {
-  bool res;
+  std::unique_ptr<TTCPRequester> sender(new TTCPRequester(host, DEFAULT_SERVER_PORT));
+  bool res = true;
 
   try
-     {
-	   String load_path = AppPath + "\\AESCrypt.dll";
-
-	   dllhandle = LoadLibraryW(load_path.c_str());
-
-       if (dllhandle)
-		 {
-		   EncryptText = (ENCRYPTTEXT) GetProcAddress(dllhandle, "AESEncryptText");
-		   DecryptText = (DECRYPTTEXT) GetProcAddress(dllhandle, "AESDecryptText");
-
-		   if (!EncryptText)
-			 throw new Exception("Помилка ініціалізації EnryptText()");
-		   else if (!DecryptText)
-			 throw new Exception("Помилка ініціалізації DecryptText()");
-		   else
-			 res = true;
-		 }
-	   else
-		 {
-		   SaveLog(LogPath + "\\TIClient_exceptions.log",
-				   "LoadCryptoDLL(): Помилковий дескриптор");
-		   SaveLog(LogPath + "\\TIClient_exceptions.log",
-				   "LoadCryptoDLL(): Код помилки " + String((int)GetLastError()));
-		   res = false;
-		 }
-	 }
-  catch(Exception &e)
 	 {
-	   SaveLog(LogPath + "\\TIClient_exceptions.log", "LoadCryptoDLL(): " + e.ToString());
+	   try
+		  {
+			AddActionLog("Шифрування буферу даних");
+			buffer->LoadFromStream(TSAESCypher::Crypt(buffer, DataCryptKey));
+		  }
+	   catch (Exception &e)
+		  {
+			throw Exception("Помилка шифрування: " + e.ToString());
+		  }
+
+	   AddActionLog("Відправка даних на сервер");
+
+	   if (!sender->SendData(buffer))
+		 throw Exception("Помилка відправки даних");
+
+	   buffer->Clear();
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog(String(host) + ": " + e.ToString());
 	   res = false;
 	 }
 
@@ -236,142 +207,48 @@ bool __fastcall TClientForm::LoadCryptoDLL()
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TClientForm::UnLoadCryptoDLL()
+bool __fastcall TClientForm::AskToServer(const String &host, TStringStream *buffer)
 {
-  try
-	 {
-	   FreeLibrary(dllhandle);
-	 }
-  catch(Exception &e)
-	 {
-	   SaveLog(LogPath + "\\TIClient_exceptions.log", "UnLoadCryptoDLL(): " + e.ToString());
-	 }
-}
-//---------------------------------------------------------------------------
-
-int __fastcall TClientForm::SendToServer(const wchar_t *host, TStringStream *buffer)
-{
-  TIdTCPClient *RequestClient;
-  int res = 0;
+  std::unique_ptr<TTCPRequester> sender(new TTCPRequester(host, DEFAULT_SERVER_PORT));
+  bool res = true;
 
   try
 	 {
 	   try
 		  {
-			try
-			   {
-				 String crypted_data = buffer->ReadString(buffer->Size);
-				 crypted_data = EncryptText(crypted_data.c_str(), DataCryptKey);
-				 buffer->Clear();
-				 buffer->WriteString(crypted_data);
-				 AddActionLog("Шифрування буферу даних");
-			   }
-			catch (Exception &e)
-			   {
-				 throw new Exception("Помилка шифрування: " + e.ToString());
-			   }
-
-			RequestClient = CreateSender(host);
-			RequestClient->Connect();
-			AddActionLog("Відправка буферу даних");
-			RequestClient->IOHandler->Write(buffer, buffer->Size, true);
+			AddActionLog("Шифрування буферу даних");
+			buffer->LoadFromStream(TSAESCypher::Crypt(buffer, DataCryptKey));
 		  }
 	   catch (Exception &e)
 		  {
-			AddActionLog(String(host) + ": " + e.ToString());
-			res = -1;
+			throw Exception("Помилка шифрування: " + e.ToString());
 		  }
+
+	   AddActionLog("Обмін даними з сервером");
+
+	   if (!sender->AskData(buffer))
+		  throw Exception("Помилка обміну даними");
+
+	   try
+		  {
+			AddActionLog("Розшифрування буферу даних");
+			buffer->Position = 0;
+			buffer->LoadFromStream(TSAESCypher::Encrypt(buffer, DataCryptKey));
+		  }
+	   catch (Exception &e)
+		 {
+		   throw Exception("Помилка шифрування: " + e.ToString());
+		 }
 
 	   buffer->Clear();
 	 }
-  __finally
-	 {
-	   if (RequestClient)
-		 FreeSender(RequestClient);
-	 }
-
-  return res;
-}
-//---------------------------------------------------------------------------
-
-int __fastcall TClientForm::AskToServer(const wchar_t *host, TStringStream *buffer)
-{
-  TIdTCPClient *RequestClient;
-  int res = 0;
-
-  try
-	 {
-	   try
-		  {
-			try
-			   {
-				 String crypted_data = buffer->ReadString(buffer->Size);
-				 crypted_data = EncryptText(crypted_data.c_str(), DataCryptKey);
-				 buffer->Clear();
-				 buffer->WriteString(crypted_data);
-				 AddActionLog("Шифрування буферу даних");
-			   }
-			catch (Exception &e)
-			   {
-				 throw new Exception("Помилка шифрування: " + e.ToString());
-			   }
-
-			RequestClient = CreateSender(host);
-			RequestClient->Connect();
-			AddActionLog("Відправка буферу даних");
-			RequestClient->IOHandler->Write(buffer, buffer->Size, true);
-
-			AddActionLog("Отримання буферу даних");
-			RequestClient->IOHandler->ReadStream(buffer);
-
-            try
-			   {
-				 String data = buffer->ReadString(buffer->Size);
-				 data = DecryptText(data.c_str(), DataCryptKey);
-				 buffer->Clear();
-				 buffer->WriteString(data);
-				 AddActionLog("Розшифрування буферу даних");
-			   }
-			catch (Exception &e)
-			   {
-				 throw new Exception("Помилка шифрування: " + e.ToString());
-			   }
-		  }
-	   catch (Exception &e)
-		  {
-			AddActionLog(String(host) + ": " + e.ToString());
-			res = -1;
-		  }
-
-       buffer->Clear();
-	 }
-  __finally
-	 {
-	   if (RequestClient)
-		 FreeSender(RequestClient);
-	 }
-
-  return res;
-}
-//---------------------------------------------------------------------------
-
-TIdTCPClient* __fastcall TClientForm::CreateSender(const wchar_t *host)
-{
-  TIdTCPClient *sender;
-
-  try
-	 {
-	   sender = CreateSimpleTCPSender(host, DEFAULT_SERVER_PORT);
-	   sender->OnConnected = ClientConnected;
-	   sender->OnDisconnected = ClientDisconnected;
-	 }
   catch (Exception &e)
 	 {
-	   AddActionLog("Помилка створення TCP-клієнта");
-	   sender = NULL;
+	   AddActionLog(String(host) + ": " + e.ToString());
+	   res = false;
 	 }
 
-  return sender;
+  return res;
 }
 //---------------------------------------------------------------------------
 
@@ -381,9 +258,9 @@ TXMLDocument *__fastcall TClientForm::CreatXMLStream(TStringStream *ms)
 
   try
 	 {
-	   TXMLDocument *ixml = new TXMLDocument(NULL);
+	   ixml = new TXMLDocument(this);
 
-	   ixml->DOMVendor = GetDOMVendor("MSXML");
+	   ixml->DOMVendor = GetDOMVendor(sOmniXmlVendor);
 	   ixml->Active = true;
 	   ixml->Encoding = "UTF-8";
 	   ixml->Options = ixml->Options << doNodeAutoIndent;
@@ -396,36 +273,6 @@ TXMLDocument *__fastcall TClientForm::CreatXMLStream(TStringStream *ms)
 	 }
 
   return ixml;
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TClientForm::FreeSender(TIdTCPClient *sender)
-{
-  try
-	 {
-	   FreeSimpleTCPSender(sender);
-	 }
-  catch (Exception &e)
-	 {
-	   AddActionLog("Помилка знищення TCP-клієнта");
-	   sender = NULL;
-	 }
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TClientForm::ClientConnected(TObject *Sender)
-{
-  TIdTCPClient *sender = reinterpret_cast<TIdTCPClient*>(Sender);
-
-  AddActionLog("Початок сесії з " + sender->Host + ":" + IntToStr(sender->Port));
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TClientForm::ClientDisconnected(TObject *Sender)
-{
-  TIdTCPClient *sender = reinterpret_cast<TIdTCPClient*>(Sender);
-
-  AddActionLog("Кінець сесії з " + sender->Host + ":" + IntToStr(sender->Port));
 }
 //---------------------------------------------------------------------------
 
@@ -728,16 +575,16 @@ void __fastcall TClientForm::LockUI()
 	   ServerInfo->Hide();
 	   UserInfo->Hide();
 
-	   MnHome->Enabled = false;
-	   MnCheckItem->Enabled = false;
-	   MnCheckItems->Enabled = false;
-	   MnAddItem->Enabled = false;
-	   MnShowItems->Enabled = false;
-	   MnShowEvents->Enabled = false;
-	   MnAdmUsers->Enabled = false;
-	   MnAdmLocations->Enabled = false;
-	   MnAdmLogs->Enabled = false;
-	   MnAdmManage->Enabled = false;
+	   MnHome->Visible = false;
+	   MnCheckItem->Visible = false;
+	   MnCheckItems->Visible = false;
+	   MnAddItem->Visible = false;
+	   MnShowItems->Visible = false;
+	   MnShowEvents->Visible = false;
+	   MnAdmUsers->Visible = false;
+	   MnAdmLocations->Visible = false;
+	   MnAdmLogs->Visible = false;
+	   MnAdmManage->Visible = false;
 	 }
   catch (Exception &e)
 	 {
@@ -754,16 +601,20 @@ void __fastcall TClientForm::UnlockUI()
 	   ServerInfo->Show();
 	   UserInfo->Show();
 
-	   MnHome->Enabled = true;
-	   MnCheckItem->Enabled = true;
-	   MnCheckItems->Enabled = true;
-	   MnAddItem->Enabled = true;
-	   MnShowItems->Enabled = true;
-	   MnShowEvents->Enabled = true;
-	   MnAdmUsers->Enabled = true;
-	   MnAdmLocations->Enabled = true;
-	   MnAdmLogs->Enabled = true;
-	   MnAdmManage->Enabled = true;
+	   MnHome->Visible = true;
+	   MnCheckItem->Visible = true;
+	   MnCheckItems->Visible = true;
+	   MnAddItem->Visible = true;
+	   MnShowItems->Visible = true;
+	   MnShowEvents->Visible = true;
+
+	   if (IsAdmin)
+		 {
+		   MnAdmUsers->Visible = true;
+		   MnAdmLocations->Visible = true;
+		   MnAdmLogs->Visible = true;
+		   MnAdmManage->Visible = true;
+		 }
 
        MnHome->Click();
 	 }
@@ -771,6 +622,81 @@ void __fastcall TClientForm::UnlockUI()
 	 {
 	   AddActionLog("Помилка розблокування UI");
 	 }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::GetServerVersion()
+{
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("GETVERSION"));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command;
+		   _di_IXMLNode Data;
+		   _di_IXMLNode Row;
+		   _di_IXMLNode Version;
+
+		   Command = Document->ChildNodes->Nodes[0];
+		   Data = Document->ChildNodes->Nodes[2];
+
+		   if (Command->NodeValue == "SERVERVERSION")
+			 {
+			   Row = Data->ChildNodes->Nodes[0];
+			   Version = Row->ChildNodes->Nodes[0];
+			   ServerInfo->Caption += Version->NodeValue;
+			 }
+		   else
+			 ServerInfo->Caption += "-err-";
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка отримання версії серверу");
+	 }
+}
+//---------------------------------------------------------------------------
+
+TMemoryStream* __fastcall TClientForm::CryptData(String data, const char *pass)
+{
+  TMemoryStream *res = new TMemoryStream();
+
+  TAESCypher *cypher = new TAESCypher(data, pass);
+
+  try
+	 {
+	   res->LoadFromStream(cypher->Data);
+
+	   if (cypher->LastError != "")
+		 AddActionLog("CryptData(): " + cypher->LastError);
+	 }
+  __finally{delete cypher;}
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+String __fastcall TClientForm::EncryptData(TMemoryStream *crypted_data, const char *pass)
+{
+  String res;
+
+  TAESCypher *cypher = new TAESCypher(crypted_data, pass, coEncrypt);
+
+  try
+	 {
+	   res = cypher->DataToString();
+
+	   if (cypher->LastError != "")
+		 AddActionLog("EncryptData(): " + cypher->LastError);
+	 }
+  __finally{delete cypher;}
+
+  return res;
 }
 //---------------------------------------------------------------------------
 
@@ -814,6 +740,33 @@ TStringStream* __fastcall TClientForm::CreateRequest(const String &command,
 }
 //---------------------------------------------------------------------------
 
+TStringStream* __fastcall TClientForm::CreateRequest(const String &command)
+{
+  TStringStream *ms;
+
+  try
+	 {
+	   ms = new TStringStream("", TEncoding::UTF8, true);
+
+	   ms->WriteString("<Request>");
+	   ms->WriteString("<Command>" + command + "</Command>");
+	   ms->WriteString("<Params>");
+	   ms->WriteString("</Params>");
+       ms->WriteString("</Request>");
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("CreateRequest(" + command + "): " + e.ToString());
+
+	   if (ms) {delete ms;}
+
+       ms = NULL;
+	 }
+
+  return ms;
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TClientForm::ParseXML(TXMLDocument *ixml)
 {
   try
@@ -833,7 +786,7 @@ void __fastcall TClientForm::ParseXML(TXMLDocument *ixml)
 	   else
 		 {
 		   //прийшла якась фігня
-		   throw new Exception("Невідомий тип XML-документу");
+		   throw Exception("Невідомий тип XML-документу");
 		 }
 	 }
   catch (Exception &e)
@@ -885,7 +838,7 @@ void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml)
 		  }
 	   catch (Exception &e)
 		  {
-            throw new Exception("Помилка форматування таблиці відображення даних");
+            throw Exception("Помилка форматування таблиці відображення даних");
 		  }
 
 	   try
@@ -907,7 +860,7 @@ void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml)
 		  }
 	   catch (Exception &e)
 		  {
-            throw new Exception("Помилка виводу даних у таблицю");
+            throw Exception("Помилка виводу даних у таблицю");
 		  }
 	 }
   catch (Exception &e)
@@ -951,7 +904,6 @@ void __fastcall TClientForm::ProcessRequest(TXMLDocument *ixml)
 
 void __fastcall TClientForm::ListenerExecute(TIdContext *AContext)
 {
-  String crypted_msg, uncrypted_msg;
   TXMLDocument *ixml;
   TStringStream *ms = new TStringStream("", TEncoding::UTF8, true);
 
@@ -961,13 +913,8 @@ void __fastcall TClientForm::ListenerExecute(TIdContext *AContext)
 	 {
        try
 		  {
+			ms->LoadFromStream(TSAESCypher::Encrypt(ms, DataCryptKey));
 			ms->Position = 0;
-			crypted_msg = ms->ReadString(ms->Size);
-
-			uncrypted_msg = DecryptText(crypted_msg.c_str(), DataCryptKey);
-
-			ms->Clear();
-			ms->WriteString(uncrypted_msg);
 		  }
 	   catch (Exception &e)
 		  {
@@ -1023,7 +970,7 @@ void __fastcall TClientForm::CheckItemScannedCodeKeyPress(TObject *Sender, Syste
 		  }
 	   catch (Exception &e)
 		  {
-            throw new Exception("Помилка форматування таблиці відображення даних");
+            throw Exception("Помилка форматування таблиці відображення даних");
 		  }
 
        try
@@ -1038,7 +985,7 @@ void __fastcall TClientForm::CheckItemScannedCodeKeyPress(TObject *Sender, Syste
 		  }
 	   catch (Exception &e)
 		  {
-            throw new Exception("Помилка виводу даних у таблицю");
+            throw Exception("Помилка виводу даних у таблицю");
 		  }
 }
 //---------------------------------------------------------------------------

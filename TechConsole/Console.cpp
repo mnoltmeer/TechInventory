@@ -25,12 +25,11 @@ void __fastcall TConsoleForm::FormCreate(TObject *Sender)
 	 {
 	   if (ReadSettings())
 		 {
-           ShowLog("Старт консолі", ConsoleWindow);
+		   ShowLog("Старт консолі, порт: " + String(ConsolePort), ConsoleWindow);
+		   ShowLog("Версія служби: " + ServerVersion, ConsoleWindow);
 		   ShowLog("Сервер: " + ServerName + ":" + String(ListenPort), ConsoleWindow);
-		   ShowLog("Версія серверу: " + ServerVersion, ConsoleWindow);
-		   ShowLog("Конфіг служби: " + ConfigPath, ConsoleWindow);
 
-		   Listener->DefaultPort = ListenPort;
+		   Listener->DefaultPort = ConsolePort;
 		   Listener->Active = true;
 		 }
 	 }
@@ -86,26 +85,62 @@ bool __fastcall TConsoleForm::ReadSettings()
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TConsoleForm::ExecuteCommand(const String &command)
+{
+
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TConsoleForm::ListenerExecute(TIdContext *AContext)
 {
   TStringStream *msg = new TStringStream("", TEncoding::UTF8, true);
-  String rec;
+  String rec = "["
+				+ DateToStr(Date())
+				+ " "
+				+ TimeToStr(Time())
+				+ "]"
+				+ " : ";
+
+  AContext->Connection->IOHandler->ReadStream(msg);
 
   try
 	 {
 	   try //читаємо дані, що надійшли
 		  {
-			AContext->Connection->IOHandler->ReadStream(msg);
 			msg->Position = 0;
-			rec = msg->ReadString(msg->Size);
-			ConsoleWindow->Perform(LB_ADDSTRING, 0, (LPARAM)rec.c_str());
+			rec += msg->ReadString(msg->Size);
+			SendToLog(rec + "\r\n", ConsoleWindow);
+			ConsoleWindow->Perform(WM_VSCROLL, SB_BOTTOM, 0);
 		  }
 	   catch (Exception &e)
 		  {
-			rec = "ListenerExecute: " + e.ToString();
-			ConsoleWindow->Perform(LB_ADDSTRING, 0, (LPARAM)rec.c_str());
+			rec += "ListenerExecute: " + e.ToString();
+			SendToLog(rec + "\r\n", ConsoleWindow);
+			ConsoleWindow->Perform(WM_VSCROLL, SB_BOTTOM, 0);
 		  }
 	 }
   __finally {delete msg;}
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TConsoleForm::TrayIconClick(TObject *Sender)
+{
+  Visible = !Visible;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TConsoleForm::CmdSendClick(TObject *Sender)
+{
+  ShowLog(" >> " + CmdText->Text, ConsoleWindow);
+  ExecuteCommand(CmdText->Text);
+  CmdText->Text = "";
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TConsoleForm::CmdTextKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	CmdSend->Click();
+}
+//---------------------------------------------------------------------------
+

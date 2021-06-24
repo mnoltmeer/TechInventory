@@ -1,16 +1,17 @@
 //---------------------------------------------------------------------------
 #include "..\work-functions\MyFunc.h"
+#include "..\work-functions\Cypher.h"
 #include "html_headers.h"
 #include "serv.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 
-int ListenPort, RemoteConsolePort;
+int ListenPort, ConsolePort;
 String DBHost, DBPath, ServerName, ServerVersion, ConfigPath;
-HINSTANCE dllhandle;
 
 TTechService *TechService;
+
 //---------------------------------------------------------------------------
 __fastcall TTechService::TTechService(TComponent* Owner)
 	: TService(Owner)
@@ -51,17 +52,9 @@ void __fastcall TTechService::ServiceStart(TService *Sender, bool &Started)
   try
 	 {
 	   ReadSettings();
-
-	   if (!LoadCryptoDLL())
-		 {
-		   SendLogToConsole("LoadCryptoDLL(): Помилка завантаження бібліотеки криптографування! Робота сервісу неможлива!");
-		 }
-	   else
-		 {
-		   ConnectToDB();
-		   StartServer();
-		   SendLogToConsole("Службу запущено");
-		 }
+	   ConnectToDB();
+	   StartServer();
+	   SendLogToConsole("Службу запущено");
 	 }
   catch (Exception &e)
 	 {
@@ -76,7 +69,6 @@ void __fastcall TTechService::ServiceStop(TService *Sender, bool &Stopped)
 	 {
 	   StopServer();
 	   DisconnectFromDB();
-	   UnLoadCryptoDLL();
 	   SendLogToConsole("Службу зупинено");
 	 }
   catch (Exception &e)
@@ -839,7 +831,7 @@ UserInfo __fastcall TTechService::Authorisation(const String &login, const Strin
 
 			tmp_query->Prepare();
 			tmp_query->Open();
-            tmp_tr->Commit();
+			tmp_tr->Commit();
 
 			if (tmp_query->RecordCount == 1)
 			  {
@@ -1275,6 +1267,9 @@ void __fastcall TTechService::ReadSettings()
 
 	   if (ReadParameter(ConfigPath + "\\service.conf", "ListenPort", &ListenPort, TT_TO_INT) != RP_OK)
 		 throw new Exception("Помилка читання параметру ListenPort");
+
+	   if (ReadParameter(ConfigPath + "\\service.conf", "ConsolePort", &ConsolePort, TT_TO_INT) != RP_OK)
+		 throw new Exception("Помилка читання параметру ConsolePort");
 	 }
   catch (Exception &e)
 	 {
@@ -1319,45 +1314,23 @@ void __fastcall TTechService::SendLogToConsole(const String &msg)
 
   SaveLog(ConfigPath + "\\Logs\\" + DateToStr(Date()) + ".log", msg);
 
-  /*//відправка логу до консолей, локальної та віддаленної
-  String rec = "["
-			   + DateToStr(Date())
-			   + " "
-			   + TimeToStr(Time())
-			   + "]"
-			   + " : "
-			   + msg
-			   + "\r\n";
-
-  COPYDATASTRUCT cds;
-
-  HWND wnd = FindHandleByName(L"Server Console");
-
-  if (wnd)
-	{
-	  unsigned int len = rec.Length() + 1;
-	  wchar_t *buffer = new wchar_t[len];
-
-	  try
-		 {
-           wcscpy(buffer, rec.c_str());
-		   cds.dwData = 1;
-		   cds.lpData = buffer;
-		   cds.cbData = len * sizeof(wchar_t);
-		   SendMessage(wnd, WM_COPYDATA, (WPARAM)wnd, (LPARAM)&cds);
-		 }
-	  __finally {delete[] buffer;}
-    }
-
-  TStringStream *ms = new TStringStream(msg, TEncoding::UTF8, true);
+  TIdTCPClient *sender;
+  TStringStream *data = new TStringStream(msg, TEncoding::UTF8, false);
 
   try
 	 {
-       ms->Position = 0;
-	   RemoteLogSender->Connect();
-	   RemoteLogSender->IOHandler->Write(ms, ms->Size, true);
+	   try
+		  {
+			sender = CreateSimpleTCPSender(L"127.0.0.1", ConsolePort);
+			sender->Connect();
+			sender->IOHandler->Write(data, data->Size, true);
+		  }
+	   catch (Exception &e)
+		  {
+			SaveLog(ConfigPath + "\\Logs\\" + DateToStr(Date()) + ".log", e.ToString());
+          }
 	 }
-  __finally {delete ms;} */
+  __finally {delete data; if (sender) FreeSimpleTCPSender(sender);}
 }
 //---------------------------------------------------------------------------
 
@@ -1500,81 +1473,57 @@ void DeleteQueryObj(TFDQuery *q)
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TTechService::LoadCryptoDLL()
-{
-  bool res;
-
-  try
-     {
-	   String load_path = ConfigPath + "\\AESCrypt.dll";
-
-	   dllhandle = LoadLibraryW(load_path.c_str());
-
-       if (dllhandle)
-		 {
-		   EncryptText = (ENCRYPTTEXT) GetProcAddress(dllhandle, "AESEncryptText");
-		   DecryptText = (DECRYPTTEXT) GetProcAddress(dllhandle, "AESDecryptText");
-
-		   if (!EncryptText)
-			 {
-			   SendLogToConsole("LoadCryptoDLL(): Помилка ініціалізації EnryptText()");
-			   res = false;
-			 }
-		   else if (!DecryptText)
-			 {
-			   SendLogToConsole("LoadCryptoDLL(): Помилка ініціалізації DecryptText()");
-			   res = false;
-			 }
-		   else
-			 {
-			   String ver = GetVersionInString(String(ConfigPath + "\\AESCrypt.dll").c_str());
-			   SendLogToConsole("LoadCryptoDLL(): OK, версія: " + ver);
-			   res = true;
-			 }
-		 }
-	   else
-		 {
-		   SendLogToConsole("LoadCryptoDLL(): Помилковий дескриптор");
-		   SendLogToConsole("LoadCryptoDLL(): Код помилки " + String((int)GetLastError()));
-		   res = false;
-		 }
-	 }
-  catch(Exception &e)
-	 {
-	   SendLogToConsole("LoadCryptoDLL(): " + e.ToString());
-	   res = false;
-	 }
-
-  return res;
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TTechService::UnLoadCryptoDLL()
-{
-  try
-	 {
-	   FreeLibrary(dllhandle);
-	 }
-  catch(Exception &e)
-	 {
-	   SendLogToConsole("UnLoadCryptoDLL(): " + e.ToString());
-	 }
-}
-//---------------------------------------------------------------------------
-
 String __fastcall TTechService::CryptUserPassword(const String &pass)
 {
   String res;
 
   try
 	 {
-	   res = EncryptText(pass.c_str(), AccCryptKey);
+	   //res = EncryptText(pass.c_str(), AccCryptKey);
 	 }
   catch(Exception &e)
 	 {
 	   res = "";
 	   SendLogToConsole("CryptUserAuthID(): " + e.ToString());
 	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+TMemoryStream* __fastcall TTechService::CryptData(String data, const char *pass)
+{
+  TMemoryStream *res = new TMemoryStream();
+
+  TAESCypher *cypher = new TAESCypher(data, pass);
+
+  try
+	 {
+	   res->LoadFromStream(cypher->Data);
+
+	   if (cypher->LastError != "")
+		 SendLogToConsole("CryptData(): " + cypher->LastError);
+	 }
+  __finally{delete cypher;}
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+String __fastcall TTechService::EncryptData(TMemoryStream *crypted_data, const char *pass)
+{
+  String res;
+
+  TAESCypher *cypher = new TAESCypher(crypted_data, pass, coEncrypt);
+
+  try
+	 {
+	   res = cypher->DataToString();
+
+	   if (cypher->LastError != "")
+		 SendLogToConsole("EncryptData(): " + cypher->LastError);
+	 }
+  __finally{delete cypher;}
 
   return res;
 }
@@ -1592,15 +1541,9 @@ void __fastcall TTechService::ConnectionServerExecute(TIdContext *AContext)
 	 {
 	   try //читаємо дані, що надійшли
 		  {
-			String crypted_msg, uncrypted_msg;
-
+            ms->LoadFromStream(TSAESCypher::Encrypt(ms, DataCryptKey));
 			ms->Position = 0;
-			crypted_msg = ms->ReadString(ms->Size);
-
-			uncrypted_msg = DecryptText(crypted_msg.c_str(), DataCryptKey);
-
-			ms->Clear();
-			ms->WriteString(uncrypted_msg);
+            SendLogToConsole(ms->ReadString(ms->Size));
 		  }
 	   catch (Exception &e)
 		  {
@@ -1609,18 +1552,22 @@ void __fastcall TTechService::ConnectionServerExecute(TIdContext *AContext)
 
 	   try //визначаємо тип запиту та оброблюємо його
 		  {
-			ixml = CreatXMLStream(ms);
-
-            try
+			try
 			   {
+				 if (CoInitializeEx(NULL, COINIT_MULTITHREADED) != S_OK)
+				   throw new Exception("Помилка CoInitializeEx");
+
+				 ixml = CreatXMLStream(ms);
 				 answer = ParseXML(ixml);
+				 answer->Position = 0;
+				 SendLogToConsole("Answer: " + answer->ReadString(answer->Size));
 			   }
 			catch (Exception &e)
 			   {
 				 SendLogToConsole("ConnectionServerExecute: Парсинг: " + e.ToString());
 			   }
 		  }
-	   __finally {delete ixml;}
+	   __finally {CoUninitialize(); delete ixml;}
 	 }
   __finally {delete ms;}
 
@@ -1631,12 +1578,9 @@ void __fastcall TTechService::ConnectionServerExecute(TIdContext *AContext)
 		   try
 			  {
 				answer->Position = 0;
-				String crypted_msg = answer->ReadString(answer->Size);
-
-				crypted_msg = EncryptText(crypted_msg.c_str(), DataCryptKey);
-
-				answer->Clear();
-				answer->WriteString(crypted_msg);
+				SendLogToConsole(answer->ReadString(ms->Size));
+				answer->Position = 0;
+				answer->LoadFromStream(TSAESCypher::Crypt(answer, DataCryptKey));
 			  }
 		   catch (Exception &e)
 			 {
@@ -1645,12 +1589,13 @@ void __fastcall TTechService::ConnectionServerExecute(TIdContext *AContext)
 
 		   try
 			  {
+				SendLogToConsole("Відправка даних");
 				answer->Position = 0;
 				AContext->Connection->IOHandler->Write(answer, answer->Size, true);
 			  }
 		   catch (Exception &e)
 			  {
-			    SendLogToConsole("ConnectionServerExecute: Відправка даних: " + e.ToString());
+				SendLogToConsole("ConnectionServerExecute: Відправка даних: " + e.ToString());
 			  }
 		 }
 	  __finally {delete answer;}

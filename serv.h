@@ -57,7 +57,6 @@
 #define DEFAULT_SERVER_PORT 9874
 #define DEFAULT_CLIENT_PORT 9875
 
-const char *AccCryptKey = "U$erHa$hK3y";
 const char *DataCryptKey = "D@t@Ha$hK3y";
 
 enum OperationType {
@@ -74,12 +73,6 @@ struct UserInfo
   int ID;
   String Role;
 };
-
-typedef __stdcall const wchar_t *(*ENCRYPTTEXT)(const wchar_t*, const char*);
-ENCRYPTTEXT EncryptText;
-
-typedef __stdcall const wchar_t *(*DECRYPTTEXT)(const wchar_t*, const char*);
-DECRYPTTEXT DecryptText;
 
 class TTechService : public TService
 {
@@ -166,10 +159,11 @@ private:        // User declarations
 //повертає шифрований AuthID користувача, що зберігається у БД
 	String __fastcall GetUserPwd(int user_id);
 
-	bool __fastcall LoadCryptoDLL();
-	void __fastcall UnLoadCryptoDLL();
 //шифрує ідентифікатор, отриманий від користувача
 	String __fastcall CryptUserPassword(const String &pass);
+
+    TMemoryStream* __fastcall CryptData(String data, const char *pass);
+	String __fastcall EncryptData(TMemoryStream *crypted_data, const char *pass);
 
     bool __fastcall ConnectToSMTP();
 	void __fastcall SendMsg(String mail_addr, String subject, String from, String log);

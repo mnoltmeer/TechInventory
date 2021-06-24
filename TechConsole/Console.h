@@ -20,13 +20,18 @@ __published:	// IDE-managed Components
 	TPanel *SendCmdPanel;
 	TEdit *CmdText;
 	TButton *CmdSend;
-	TListBox *ConsoleWindow;
 	TIdTCPServer *Listener;
+	TTrayIcon *TrayIcon;
+	TMemo *ConsoleWindow;
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall ListenerExecute(TIdContext *AContext);
+	void __fastcall TrayIconClick(TObject *Sender);
+	void __fastcall CmdSendClick(TObject *Sender);
+	void __fastcall CmdTextKeyPress(TObject *Sender, System::WideChar &Key);
 
 private:	// User declarations
 	bool __fastcall ReadSettings();
+	void __fastcall ExecuteCommand(const String &command);
 
 public:		// User declarations
 	__fastcall TConsoleForm(TComponent* Owner);

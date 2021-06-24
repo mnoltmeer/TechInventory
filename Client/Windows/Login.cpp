@@ -14,9 +14,6 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 #pragma resource "*.dfm"
 TLoginForm *LoginForm;
 
-extern ENCRYPTTEXT EncryptText;
-extern DECRYPTTEXT DecryptText;
-
 extern String LogPath;
 extern const char *AccCryptKey;
 extern const char *DataCryptKey;
@@ -37,8 +34,20 @@ __fastcall TLoginForm::TLoginForm(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TLoginForm::FormShow(TObject *Sender)
+{
+  Left = ClientForm->Left + ClientForm->ClientWidth / 2 - ClientWidth / 2;
+  Top = ClientForm->Top + ClientForm->ClientHeight / 2 - ClientHeight / 2;
+  ClientForm->LockUI();
+  ServerName->Text = Server;
+  UserName->Text = User;
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TLoginForm::StartAuthClick(TObject *Sender)
 {
+  AuthError->Hide();
+
   //спроба входу
   AuthResult res = Authorisation(ServerName->Text, UserName->Text, Password->Text);
 
@@ -49,10 +58,25 @@ void __fastcall TLoginForm::StartAuthClick(TObject *Sender)
 		  ClientForm->UnlockUI();
 		  Close();
 		  break;
-        }
-	  case InvalidAcc: AuthError->Caption = "Вказані невірні облікові дані"; break;
-	  case ConnectErr: AuthError->Caption = "Помилка з'єднання"; break;
-      case UnknownErr: AuthError->Caption = "Невідома помилка. Дивись лог"; break;
+		}
+	  case InvalidAcc:
+		{
+		  ClientForm->LockUI();
+		  ShowAuthError("Вказані невірні облікові дані");
+		  break;
+		}
+	  case ConnectErr:
+		{
+		  ClientForm->LockUI();
+		  ShowAuthError("Помилка з'єднання");
+		  break;
+		}
+	  case UnknownErr:
+		{
+		  ClientForm->LockUI();
+		  ShowAuthError("Невідома помилка. Дивись лог");
+		  break;
+		}
 	}
 }
 //---------------------------------------------------------------------------
@@ -93,65 +117,59 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
   try
 	 {
 	   //тут коннект до серверу, передача йому зашифрованих логіну та паролю
-	   String crypt_login, crypt_pwd;
+	   String hash_pwd;
 	   Server = ServerName->Text;
 	   User = UserName->Text;
 
-	   crypt_pwd = EncryptText(Password->Text.c_str(), AccCryptKey);
+	   hash_pwd = MD5(Password->Text);
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("AUTH", User + ";" + hash_pwd));
 
-	   TStringStream *data = ClientForm->CreateRequest("AUTH", User + ";" + crypt_pwd);
+	   if (!ClientForm->AskToServer(Server, data.get()))
+		 res = ConnectErr;
+	   else
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
 
-	   try
-		  {
-			if (ClientForm->AskToServer(Server.c_str(), data) < 0)
-			  res = ConnectErr;
-			else
+		   try
 			  {
-				TXMLDocument *ixml = ClientForm->CreatXMLStream(data);
+				_di_IXMLNode Document = ixml->DocumentElement;
+				_di_IXMLNode Command;
+				_di_IXMLNode Data;
+				_di_IXMLNode Row1, Row2;
+				_di_IXMLNode ID, Role;
 
-				try
-				   {
-					 try
-						{
-						  _di_IXMLNode Document = ixml->DocumentElement;
-						  _di_IXMLNode Command;
-						  _di_IXMLNode Data;
-						  _di_IXMLNode Row;
-						  _di_IXMLNode Field_1, Field_2;
+				Command = Document->ChildNodes->Nodes[0];
+				Data = Document->ChildNodes->Nodes[2];
 
-						  Command = Document->ChildNodes->Nodes[0];
-						  Data = Document->ChildNodes->Nodes[2];
-						  Row = Data->ChildNodes->Nodes[0];
-						  Field_1 = Row->ChildNodes->Nodes[0];
-						  Field_2 = Row->ChildNodes->Nodes[1];
+				if (Command->NodeValue == "GRANTED")
+				  {
+					Row1 = Data->ChildNodes->Nodes[0];
+					Row2 = Data->ChildNodes->Nodes[1];
+					ID = Row1->ChildNodes->Nodes[0];
+					Role = Row2->ChildNodes->Nodes[0];
 
-						  if (Command->NodeValue == "GRANTED")
-							{
-							  UserID = StrToInt(Field_1->NodeValue);
+					UserID = ID->NodeValue.AsType(3);
 
-							  if (Field_1->NodeValue == "admin")
-								IsAdmin = true;
-							  else
-								IsAdmin = false;
+					if (UpperCase(Role->NodeValue) == "ADMIN")
+					  IsAdmin = true;
+					else
+					  IsAdmin = false;
 
-                              res = AuthOK;
-							}
-						  else
-							{
-                              res = InvalidAcc;
-							}
-						}
-					  catch (Exception &e)
-						{
-						  res = ConnectErr;
-						  SaveLog(LogPath + "\\TIClient_exceptions.log",
-						  		  "Authorisation: Парсинг: " + e.ToString());
-						}
-				   }
-				__finally {delete ixml;}
+					res = AuthOK;
+				  }
+				else
+				  {
+					res = InvalidAcc;
+				  }
 			  }
-		  }
-	   __finally {delete data;}
+		   catch (Exception &e)
+			  {
+				res = ConnectErr;
+				SaveLog(LogPath + "\\TIClient_exceptions.log",
+						"Authorisation: Парсинг: " + e.ToString());
+			  }
+		 }
 	 }
   catch (Exception &e)
 	 {
@@ -163,13 +181,12 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TLoginForm::FormShow(TObject *Sender)
+void __fastcall TLoginForm::ShowAuthError(const String &error)
 {
-  Left = ClientForm->ClientWidth / 2 - ClientWidth / 2;
-  Top = ClientForm->ClientHeight / 2 - ClientHeight / 2;
-  ClientForm->LockUI();
-  ServerName->Text = Server;
-  UserName->Text = User;
+  AuthError->Show();
+  AuthError->Caption = error;
+  AuthError->Left = ClientWidth / 2 - AuthError->Width / 2;
 }
 //---------------------------------------------------------------------------
+
 
