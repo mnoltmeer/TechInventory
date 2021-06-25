@@ -239,8 +239,6 @@ bool __fastcall TClientForm::AskToServer(const String &host, TStringStream *buff
 		 {
 		   throw Exception("Помилка шифрування: " + e.ToString());
 		 }
-
-	   buffer->Clear();
 	 }
   catch (Exception &e)
 	 {

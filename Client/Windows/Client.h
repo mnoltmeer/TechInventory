@@ -230,7 +230,6 @@ __published:	// IDE-managed Components
 	void __fastcall ChangeMailClick(TObject *Sender);
 
 private:	// User declarations
-	void __fastcall AddActionLog(String status);
 	void __fastcall ShowLoadingImage();
 	void __fastcall HideLoadingImage();
 	void __fastcall HideAllPanels();
@@ -247,6 +246,8 @@ public:		// User declarations
 
 	void __fastcall LockUI();
 	void __fastcall UnlockUI();
+
+	void __fastcall AddActionLog(String status);
 
 //створює об'єкт документу XML у пам'яті
 	TXMLDocument *__fastcall CreatXMLStream(TStringStream *ms);

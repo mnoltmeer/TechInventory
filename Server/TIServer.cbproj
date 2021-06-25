@@ -120,11 +120,11 @@
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_Keys>CompanyName=;FileDescription=Сервер для АС &quot;ТехІнвент&quot;;FileVersion=1.0.0.1;InternalName=;LegalCopyright=2020-2021 Максим Нольтмєєр (m.noltmeer@gmail.com);LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=АС ТехІнвент;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
-        <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
         <VerInfo_Build>1</VerInfo_Build>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Icon_MainIcon>TIServer_Icon.ico</Icon_MainIcon>
         <UWP_CppLogo44>..\icos\server_115155.png</UWP_CppLogo44>
+        <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
         <UWP_CppLogo150>..\icos\server_115155.png</UWP_CppLogo150>
     </PropertyGroup>
     <ItemGroup>

@@ -129,6 +129,8 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
 	   else
 		 {
 		   data->Position = 0;
+		   ClientForm->AddActionLog(data->ReadString(data->Size));
+		   data->Position = 0;
 		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
 
 		   try
@@ -166,15 +168,14 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
 		   catch (Exception &e)
 			  {
 				res = ConnectErr;
-				SaveLog(LogPath + "\\TIClient_exceptions.log",
-						"Authorisation: Парсинг: " + e.ToString());
+				ClientForm->AddActionLog("Authorisation: Парсинг: " + e.ToString());
 			  }
 		 }
 	 }
   catch (Exception &e)
 	 {
 	   res = UnknownErr;
-	   SaveLog(LogPath + "\\TIClient_exceptions.log", "Authorisation: " + e.ToString());
+	   ClientForm->AddActionLog("Authorisation: " + e.ToString());
 	 }
 
   return res;
