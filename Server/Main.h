@@ -75,6 +75,7 @@ struct UserInfo
 {
   int ID;
   String Role;
+  String Mail;
 };
 //---------------------------------------------------------------------------
 class TServerForm : public TForm

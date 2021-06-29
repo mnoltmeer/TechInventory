@@ -239,7 +239,6 @@ private:	// User declarations
 	void __fastcall SetUIImages();
     TMemoryStream* __fastcall CryptData(String data, const char *pass);
 	String __fastcall EncryptData(TMemoryStream *crypted_data, const char *pass);
-	void __fastcall GetServerVersion();
 
 public:		// User declarations
 	__fastcall TClientForm(TComponent* Owner);
@@ -259,6 +258,7 @@ public:		// User declarations
 	bool __fastcall AskToServer(const String &host, TStringStream *buffer);
     void __fastcall ProcessAnswer(TXMLDocument *ixml);
 	void __fastcall ProcessRequest(TXMLDocument *ixml);
+	void __fastcall GetServerVersion();
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TClientForm *ClientForm;

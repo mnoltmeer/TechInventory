@@ -4,8 +4,8 @@ object RegistrationForm: TRegistrationForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'RegistrationForm'
-  ClientHeight = 362
-  ClientWidth = 475
+  ClientHeight = 401
+  ClientWidth = 457
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,12 +13,13 @@ object RegistrationForm: TRegistrationForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 16
   object Label1: TLabel
     Left = 0
     Top = 0
-    Width = 475
+    Width = 457
     Height = 23
     Align = alTop
     Alignment = taCenter
@@ -54,27 +55,70 @@ object RegistrationForm: TRegistrationForm
   end
   object Label5: TLabel
     Left = 8
-    Top = 191
+    Top = 187
     Width = 153
     Height = 16
     Caption = #1042#1082#1072#1078#1110#1090#1100' '#1072#1076#1088#1077#1089#1091' '#1077#1083'. '#1087#1086#1096#1090#1080
   end
-  object Label6: TLabel
-    Left = 8
-    Top = 253
-    Width = 444
-    Height = 16
-    Caption = 
-      #1053#1072' '#1074#1072#1096#1091' '#1087#1086#1096#1090#1091' '#1073#1091#1083#1086' '#1085#1072#1076#1110#1089#1083#1072#1085#1086' '#1082#1086#1076' '#1074#1077#1088#1080#1092#1110#1082#1072#1094#1110#1111', '#1074#1074#1077#1076#1110#1090#1100' '#1081#1086#1075#1086' '#1074' '#1087#1086#1083 +
-      #1077' '#1085#1080#1078#1095#1077
-  end
   object RegistrationResult: TLabel
-    Left = 248
-    Top = 282
+    Left = 8
+    Top = 293
     Width = 103
     Height = 16
     Alignment = taCenter
     Caption = 'RegistrationResult'
+  end
+  object LoginError: TLabel
+    Left = 102
+    Top = 29
+    Width = 59
+    Height = 16
+    Caption = 'LoginError'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clRed
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object PasswordError: TLabel
+    Left = 112
+    Top = 80
+    Width = 84
+    Height = 16
+    Caption = 'PasswordError'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clRed
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object EMailError: TLabel
+    Left = 175
+    Top = 187
+    Width = 59
+    Height = 16
+    Caption = 'EMailError'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clRed
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+  end
+  object ConfirmPasswordError: TLabel
+    Left = 128
+    Top = 135
+    Width = 129
+    Height = 16
+    Caption = 'ConfirmPasswordError'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clRed
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
   end
   object Login: TEdit
     Left = 8
@@ -91,7 +135,7 @@ object RegistrationForm: TRegistrationForm
     PasswordChar = '*'
     TabOrder = 1
   end
-  object Edit2: TEdit
+  object ConfirmPassword: TEdit
     Left = 8
     Top = 154
     Width = 201
@@ -101,14 +145,14 @@ object RegistrationForm: TRegistrationForm
   end
   object EMail: TEdit
     Left = 8
-    Top = 210
+    Top = 206
     Width = 289
     Height = 24
     TabOrder = 3
   end
   object VerificationCode: TEdit
     Left = 8
-    Top = 276
+    Top = 322
     Width = 121
     Height = 27
     Font.Charset = DEFAULT_CHARSET
@@ -120,27 +164,29 @@ object RegistrationForm: TRegistrationForm
     TabOrder = 4
   end
   object SendCode: TButton
-    Left = 303
-    Top = 210
+    Left = 8
+    Top = 252
     Width = 164
     Height = 25
-    Caption = #1053#1072#1076#1110#1089#1083#1072#1090#1080' '#1082#1086#1076' '#1074#1077#1088#1080#1092#1110#1082#1072#1094#1110#1111
+    Caption = #1043#1086#1090#1086#1074#1086
     TabOrder = 5
+    OnClick = SendCodeClick
   end
   object Confirm: TButton
     Left = 144
-    Top = 277
+    Top = 323
     Width = 84
     Height = 25
     Caption = #1055#1110#1076#1090#1074#1077#1088#1076#1080#1090#1080
     TabOrder = 6
   end
   object Exit: TButton
-    Left = 392
-    Top = 329
+    Left = 367
+    Top = 368
     Width = 75
     Height = 25
     Caption = #1042#1080#1081#1090#1080
     TabOrder = 7
+    OnClick = ExitClick
   end
 end

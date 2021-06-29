@@ -8,6 +8,7 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 
 #include "..\..\..\work-functions\MyFunc.h"
 #include "Client.h"
+#include "Registration.h"
 #include "Login.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -18,7 +19,6 @@ extern String LogPath;
 extern const char *AccCryptKey;
 extern const char *DataCryptKey;
 extern String AppPath;
-extern String Server, User;
 extern int UserID;
 extern bool IsAdmin;
 extern int MainFormWidth, MainFormHeight;
@@ -26,6 +26,7 @@ extern bool MainFormFullScreen;
 extern String Server, User; //поточний сервер та логін користувача
 extern String AppPath;
 extern TClientForm *ClientForm;
+extern TRegistrationForm *RegistrationForm;
 //---------------------------------------------------------------------------
 __fastcall TLoginForm::TLoginForm(TComponent* Owner)
 	: TForm(Owner)
@@ -56,6 +57,7 @@ void __fastcall TLoginForm::StartAuthClick(TObject *Sender)
 	  case AuthOK:
 		{
 		  ClientForm->UnlockUI();
+		  ClientForm->GetServerVersion();
 		  Close();
 		  break;
 		}
@@ -84,6 +86,8 @@ void __fastcall TLoginForm::StartAuthClick(TObject *Sender)
 void __fastcall TLoginForm::RegNewUserClick(TObject *Sender)
 {
   //відкриття форми реєстрації
+  RegistrationForm->Show();
+  Hide();
 }
 //---------------------------------------------------------------------------
 
@@ -138,8 +142,8 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
 				_di_IXMLNode Document = ixml->DocumentElement;
 				_di_IXMLNode Command;
 				_di_IXMLNode Data;
-				_di_IXMLNode Row1, Row2;
-				_di_IXMLNode ID, Role;
+				_di_IXMLNode Row1, Row2, Row3;
+				_di_IXMLNode ID, Role, Mail;
 
 				Command = Document->ChildNodes->Nodes[0];
 				Data = Document->ChildNodes->Nodes[2];
@@ -148,8 +152,10 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
 				  {
 					Row1 = Data->ChildNodes->Nodes[0];
 					Row2 = Data->ChildNodes->Nodes[1];
+                    Row3 = Data->ChildNodes->Nodes[2];
 					ID = Row1->ChildNodes->Nodes[0];
 					Role = Row2->ChildNodes->Nodes[0];
+					Mail = Row3->ChildNodes->Nodes[0];
 
 					UserID = ID->NodeValue.AsType(3);
 
@@ -157,6 +163,8 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
 					  IsAdmin = true;
 					else
 					  IsAdmin = false;
+
+					ClientForm->CurrentMail->Caption = Mail->NodeValue;
 
 					res = AuthOK;
 				  }

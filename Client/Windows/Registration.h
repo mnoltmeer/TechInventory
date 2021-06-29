@@ -14,19 +14,30 @@ __published:	// IDE-managed Components
 	TLabel *Label1;
 	TEdit *Login;
 	TEdit *Password;
-	TEdit *Edit2;
+	TEdit *ConfirmPassword;
 	TEdit *EMail;
 	TLabel *Label2;
 	TLabel *Label3;
 	TLabel *Label4;
 	TLabel *Label5;
 	TEdit *VerificationCode;
-	TLabel *Label6;
 	TButton *SendCode;
 	TButton *Confirm;
 	TButton *Exit;
 	TLabel *RegistrationResult;
+	TLabel *LoginError;
+	TLabel *PasswordError;
+	TLabel *EMailError;
+	TLabel *ConfirmPasswordError;
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall SendCodeClick(TObject *Sender);
+	void __fastcall ExitClick(TObject *Sender);
 private:	// User declarations
+    bool __fastcall IsLoginFree(const String &login);
+	bool __fastcall Registration(const String &login,
+								 const String &pass,
+								 const String &mail);
+
 public:		// User declarations
 	__fastcall TRegistrationForm(TComponent* Owner);
 };

@@ -20,7 +20,7 @@ const char *DataCryptKey = "D@t@Ha$hK3y";
 
 extern String UsedAppLogDir; //вказуємо директорію для логування для функцій з MyFunc.h
 
-String AppPath, LogFile, LogDir, DBHost, DBPath, DBPort, ServerName;
+String AppPath, LogFile, LogDir, DBHost, DBPath, DBPort, ServerName, Version;
 int ListenPort, HideWnd, FullScreen;
 TDate DateStart;
 //---------------------------------------------------------------------------
@@ -72,7 +72,8 @@ void __fastcall TServerForm::FormCreate(TObject *Sender)
 	WindowState = wsMinimized;
 
   SwServerOff->Show();
-  LbVersion->Caption = "Версія: " + GetVersionInString(Application->ExeName.c_str());
+  Version = GetVersionInString(Application->ExeName.c_str());
+  LbVersion->Caption = "Версія: " + Version;
 }
 //---------------------------------------------------------------------------
 
@@ -216,7 +217,7 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
 {
   UserInfo res;
 
-  String sqltext = "SELECT ID, PASS, ROLE FROM AGENTS";
+  String sqltext = "SELECT ID, PASS, ROLE, MAIL FROM AGENTS";
 
   if (login != "")
 	sqltext += " WHERE LOGIN = :login";
@@ -239,7 +240,7 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
 	   tmp_query->Prepare();
 	   tmp_query->Open();
 	   tmp_tr->Commit();
-	   WriteLog("Authorisation(): Record count = " + IntToStr(tmp_query->RecordCount));
+	   //WriteLog("Authorisation(): Record count = " + IntToStr(tmp_query->RecordCount));
 	   if (tmp_query->RecordCount == 1)
 		 {
 		   tmp_query->First();
@@ -248,7 +249,8 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
 			 {
 			   res.ID = tmp_query->FieldByName("ID")->AsInteger;
 			   res.Role = tmp_query->FieldByName("ROLE")->AsString;
-			   WriteLog("Authorisation(): ID = " + tmp_query->FieldByName("ID")->AsString);
+			   res.Mail = tmp_query->FieldByName("MAIL")->AsString;
+			   //WriteLog("Authorisation(): ID = " + tmp_query->FieldByName("ID")->AsString);
 			 }
 		   else
 			 res.ID = -1;
@@ -623,11 +625,11 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		   if (user.ID < 0)
 			 res = CreateAnswer("DENIED", "");
 		   else
-			 res = CreateAnswer("GRANTED", IntToStr(user.ID) + ";" + user.Role);
+			 res = CreateAnswer("GRANTED", IntToStr(user.ID) + ";" + user.Role + ";" + user.Mail);
 		 }
 	   else if (command == "GETVERSION")
 		 {
-		   res = CreateAnswer("SERVERVERSION", LbVersion->Caption);
+		   res = CreateAnswer("SERVERVERSION", Version);
          }
 	 }
   catch (Exception &e)
