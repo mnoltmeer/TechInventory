@@ -125,6 +125,8 @@ private:	// User declarations
 	void __fastcall DisconnectFromDB();
 //авторизує користувача, якщо успішно повертає ІД Агента та роль, інакше повертає NULL
 	UserInfo __fastcall Authorisation(const String &login, const String &pass);
+	bool __fastcall Registration(const String &login, const String &pass, const String &mail);
+    bool __fastcall IsLoginFree(const String &login);
     TMemoryStream* __fastcall CryptData(String data, const char *pass);
 	String __fastcall EncryptData(TMemoryStream *crypted_data, const char *pass);
     bool __fastcall ConnectToSMTP();
@@ -145,8 +147,10 @@ private:	// User declarations
 	TStringStream* __fastcall CreateAnswer();
 //формує результат на основі набору даних
 	TStringStream* __fastcall CreateAnswer(const String &command, TStringList *data);
-//формує запит на базі строк. Сивол-роздільник стовпців - ; Символ-роздільик рядків - &&
-	TStringStream* __fastcall CreateAnswer(const String &headers, const String &data);
+//формує результат на базі строк. Сивол-роздільник стовпців - ; Символ-роздільик рядків - &&
+	TStringStream* __fastcall CreateAnswer(const String &command, const String &data);
+//формує результат з однієї лише команди
+	TStringStream* __fastcall CreateAnswer(const String &command);
 //створює запит до клієнта
 	TStringStream* __fastcall CreateRequest(const String &command, const String &params);
 //створює об'єкт документу XML у пам'яті

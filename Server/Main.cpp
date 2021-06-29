@@ -240,7 +240,7 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
 	   tmp_query->Prepare();
 	   tmp_query->Open();
 	   tmp_tr->Commit();
-	   //WriteLog("Authorisation(): Record count = " + IntToStr(tmp_query->RecordCount));
+
 	   if (tmp_query->RecordCount == 1)
 		 {
 		   tmp_query->First();
@@ -250,7 +250,6 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
 			   res.ID = tmp_query->FieldByName("ID")->AsInteger;
 			   res.Role = tmp_query->FieldByName("ROLE")->AsString;
 			   res.Mail = tmp_query->FieldByName("MAIL")->AsString;
-			   //WriteLog("Authorisation(): ID = " + tmp_query->FieldByName("ID")->AsString);
 			 }
 		   else
 			 res.ID = -1;
@@ -265,6 +264,93 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
   catch (Exception &e)
 	 {
 	   res.ID = -1;
+	   tmp_tr->Rollback();
+	   WriteLog("Authorisation(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::IsLoginFree(const String &login)
+{
+  bool res;
+
+  String sqltext = "SELECT ID FROM AGENTS";
+
+  if (login != "")
+	sqltext += " WHERE LOGIN = :login";
+  else
+	return false;
+
+  std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+  std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+  try
+	 {
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("login")->AsString = login;
+
+	   tmp_query->Prepare();
+	   tmp_query->Open();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RecordCount >= 1)
+		 res = false;
+	   else
+		 res = true;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   tmp_tr->Rollback();
+	   WriteLog("IsLoginFree(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::Registration(const String &login,
+										  const String &pass,
+										  const String &mail)
+{
+//реєстрація нового користувача
+  bool res;
+
+  String sqltext = "INSERT INTO AGENTS ID, LOGIN, PASS, ROLE, MAIL VALUES (\
+GEN_ID(GEN_AGENTS_ID, 1), :login, :pass, agent, :mail)";
+
+  std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+  std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+  try
+	 {
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("login")->AsString = login;
+	   tmp_query->ParamByName("pass")->AsString = pass;
+	   tmp_query->ParamByName("mail")->AsString = mail;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected >= 1)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
 	   tmp_tr->Rollback();
 	   WriteLog("Authorisation(): " + e.ToString());
 	 }
@@ -623,14 +709,28 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		   UserInfo user = Authorisation(params->Strings[0], params->Strings[1]);
 
 		   if (user.ID < 0)
-			 res = CreateAnswer("DENIED", "");
+			 res = CreateAnswer("DENIED");
 		   else
 			 res = CreateAnswer("GRANTED", IntToStr(user.ID) + ";" + user.Role + ";" + user.Mail);
 		 }
 	   else if (command == "GETVERSION")
 		 {
 		   res = CreateAnswer("SERVERVERSION", Version);
-         }
+		 }
+	   else if (command == "CHECKLOGIN")
+		 {
+		   if (IsLoginFree(params->Strings[0]))
+			 res = CreateAnswer("FREE");
+		   else
+             res = CreateAnswer("EXISTS");
+		 }
+	   else if (command == "REGISTER")
+		 {
+		   if (Registration(params->Strings[0], params->Strings[1], params->Strings[2]))
+			 res = CreateAnswer("SUCCESS");
+		   else
+             res = CreateAnswer("FAIL");
+		 }
 	 }
   catch (Exception &e)
 	 {
@@ -644,7 +744,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 //---------------------------------------------------------------------------
 
 TStringStream* __fastcall TServerForm::CreateAnswer(const String &command,
-													 TStringList *data)
+													TStringList *data)
 {
   TStringStream *res;
 
@@ -686,7 +786,7 @@ TStringStream* __fastcall TServerForm::CreateAnswer(const String &command,
 //---------------------------------------------------------------------------
 
 TStringStream* __fastcall TServerForm::CreateAnswer(const String &command,
-													 const String &data)
+													const String &data)
 {
   TStringStream *res;
 
@@ -717,6 +817,29 @@ TStringStream* __fastcall TServerForm::CreateAnswer(const String &command,
 		  }
 
 	   res->WriteString("</Data>");
+	   res->WriteString("</Answer>");
+	 }
+  catch (Exception &e)
+	 {
+       if (res) delete res;
+	   res = NULL;
+	   WriteLog("CreateAnswer: " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+TStringStream* __fastcall TServerForm::CreateAnswer(const String &command)
+{
+  TStringStream *res;
+
+  try
+	 {
+	   res = new TStringStream("", TEncoding::UTF8, true);
+
+	   res->WriteString("<Answer>");
+	   res->WriteString("<Command>" + command + "</Command>");
 	   res->WriteString("</Answer>");
 	 }
   catch (Exception &e)
