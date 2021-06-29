@@ -141,15 +141,15 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
 			  {
 				_di_IXMLNode Document = ixml->DocumentElement;
 				_di_IXMLNode Command;
-				_di_IXMLNode Data;
-				_di_IXMLNode Row1, Row2, Row3;
-				_di_IXMLNode ID, Role, Mail;
-
 				Command = Document->ChildNodes->Nodes[0];
-				Data = Document->ChildNodes->Nodes[2];
 
 				if (Command->NodeValue == "GRANTED")
 				  {
+					_di_IXMLNode Data;
+					_di_IXMLNode Row1, Row2, Row3;
+					_di_IXMLNode ID, Role, Mail;
+
+					Data = Document->ChildNodes->Nodes[2];
 					Row1 = Data->ChildNodes->Nodes[0];
 					Row2 = Data->ChildNodes->Nodes[1];
                     Row3 = Data->ChildNodes->Nodes[2];

@@ -3,6 +3,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include "..\..\..\work-functions\MyFunc.h"
 #include "Client.h"
 #include "Registration.h"
 //---------------------------------------------------------------------------
@@ -34,7 +35,7 @@ void __fastcall TRegistrationForm::FormShow(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TLoginForm::IsLoginFree(const String &login)
+bool __fastcall TRegistrationForm::IsLoginFree(const String &login)
 {
   bool res;
 
@@ -56,7 +57,6 @@ bool __fastcall TLoginForm::IsLoginFree(const String &login)
 				_di_IXMLNode Command;
 
 				Command = Document->ChildNodes->Nodes[0];
-				Data = Document->ChildNodes->Nodes[2];
 
 				if (Command->NodeValue == "FREE")
 				  res = true;
@@ -65,7 +65,7 @@ bool __fastcall TLoginForm::IsLoginFree(const String &login)
 			  }
 		   catch (Exception &e)
 			  {
-				res = ConnectErr;
+				res = false;
 				ClientForm->AddActionLog("IsLoginFree: Парсинг: " + e.ToString());
 			  }
 		 }
@@ -80,9 +80,9 @@ bool __fastcall TLoginForm::IsLoginFree(const String &login)
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TLoginForm::Registration(const String &login,
-										 const String &pass,
-										 const String &mail)
+bool __fastcall TRegistrationForm::Registration(const String &login,
+												const String &pass,
+										 		const String &mail)
 {
   bool res;
 
@@ -90,18 +90,17 @@ bool __fastcall TLoginForm::Registration(const String &login,
 	 {
 	   //тут коннект до серверу, передача йому зашифрованих логіну та паролю
 	   String hash_pwd;
-	   Server = ServerName->Text;
-	   User = UserName->Text;
 
-	   hash_pwd = MD5(Password->Text);
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("AUTH", User + ";" + hash_pwd));
+	   hash_pwd = MD5(pass);
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("REGISTER",
+																	 login + ";" +
+																	 hash_pwd + ";" +
+																	 mail));
 
 	   if (!ClientForm->AskToServer(Server, data.get()))
-		 res = ConnectErr;
+		 res = false;
 	   else
 		 {
-		   data->Position = 0;
-		   ClientForm->AddActionLog(data->ReadString(data->Size));
 		   data->Position = 0;
 		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
 
@@ -109,49 +108,25 @@ bool __fastcall TLoginForm::Registration(const String &login,
 			  {
 				_di_IXMLNode Document = ixml->DocumentElement;
 				_di_IXMLNode Command;
-				_di_IXMLNode Data;
-				_di_IXMLNode Row1, Row2, Row3;
-				_di_IXMLNode ID, Role, Mail;
 
 				Command = Document->ChildNodes->Nodes[0];
-				Data = Document->ChildNodes->Nodes[2];
 
-				if (Command->NodeValue == "GRANTED")
-				  {
-					Row1 = Data->ChildNodes->Nodes[0];
-					Row2 = Data->ChildNodes->Nodes[1];
-                    Row3 = Data->ChildNodes->Nodes[2];
-					ID = Row1->ChildNodes->Nodes[0];
-					Role = Row2->ChildNodes->Nodes[0];
-					Mail = Row3->ChildNodes->Nodes[0];
-
-					UserID = ID->NodeValue.AsType(3);
-
-					if (UpperCase(Role->NodeValue) == "ADMIN")
-					  IsAdmin = true;
-					else
-					  IsAdmin = false;
-
-					ClientForm->CurrentMail->Caption = Mail->NodeValue;
-
-					res = AuthOK;
-				  }
+				if (Command->NodeValue == "SUCCSESS")
+				  res = true;
 				else
-				  {
-					res = InvalidAcc;
-				  }
+				  res = false;
 			  }
 		   catch (Exception &e)
 			  {
-				res = ConnectErr;
-				ClientForm->AddActionLog("Authorisation: Парсинг: " + e.ToString());
+				res = false;
+				ClientForm->AddActionLog("Registration: Парсинг: " + e.ToString());
 			  }
 		 }
 	 }
   catch (Exception &e)
 	 {
-	   res = UnknownErr;
-	   ClientForm->AddActionLog("Authorisation: " + e.ToString());
+	   res = false;
+	   ClientForm->AddActionLog("Registration: " + e.ToString());
 	 }
 
   return res;
@@ -197,6 +172,11 @@ void __fastcall TRegistrationForm::SendCodeClick(TObject *Sender)
 	{
 	  EMailError->Caption = "Не вірний формат адреси ел. пошти";
 	  EMailError->Show();
+	}
+  else if (!IsLoginFree(Login->Text))
+	{
+	  LoginError->Caption = "Логін вже зареєстровано";
+	  LoginError->Show();
 	}
   else
 	{
