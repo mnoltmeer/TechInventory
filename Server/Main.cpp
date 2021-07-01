@@ -201,7 +201,6 @@ void __fastcall TServerForm::DisconnectFromDB()
 	{
 	  try
 		 {
-		   WriteQuery->Active = false;
 		   StatConnection->Connected = false;
 		   WriteLog("Відключено від: " + DBHost + ":" + DBPath);
 		 }
@@ -292,7 +291,7 @@ bool __fastcall TServerForm::IsLoginFree(const String &login)
 	   tmp_query->Open();
 	   tmp_tr->Commit();
 
-	   if (tmp_query->RecordCount >= 1)
+	   if (tmp_query->RecordCount > 0)
 		 res = false;
 	   else
 		 res = true;
@@ -344,7 +343,7 @@ GEN_ID(GEN_AGENTS_ID, 1), :login, :pass, 'agent', :mail)";
 	   tmp_query->Execute();
 	   tmp_tr->Commit();
 
-	   if (tmp_query->RowsAffected >= 1)
+	   if (tmp_query->RowsAffected > 0)
 		 res = true;
 	   else
 		 res = false;
@@ -388,7 +387,51 @@ bool __fastcall TServerForm::SetUserPassword(const String &login, const String &
 	   tmp_query->Execute();
 	   tmp_tr->Commit();
 
-	   if (tmp_query->RowsAffected >= 1)
+	   if (tmp_query->RowsAffected > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("SetUserPassword(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::ValidUserPassword(const String &login, const String &password)
+{
+  bool res;
+
+  try
+	 {
+       if (password == "")
+		 throw Exception("Порожній пароль");
+
+	   if (login == "")
+		 throw Exception("Порожній логін");
+
+	   String sqltext = "SELECT ID FROM AGENTS WHERE LOGIN = :login AND PASS = :pass";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("login")->AsString = login;
+	   tmp_query->ParamByName("pass")->AsString = password;
+
+	   tmp_query->Prepare();
+	   tmp_query->Open();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
@@ -845,12 +888,17 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "SETPWD") //зміна паролю користувачу
 		 {
-		   String code = GenerateVerificationCode();
-
 		   if (SetUserPassword(params->Strings[0], params->Strings[1]))
 			 res = CreateAnswer("SUCCESS");
 		   else
 			 res = CreateAnswer("ERROR");
+		 }
+	   else if (command == "CHECKPWD") //перевірка на правильність паролю
+		 {
+		   if (ValidUserPassword(params->Strings[0], params->Strings[1]))
+			 res = CreateAnswer("VALID");
+		   else
+			 res = CreateAnswer("INVALID");
 		 }
 	 }
   catch (Exception &e)
@@ -1057,6 +1105,8 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
   catch (Exception &e)
 	 {
 	   WriteLog("ConnectionServerExecute: Розшифровка вхідних даних: " + e.ToString());
+
+	   return;
 	 }
 
   try //визначаємо тип запиту та оброблюємо його
@@ -1070,9 +1120,11 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 	   WriteLog(answer->ReadString(answer->Size));
 	 }
   catch (Exception &e)
-	{
-	  WriteLog("ConnectionServerExecute: Парсинг: " + e.ToString());
-	}
+	 {
+	   WriteLog("ConnectionServerExecute: Парсинг: " + e.ToString());
+
+	   return;
+	 }
 
   if (answer) //якщо відповідь сформовано одразу - надсилаємо її клієнту
 	{
@@ -1085,6 +1137,8 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 	  catch (Exception &e)
 		 {
 		   WriteLog("ConnectionServerExecute: Шифровка вихідних даних: " + e.ToString());
+
+		   return;
 		 }
 
 	  try
@@ -1096,6 +1150,8 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 	  catch (Exception &e)
 		 {
 		   WriteLog("ConnectionServerExecute: Відправка даних: " + e.ToString());
+
+           return;
 		 }
 	}
 }

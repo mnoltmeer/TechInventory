@@ -99,8 +99,6 @@ __published:	// IDE-managed Components
 	TMemo *Log;
 	TListBox *AuthorisedClients;
 	TFDConnection *StatConnection;
-	TFDTransaction *WriteTransaction;
-	TFDQuery *WriteQuery;
 	TFDPhysFBDriverLink *StatFBDriverLink;
 	TIdSMTP *MailSender;
 	TBitBtn *Settings;
@@ -123,11 +121,16 @@ private:	// User declarations
 	void __fastcall StopServer();
     void __fastcall ConnectToDB();
 	void __fastcall DisconnectFromDB();
+
+//методи, що викликаються з ExecuteCommand() і повертають туди результат
 //авторизує користувача, якщо успішно повертає ІД Агента та роль, інакше повертає NULL
 	UserInfo __fastcall Authorisation(const String &login, const String &pass);
 	bool __fastcall Registration(const String &login, const String &pass, const String &mail);
 	bool __fastcall IsLoginFree(const String &login);
 	bool __fastcall SetUserPassword(const String &login, const String &new_password);
+	bool __fastcall ValidUserPassword(const String &login, const String &password);
+//---------------------------------------------------------------------------
+
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);
 	String __fastcall EncryptData(TMemoryStream *crypted_data, const char *pass);
 	bool __fastcall SendToClient(const String &host, TStringStream *buffer);

@@ -1214,25 +1214,8 @@ object ServerForm: TServerForm
       'Protocol=TCPIP'
       'DriverID=myFB')
     LoginPrompt = False
-    Transaction = WriteTransaction
     Left = 504
     Top = 40
-  end
-  object WriteTransaction: TFDTransaction
-    Options.Isolation = xiSnapshot
-    Options.AutoStart = False
-    Options.AutoStop = False
-    Options.DisconnectAction = xdRollback
-    Connection = StatConnection
-    Left = 502
-    Top = 224
-  end
-  object WriteQuery: TFDQuery
-    Connection = StatConnection
-    Transaction = WriteTransaction
-    ResourceOptions.AssignedValues = [rvCmdExecMode]
-    Left = 502
-    Top = 160
   end
   object StatFBDriverLink: TFDPhysFBDriverLink
     DriverID = 'myFB'
@@ -1243,6 +1226,6 @@ object ServerForm: TServerForm
   object MailSender: TIdSMTP
     SASLMechanisms = <>
     Left = 504
-    Top = 296
+    Top = 160
   end
 end
