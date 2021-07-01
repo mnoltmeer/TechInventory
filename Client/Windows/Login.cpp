@@ -25,8 +25,6 @@ extern int MainFormWidth, MainFormHeight;
 extern bool MainFormFullScreen;
 extern String Server, User; //поточний сервер та логін користувача
 extern String AppPath;
-extern TClientForm *ClientForm;
-extern TRegistrationForm *RegistrationForm;
 //---------------------------------------------------------------------------
 __fastcall TLoginForm::TLoginForm(TComponent* Owner)
 	: TForm(Owner)
@@ -56,6 +54,8 @@ void __fastcall TLoginForm::StartAuthClick(TObject *Sender)
 	{
 	  case AuthOK:
 		{
+		  Server = ServerName->Text;
+		  User = UserName->Text;
 		  ClientForm->UnlockUI();
 		  ClientForm->GetServerVersion();
 		  Close();
@@ -121,14 +121,9 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
   try
 	 {
 	   //тут коннект до серверу, передача йому зашифрованих логіну та паролю
-	   String hash_pwd;
-	   Server = ServerName->Text;
-	   User = UserName->Text;
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("AUTH", user + ";" + MD5(password)));
 
-	   hash_pwd = MD5(Password->Text);
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("AUTH", User + ";" + hash_pwd));
-
-	   if (!ClientForm->AskToServer(Server, data.get()))
+	   if (!ClientForm->AskToServer(server, data.get()))
 		 res = ConnectErr;
 	   else
 		 {

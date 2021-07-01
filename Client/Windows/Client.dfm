@@ -707,95 +707,6 @@ object ClientForm: TClientForm
       OnMouseUp = CheckItemResultMouseUp
     end
   end
-  object PnAdmUsers: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 8
-    object Label18: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1050#1077#1088#1091#1074#1072#1085#1085#1103' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072#1084#1080
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 230
-    end
-    object Panel5: TPanel
-      Left = 1
-      Top = 450
-      Width = 769
-      Height = 25
-      Align = alBottom
-      TabOrder = 0
-      object AdmUsersRefresh: TBitBtn
-        Left = 0
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = CheckItemRefreshClick
-      end
-      object AdmUsersAdd: TBitBtn
-        Left = 27
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1057#1090#1074#1086#1088#1080#1090#1080' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-        OnClick = AdmUsersAddClick
-      end
-      object AdmUsersSetPwd: TBitBtn
-        Left = 54
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1042#1089#1090#1072#1085#1086#1074#1080#1090#1080' '#1087#1072#1088#1086#1083#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
-        OnClick = AdmUsersSetPwdClick
-      end
-      object AdmUsersRemove: TBitBtn
-        Left = 81
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 3
-        OnClick = AdmUsersRemoveClick
-      end
-    end
-    object AdmUsersResult: TStringGrid
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 426
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      PopupMenu = PPEditUser
-      TabOrder = 1
-      OnMouseUp = CheckItemResultMouseUp
-    end
-  end
   object PnAdmLocations: TPanel
     Left = 40
     Top = 33
@@ -1098,6 +1009,95 @@ object ClientForm: TClientForm
       OnClick = AddItemSelectLocationClick
     end
   end
+  object PnAdmUsers: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 8
+    object Label18: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1050#1077#1088#1091#1074#1072#1085#1085#1103' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072#1084#1080
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 230
+    end
+    object Panel5: TPanel
+      Left = 1
+      Top = 450
+      Width = 769
+      Height = 25
+      Align = alBottom
+      TabOrder = 0
+      object AdmUsersRefresh: TBitBtn
+        Left = 0
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = CheckItemRefreshClick
+      end
+      object AdmUsersAdd: TBitBtn
+        Left = 27
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1057#1090#1074#1086#1088#1080#1090#1080' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+        OnClick = AdmUsersAddClick
+      end
+      object AdmUsersSetPwd: TBitBtn
+        Left = 54
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1042#1089#1090#1072#1085#1086#1074#1080#1090#1080' '#1087#1072#1088#1086#1083#1100
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        OnClick = AdmUsersSetPwdClick
+      end
+      object AdmUsersRemove: TBitBtn
+        Left = 81
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 3
+        OnClick = AdmUsersRemoveClick
+      end
+    end
+    object AdmUsersResult: TStringGrid
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 426
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      PopupMenu = PPEditUser
+      TabOrder = 1
+      OnMouseUp = CheckItemResultMouseUp
+    end
+  end
   object PnHome: TPanel
     Left = 40
     Top = 33
@@ -1141,22 +1141,23 @@ object ClientForm: TClientForm
       Caption = #1054#1085#1086#1074#1080#1090#1080
       TabOrder = 0
     end
-    object ChangePassword: TButton
-      Left = 6
-      Top = 81
-      Width = 105
-      Height = 25
-      Caption = #1047#1084#1110#1085#1080#1090#1080' '#1087#1072#1088#1086#1083#1100
-      TabOrder = 1
-    end
     object ChangeMail: TButton
       Left = 455
       Top = 34
       Width = 75
       Height = 25
       Caption = #1047#1084#1110#1085#1080#1090#1080
-      TabOrder = 2
+      TabOrder = 1
       OnClick = ChangeMailClick
+    end
+    object ChangePassword: TButton
+      Left = 6
+      Top = 81
+      Width = 105
+      Height = 25
+      Caption = #1047#1084#1110#1085#1080#1090#1080' '#1087#1072#1088#1086#1083#1100
+      TabOrder = 2
+      OnClick = ChangePasswordClick
     end
   end
   object SaveCfgDialog: TSaveDialog

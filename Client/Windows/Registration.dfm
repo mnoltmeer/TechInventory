@@ -162,6 +162,7 @@ object RegistrationForm: TRegistrationForm
     Font.Style = []
     ParentFont = False
     TabOrder = 4
+    OnKeyPress = VerificationCodeKeyPress
   end
   object SendCode: TButton
     Left = 8
@@ -179,6 +180,7 @@ object RegistrationForm: TRegistrationForm
     Height = 25
     Caption = #1055#1110#1076#1090#1074#1077#1088#1076#1080#1090#1080
     TabOrder = 6
+    OnClick = ConfirmClick
   end
   object Exit: TButton
     Left = 367

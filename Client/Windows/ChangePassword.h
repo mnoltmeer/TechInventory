@@ -8,20 +8,25 @@
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 //---------------------------------------------------------------------------
-class TForm1 : public TForm
+class TPasswordChangeForm : public TForm
 {
 __published:	// IDE-managed Components
 	TEdit *Password;
-	TEdit *Edit2;
+	TEdit *ConfirmPassword;
 	TLabel *Label3;
 	TLabel *Label4;
 	TButton *Apply;
 	TButton *Cancel;
+	TLabel *Label1;
+	TEdit *OldPassword;
+	void __fastcall ApplyClick(TObject *Sender);
+	void __fastcall CancelClick(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
-	__fastcall TForm1(TComponent* Owner);
+	__fastcall TPasswordChangeForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TForm1 *Form1;
+extern PACKAGE TPasswordChangeForm *PasswordChangeForm;
 //---------------------------------------------------------------------------
 #endif

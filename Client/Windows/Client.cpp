@@ -11,6 +11,7 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include "..\..\..\work-functions\TCPRequester.h"
 #include "TICServiceThread.h"
 #include "Login.h"
+#include "ChangePassword.h"
 #include "Client.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -635,28 +636,48 @@ void __fastcall TClientForm::GetServerVersion()
 		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
 
 		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command;
-		   _di_IXMLNode Data;
-		   _di_IXMLNode Row;
-		   _di_IXMLNode Version;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
 
-		   Command = Document->ChildNodes->Nodes[0];
-		   Data = Document->ChildNodes->Nodes[2];
-
-		   if (Command->NodeValue == "SERVERVERSION")
-			 {
-			   Row = Data->ChildNodes->Nodes[0];
-			   Version = Row->ChildNodes->Nodes[0];
-			   ServerInfo->Caption += Version->NodeValue;
-			 }
-		   else
-			 ServerInfo->Caption += "-err-";
+		   ServerInfo->Caption += Command->NodeValue;
          }
 	 }
   catch (Exception &e)
 	 {
 	   AddActionLog("Помилка отримання версії серверу");
 	 }
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::SetUserPassword(const String &login, const String &new_password)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("SETPWD",
+	   																 login + ";" + MD5(new_password)));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 res = true;
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка отримання версії серверу");
+	   res = false;
+	 }
+
+  return res;
 }
 //---------------------------------------------------------------------------
 
@@ -909,7 +930,7 @@ void __fastcall TClientForm::ListenerExecute(TIdContext *AContext)
 
   try
 	 {
-       try
+	   try
 		  {
 			ms->LoadFromStream(TSAESCypher::Encrypt(ms, DataCryptKey));
 			ms->Position = 0;
@@ -1149,6 +1170,12 @@ void __fastcall TClientForm::PPRefreshClick(TObject *Sender)
 void __fastcall TClientForm::ChangeMailClick(TObject *Sender)
 {
   String NewMail = InputBox("Зміна адреси ел. пошти", "Нова адреса:", "");
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ChangePasswordClick(TObject *Sender)
+{
+  PasswordChangeForm->Show();
 }
 //---------------------------------------------------------------------------
 

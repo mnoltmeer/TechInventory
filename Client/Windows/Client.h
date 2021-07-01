@@ -34,6 +34,10 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include <Xml.omnixmldom.hpp>
 //#include <Xml.Win.msxmldom.hpp>
 #include <Vcl.Menus.hpp>
+#include <IdExplicitTLSClientServerBase.hpp>
+#include <IdMessageClient.hpp>
+#include <IdSMTP.hpp>
+#include <IdSMTPBase.hpp>
 
 #define DEFAULT_SERVER_PORT 9874
 #define DEFAULT_CLIENT_PORT 9875
@@ -68,10 +72,6 @@ __published:	// IDE-managed Components
 	TLabel *Label1;
 	TLabel *ActualClientVersion;
 	TButton *UpdateClient;
-	TButton *ChangePassword;
-	TButton *ChangeMail;
-	TLabel *Label2;
-	TLabel *CurrentMail;
 	TPanel *PnCheckItem;
 	TEdit *CheckItemScannedCode;
 	TLabel *Label3;
@@ -184,6 +184,10 @@ __published:	// IDE-managed Components
 	TMenuItem *PPAddLocation;
 	TMenuItem *PPLocationsRefresh;
 	TMenuItem *PPUsersRefresh;
+	TLabel *Label2;
+	TLabel *CurrentMail;
+	TButton *ChangeMail;
+	TButton *ChangePassword;
 	void __fastcall LoadAnimTimerTimer(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -228,6 +232,7 @@ __published:	// IDE-managed Components
 	void __fastcall PPLocationsRefreshClick(TObject *Sender);
 	void __fastcall PPAddLocationClick(TObject *Sender);
 	void __fastcall ChangeMailClick(TObject *Sender);
+	void __fastcall ChangePasswordClick(TObject *Sender);
 
 private:	// User declarations
 	void __fastcall ShowLoadingImage();
@@ -237,7 +242,7 @@ private:	// User declarations
 	void __fastcall WriteSettings();
 	void __fastcall ReadSettings();
 	void __fastcall SetUIImages();
-    TMemoryStream* __fastcall CryptData(String data, const char *pass);
+	TMemoryStream* __fastcall CryptData(String data, const char *pass);
 	String __fastcall EncryptData(TMemoryStream *crypted_data, const char *pass);
 
 public:		// User declarations
@@ -259,6 +264,7 @@ public:		// User declarations
     void __fastcall ProcessAnswer(TXMLDocument *ixml);
 	void __fastcall ProcessRequest(TXMLDocument *ixml);
 	void __fastcall GetServerVersion();
+    bool __fastcall SetUserPassword(const String &login, const String &new_password);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TClientForm *ClientForm;
