@@ -26,6 +26,8 @@ void __fastcall TPasswordChangeForm::ApplyClick(TObject *Sender)
 	MessageBox(this->Handle, L"Не вказане підтвердження паролю", L"Помилка", MB_OK|MB_ICONERROR);
   else if (Password->Text != ConfirmPassword->Text)
 	MessageBox(this->Handle, L"Пароль та його підтвердження не збігаються", L"Помилка", MB_OK|MB_ICONERROR);
+  else if (!ClientForm->ValidUserPassword(User, OldPassword->Text))
+    MessageBox(this->Handle, L"Не вірно вказано старий пароль", L"Помилка", MB_OK|MB_ICONERROR);
   else
 	{
 	  if (ClientForm->SetUserPassword(User, Password->Text))
@@ -49,6 +51,9 @@ void __fastcall TPasswordChangeForm::FormShow(TObject *Sender)
 {
   Left = ClientForm->Left + ClientForm->ClientWidth / 2 - ClientWidth / 2;
   Top = ClientForm->Top + ClientForm->ClientHeight / 2 - ClientHeight / 2;
+  OldPassword->Text = "";
+  Password->Text = "";
+  ConfirmPassword->Text = "";
 }
 //---------------------------------------------------------------------------
 

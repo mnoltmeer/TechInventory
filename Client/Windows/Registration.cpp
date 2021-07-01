@@ -34,6 +34,12 @@ void __fastcall TRegistrationForm::FormShow(TObject *Sender)
   PasswordError->Hide();
   ConfirmPasswordError->Hide();
   EMailError->Hide();
+
+  Login->Text = "";
+  Password->Text = "";
+  ConfirmPassword->Text = "";
+  EMail->Text = "";
+  VerificationCode->Text = "";
 }
 //---------------------------------------------------------------------------
 

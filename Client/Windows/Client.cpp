@@ -673,7 +673,40 @@ bool __fastcall TClientForm::SetUserPassword(const String &login, const String &
 	 }
   catch (Exception &e)
 	 {
-	   AddActionLog("Помилка отримання версії серверу");
+	   AddActionLog("Помилка встановленя паролю");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::ValidUserPassword(const String &login, const String &password)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("CHECKPWD",
+																	 login + ";" + MD5(password)));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "VALID")
+			 res = true;
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка перевірки паролю");
 	   res = false;
 	 }
 

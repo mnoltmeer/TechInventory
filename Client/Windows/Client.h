@@ -264,7 +264,8 @@ public:		// User declarations
     void __fastcall ProcessAnswer(TXMLDocument *ixml);
 	void __fastcall ProcessRequest(TXMLDocument *ixml);
 	void __fastcall GetServerVersion();
-    bool __fastcall SetUserPassword(const String &login, const String &new_password);
+	bool __fastcall SetUserPassword(const String &login, const String &new_password);
+	bool __fastcall ValidUserPassword(const String &login, const String &password);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TClientForm *ClientForm;
