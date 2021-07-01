@@ -4,8 +4,8 @@ object SettingsForm: TSettingsForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1053#1072#1083#1072#1096#1090#1091#1074#1072#1085#1085#1103' '#1089#1077#1088#1074#1077#1088#1091
-  ClientHeight = 299
-  ClientWidth = 346
+  ClientHeight = 375
+  ClientWidth = 353
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -322,7 +322,7 @@ object SettingsForm: TSettingsForm
   TextHeight = 13
   object Label1: TLabel
     Left = 8
-    Top = 245
+    Top = 321
     Width = 301
     Height = 13
     Caption = '*'#1087#1110#1089#1083#1103' '#1079#1084#1110#1085#1080' '#1085#1072#1083#1072#1096#1090#1091#1074#1072#1085#1100' '#1085#1077#1086#1073#1093#1110#1076#1085#1086' '#1087#1077#1088#1077#1079#1072#1087#1091#1089#1090#1080#1090#1080' '#1089#1077#1088#1074#1077#1088
@@ -330,7 +330,7 @@ object SettingsForm: TSettingsForm
   object ServicePort: TLabeledEdit
     Left = 248
     Top = 24
-    Width = 89
+    Width = 97
     Height = 21
     EditLabel.Width = 69
     EditLabel.Height = 13
@@ -339,7 +339,7 @@ object SettingsForm: TSettingsForm
   end
   object StartMinimised: TCheckBox
     Left = 8
-    Top = 195
+    Top = 287
     Width = 201
     Height = 17
     Caption = #1047#1072#1087#1091#1089#1082#1072#1090#1080' '#1091' '#1079#1075#1086#1088#1085#1091#1090#1086#1084#1091' '#1074#1080#1075#1083#1103#1076#1110
@@ -347,7 +347,7 @@ object SettingsForm: TSettingsForm
   end
   object Apply: TBitBtn
     Left = 8
-    Top = 266
+    Top = 342
     Width = 90
     Height = 25
     Caption = #1047#1073#1077#1088#1077#1075#1090#1080
@@ -358,7 +358,7 @@ object SettingsForm: TSettingsForm
   end
   object Cancel: TBitBtn
     Left = 241
-    Top = 266
+    Top = 342
     Width = 97
     Height = 25
     Caption = #1057#1082#1072#1089#1091#1074#1072#1090#1080
@@ -369,7 +369,7 @@ object SettingsForm: TSettingsForm
   end
   object EnableAutoStart: TCheckBox
     Left = 8
-    Top = 160
+    Top = 252
     Width = 201
     Height = 17
     Caption = #1040#1074#1090#1086#1079#1072#1087#1091#1089#1082' '#1087#1088#1080' '#1074#1093#1086#1076#1110' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072
@@ -398,7 +398,7 @@ object SettingsForm: TSettingsForm
   object Database: TLabeledEdit
     Left = 8
     Top = 117
-    Width = 329
+    Width = 337
     Height = 21
     EditLabel.Width = 145
     EditLabel.Height = 13
@@ -408,11 +408,41 @@ object SettingsForm: TSettingsForm
   object Port: TLabeledEdit
     Left = 248
     Top = 69
-    Width = 89
+    Width = 97
     Height = 21
     EditLabel.Width = 25
     EditLabel.Height = 13
     EditLabel.Caption = #1055#1086#1088#1090
     TabOrder = 8
+  end
+  object SMTPServer: TLabeledEdit
+    Left = 8
+    Top = 168
+    Width = 234
+    Height = 21
+    EditLabel.Width = 175
+    EditLabel.Height = 13
+    EditLabel.Caption = 'SMTP-'#1089#1077#1088#1074#1077#1088' '#1076#1083#1103' '#1074#1110#1076#1087#1088#1072#1074#1082#1080' '#1083#1080#1089#1090#1110#1074
+    TabOrder = 9
+  end
+  object SMTPPort: TLabeledEdit
+    Left = 248
+    Top = 168
+    Width = 97
+    Height = 21
+    EditLabel.Width = 99
+    EditLabel.Height = 13
+    EditLabel.Caption = #1055#1086#1088#1090' SMTP-'#1089#1077#1088#1074#1077#1088#1091
+    TabOrder = 10
+  end
+  object SenderLabel: TLabeledEdit
+    Left = 8
+    Top = 217
+    Width = 337
+    Height = 21
+    EditLabel.Width = 274
+    EditLabel.Height = 13
+    EditLabel.Caption = #1030#1084#39#1103' '#1074#1110#1076#1087#1088#1072#1074#1085#1080#1082#1072' ('#1074#1110#1076' '#1094#1100#1086#1075#1086' '#1110#1084#1077#1085#1110' '#1073#1091#1076#1077' '#1085#1072#1076#1110#1089#1083#1072#1085#1086' '#1083#1080#1089#1090')'
+    TabOrder = 11
   end
 end

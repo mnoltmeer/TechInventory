@@ -14,7 +14,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 	try
 	{
 		//перевірка на запущений екземпляр програми
-		if (FindWindowW(NULL, L"Сервер конфігурацій Файлового агента АРМ ВЗ"))
+		if (FindWindowW(NULL, L"Сервер АС ТехІнвент"))
 		  Application->Terminate();
 
 		Application->Initialize();

@@ -11,9 +11,8 @@
 #pragma resource "*.dfm"
 TSettingsForm *SettingsForm;
 
-extern TServerForm *ServerForm;
-extern int ListenPort;
-extern String DBHost, DBPath, DBPort, ServerName;
+extern int ListenPort, MailPort;
+extern String DBHost, DBPath, DBPort, ServerName, MailServer, SenderName;
 //---------------------------------------------------------------------------
 __fastcall TSettingsForm::TSettingsForm(TComponent* Owner)
 	: TForm(Owner)
@@ -53,6 +52,9 @@ void __fastcall TSettingsForm::ReadSettings()
 	   Host->Text = DBHost;
 	   Port->Text = DBPort;
 	   Database->Text = DBPath;
+       SMTPServer->Text = MailServer;
+	   SMTPPort->Text = IntToStr(MailPort);
+	   SenderLabel->Text = SenderName;
 
 	   EnableAutoStart->Checked = CheckAppAutoStart("TechInventServer", FOR_CURRENT_USER);
 	 }
@@ -85,6 +87,9 @@ void __fastcall TSettingsForm::WriteSettings()
 	   DBHost = Host->Text;
 	   DBPort = Port->Text;
 	   DBPath = Database->Text;
+	   MailServer = SMTPServer->Text;
+	   MailPort = SMTPPort->Text.ToInt();
+	   SenderName = SenderLabel->Text;
 
 	   if (EnableAutoStart->Checked)
 		 AddAppAutoStart("TIServer", Application->ExeName, FOR_CURRENT_USER);

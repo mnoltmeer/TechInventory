@@ -5,7 +5,7 @@ object ServerForm: TServerForm
   Margins.Top = 0
   Margins.Right = 0
   Margins.Bottom = 0
-  Caption = #1057#1077#1088#1074#1077#1088' '#1082#1086#1085#1092#1110#1075#1091#1088#1072#1094#1110#1081' '#1060#1072#1081#1083#1086#1074#1086#1075#1086' '#1072#1075#1077#1085#1090#1072' '#1040#1056#1052' '#1042#1047
+  Caption = #1057#1077#1088#1074#1077#1088' '#1040#1057' '#1058#1077#1093#1030#1085#1074#1077#1085#1090
   ClientHeight = 583
   ClientWidth = 827
   Color = clBtnFace
@@ -362,8 +362,8 @@ object ServerForm: TServerForm
         object Label2: TLabel
           Left = 0
           Top = 0
-          Width = 159
-          Height = 19
+          Width = 201
+          Height = 30
           Align = alClient
           Alignment = taCenter
           Caption = #1040#1074#1090#1086#1088#1080#1079#1086#1074#1072#1085#1110' '#1082#1083#1110#1108#1085#1090#1080
@@ -373,6 +373,8 @@ object ServerForm: TServerForm
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
+          ExplicitWidth = 159
+          ExplicitHeight = 19
         end
       end
     end

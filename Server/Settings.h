@@ -24,6 +24,9 @@ __published:	// IDE-managed Components
 	TLabeledEdit *Database;
 	TLabeledEdit *Port;
 	TLabel *Label1;
+	TLabeledEdit *SMTPServer;
+	TLabeledEdit *SMTPPort;
+	TLabeledEdit *SenderLabel;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall CancelClick(TObject *Sender);
 	void __fastcall ApplyClick(TObject *Sender);

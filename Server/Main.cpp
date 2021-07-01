@@ -20,8 +20,8 @@ const char *DataCryptKey = "D@t@Ha$hK3y";
 
 extern String UsedAppLogDir; //вказуємо директорію для логування для функцій з MyFunc.h
 
-String AppPath, LogFile, LogDir, DBHost, DBPath, DBPort, ServerName, Version;
-int ListenPort, HideWnd, FullScreen;
+String AppPath, LogFile, LogDir, DBHost, DBPath, DBPort, ServerName, Version, MailServer, SenderName;
+int ListenPort, HideWnd, FullScreen, MailPort;
 TDate DateStart;
 //---------------------------------------------------------------------------
 
@@ -217,21 +217,19 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
 {
   UserInfo res;
 
-  String sqltext = "SELECT ID, PASS, ROLE, MAIL FROM AGENTS";
-
-  if (login != "")
-	sqltext += " WHERE LOGIN = :login";
-  else
-	{
-	  res.ID = -1;
-	  return res;
-    }
-
-  std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-  std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
-
   try
 	 {
+	   if (pass == "")
+		 throw Exception("Порожній пароль");
+
+	   if (login == "")
+		 throw Exception("Порожній логін");
+
+	   String sqltext = "SELECT ID, PASS, ROLE, MAIL FROM AGENTS WHERE LOGIN = :login";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
 	   tmp_tr->StartTransaction();
 	   tmp_query->SQL->Add(sqltext);
 
@@ -264,7 +262,6 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
   catch (Exception &e)
 	 {
 	   res.ID = -1;
-	   tmp_tr->Rollback();
 	   WriteLog("Authorisation(): " + e.ToString());
 	 }
 
@@ -276,18 +273,16 @@ bool __fastcall TServerForm::IsLoginFree(const String &login)
 {
   bool res;
 
-  String sqltext = "SELECT ID FROM AGENTS";
-
-  if (login != "")
-	sqltext += " WHERE LOGIN = :login";
-  else
-	return false;
-
-  std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-  std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
-
   try
 	 {
+	   if (login == "")
+		 throw Exception("Порожній логін");
+
+	   String sqltext = "SELECT ID FROM AGENTS WHERE LOGIN = :login";
+
+       std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
 	   tmp_tr->StartTransaction();
 	   tmp_query->SQL->Add(sqltext);
 
@@ -307,7 +302,6 @@ bool __fastcall TServerForm::IsLoginFree(const String &login)
   catch (Exception &e)
 	 {
 	   res = false;
-	   tmp_tr->Rollback();
 	   WriteLog("IsLoginFree(): " + e.ToString());
 	 }
 
@@ -322,14 +316,23 @@ bool __fastcall TServerForm::Registration(const String &login,
 //реєстрація нового користувача
   bool res;
 
-  String sqltext = "INSERT INTO AGENTS ID, LOGIN, PASS, ROLE, MAIL VALUES (\
-GEN_ID(GEN_AGENTS_ID, 1), :login, :pass, agent, :mail)";
-
-  std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-  std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
-
   try
 	 {
+	   if (pass == "")
+		 throw Exception("Порожній пароль");
+
+	   if (login == "")
+		 throw Exception("Порожній логін");
+
+       if (mail == "")
+		 throw Exception("Порожній email");
+
+	   String sqltext = "INSERT INTO AGENTS (ID, LOGIN, PASS, ROLE, MAIL) VALUES (\
+GEN_ID(GEN_AGENTS_ID, 1), :login, :pass, 'agent', :mail)";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
 	   tmp_tr->StartTransaction();
 	   tmp_query->SQL->Add(sqltext);
 
@@ -351,11 +354,134 @@ GEN_ID(GEN_AGENTS_ID, 1), :login, :pass, agent, :mail)";
   catch (Exception &e)
 	 {
 	   res = false;
-	   tmp_tr->Rollback();
-	   WriteLog("Authorisation(): " + e.ToString());
+	   WriteLog("Registration(): " + e.ToString());
 	 }
 
   return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::SetUserPassword(const String &login, const String &new_password)
+{
+  bool res;
+
+  try
+	 {
+       if (new_password == "")
+		 throw Exception("Порожній пароль");
+
+	   if (login == "")
+		 throw Exception("Порожній логін");
+
+	   String sqltext = "UPDATE AGENTS SET PASS = :pass WHERE LOGIN = :login";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("login")->AsString = login;
+	   tmp_query->ParamByName("pass")->AsString = new_password;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected >= 1)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("SetUserPassword(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::ConnectToSMTP()
+{
+  MailSender->Username = "<none>";
+  MailSender->Password = "<none>";
+  MailSender->Host = "10.255.131.122";
+  MailSender->Port = 25;
+
+  try
+	{
+	  MailSender->Connect();
+	}
+  catch (Exception &e)
+	{
+	  WriteLog("SMTP помилка: " + e.ToString());
+
+	  return false;
+	}
+
+  return MailSender->Connected();
+}
+//-------------------------------------------------------------------------
+
+bool __fastcall TServerForm::SendMsg(String mail_addr, String subject, String from, String text)
+{
+  bool res;
+
+  if (ConnectToSMTP())
+	{
+	  std::unique_ptr<TIdMessage> msg(new TIdMessage(nullptr));
+
+      try
+		 {
+		   msg->CharSet = "windows-1251";
+		   msg->Body->Text = text;
+		   msg->From->Text = from;
+		   msg->Recipients->EMailAddresses = mail_addr;
+		   msg->Subject = subject;
+		   msg->Priority = TIdMessagePriority(mpHighest);
+
+		   MailSender->Send(msg.get());
+		   MailSender->Disconnect();
+           res = true;
+		 }
+	  catch (Exception &e)
+		 {
+		   WriteLog("SendMsg: " + e.ToString());
+		   res = false;
+		 }
+	}
+  else
+	res = false;
+
+  return res;
+}
+//-------------------------------------------------------------------------
+
+String __fastcall TServerForm::GenerateVerificationCode()
+{
+  String res = IntToStr(Random(10000));
+
+  while (res.Length() < 4)
+	res = "0" + res;
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::SendVerificationCode(const String &mail, const String &code)
+{
+  if (code == "")
+	{
+	  WriteLog("SendVerificationCode: код відсутній");
+
+	  return false;
+	}
+  else
+	return SendMsg(mail, "Verification code", "TechInvent@ukrposhta.ua", code);
 }
 //---------------------------------------------------------------------------
 
@@ -419,6 +545,21 @@ bool __fastcall TServerForm::ReadSettings()
 		   else
 			 DBPort = "3050";
 
+		   if (reg->ValueExists("MailPort"))
+			 MailPort = reg->ReadInteger("MailPort");
+		   else
+			 MailPort = 25;
+
+		   if (reg->ValueExists("MailServer"))
+			 MailServer = reg->ReadString("MailServer");
+		   else
+			 MailServer = "127.0.0.1";
+
+		   if (reg->ValueExists("SenderName"))
+			 SenderName = reg->ReadString("SenderName");
+		   else
+			 SenderName = "noname@mail.sample";
+
 		   reg->CloseKey();
 		 }
 	   else
@@ -468,6 +609,9 @@ void __fastcall TServerForm::WriteSettings()
 		   reg->WriteString("DBHost", DBHost);
 		   reg->WriteString("DBPath", DBPath);
 		   reg->WriteString("DBPort", DBPort);
+		   reg->WriteInteger("MailPort", MailPort);
+		   reg->WriteString("MailServer", MailServer);
+		   reg->WriteString("SenderName", SenderName);
 
 		   reg->CloseKey();
 		 }
@@ -545,47 +689,6 @@ bool __fastcall TServerForm::SendToClient(const String &host, TStringStream *buf
   return sender->SendData(buffer);
 }
 //---------------------------------------------------------------------------
-
-bool __fastcall TServerForm::ConnectToSMTP()
-{
-  MailSender->Username = "noname@ukrposhta.com";
-  MailSender->Password = "noname";
-  MailSender->Host = "127.0.0.1";
-  MailSender->Port = 465;
-
-  try
-	{
-	  MailSender->Connect();
-	}
-  catch (Exception &e)
-	{
-	  WriteLog("SMTP помилка: " + e.ToString());
-
-	  return false;
-	}
-
-  return MailSender->Connected();
-}
-//-------------------------------------------------------------------------
-
-void __fastcall TServerForm::SendMsg(String mail_addr, String subject, String from, String log)
-{
-  if (MailSender->Connected())
-	{
-	  std::unique_ptr<TIdMessage> msg(new TIdMessage(this));
-
-	  msg->CharSet = "UTF-8";
-	  msg->Body->Text = log;
-	  msg->From->Text = from;
-	  msg->Recipients->EMailAddresses = mail_addr;
-	  msg->Subject = subject;
-	  msg->Priority = TIdMessagePriority(mpHighest);
-
-	  MailSender->Send(msg.get());
-	  MailSender->Disconnect();
-	}
-}
-//-------------------------------------------------------------------------
 
 TStringStream* __fastcall TServerForm::CreateRequest(const String &command,
 													  const String &params)
@@ -704,7 +807,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
   try
 	 {
 //за командою визначаємо потрібний запит до БД і виконуємо його
-	   if (command == "AUTH")
+	   if (command == "AUTH") //аутентифікація користувача
 		 {
 		   UserInfo user = Authorisation(params->Strings[0], params->Strings[1]);
 
@@ -713,23 +816,41 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		   else
 			 res = CreateAnswer("GRANTED", IntToStr(user.ID) + ";" + user.Role + ";" + user.Mail);
 		 }
-	   else if (command == "GETVERSION")
+	   else if (command == "GETVERSION") //запит версії серверу
 		 {
-		   res = CreateAnswer("SERVERVERSION", Version);
+		   res = CreateAnswer(Version);
 		 }
-	   else if (command == "CHECKLOGIN")
+	   else if (command == "CHECKLOGIN") //перевірка логіну на зайнятість
 		 {
 		   if (IsLoginFree(params->Strings[0]))
 			 res = CreateAnswer("FREE");
 		   else
              res = CreateAnswer("EXISTS");
 		 }
-	   else if (command == "REGISTER")
+	   else if (command == "REGISTER") //створення нового користувача
 		 {
 		   if (Registration(params->Strings[0], params->Strings[1], params->Strings[2]))
 			 res = CreateAnswer("SUCCESS");
 		   else
              res = CreateAnswer("FAIL");
+		 }
+	   else if (command == "VERIFY") //надсилання коду верифікації на пошту
+		 {
+		   String code = GenerateVerificationCode();
+
+		   if (SendVerificationCode(params->Strings[0], code))
+			 res = CreateAnswer(code);
+		   else
+			 res = CreateAnswer("ERROR");
+		 }
+	   else if (command == "SETPWD") //зміна паролю користувачу
+		 {
+		   String code = GenerateVerificationCode();
+
+		   if (SetUserPassword(params->Strings[0], params->Strings[1]))
+			 res = CreateAnswer("SUCCESS");
+		   else
+			 res = CreateAnswer("ERROR");
 		 }
 	 }
   catch (Exception &e)
@@ -946,7 +1067,7 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 	   answer.reset(ParseXML(ixml.get()));
 
 	   answer->Position = 0;
-	   WriteLog("Answer: " + answer->ReadString(answer->Size));
+	   WriteLog(answer->ReadString(answer->Size));
 	 }
   catch (Exception &e)
 	{
@@ -957,8 +1078,6 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 	{
 	  try
 		 {
-		   answer->Position = 0;
-		   WriteLog("Відправка даних: " + answer->ReadString(answer->Size));
 		   answer->Position = 0;
 		   answer->LoadFromStream(TSAESCypher::Crypt(answer.get(), DataCryptKey));
 		   answer->Position = 0;

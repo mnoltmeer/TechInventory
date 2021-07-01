@@ -126,11 +126,10 @@ private:	// User declarations
 //авторизує користувача, якщо успішно повертає ІД Агента та роль, інакше повертає NULL
 	UserInfo __fastcall Authorisation(const String &login, const String &pass);
 	bool __fastcall Registration(const String &login, const String &pass, const String &mail);
-    bool __fastcall IsLoginFree(const String &login);
-    TMemoryStream* __fastcall CryptData(String data, const char *pass);
+	bool __fastcall IsLoginFree(const String &login);
+	bool __fastcall SetUserPassword(const String &login, const String &new_password);
+	TMemoryStream* __fastcall CryptData(String data, const char *pass);
 	String __fastcall EncryptData(TMemoryStream *crypted_data, const char *pass);
-    bool __fastcall ConnectToSMTP();
-	void __fastcall SendMsg(String mail_addr, String subject, String from, String log);
 	bool __fastcall SendToClient(const String &host, TStringStream *buffer);
 //парсить документ, що надійшов, перевіряє вміст і запускає ProcessAnswer() або ProcessRequest()
 //при потребі одразу повертає відповідь у вигляді xml-файлу
@@ -155,6 +154,10 @@ private:	// User declarations
 	TStringStream* __fastcall CreateRequest(const String &command, const String &params);
 //створює об'єкт документу XML у пам'яті
 	TXMLDocument *__fastcall CreatXMLStream(TStringStream *ms);
+    bool __fastcall ConnectToSMTP();
+	bool __fastcall SendMsg(String mail_addr, String subject, String from, String text);
+	String __fastcall GenerateVerificationCode();
+    bool __fastcall SendVerificationCode(const String &mail, const String &code);
 
 public:		// User declarations
 	__fastcall TServerForm(TComponent* Owner);
