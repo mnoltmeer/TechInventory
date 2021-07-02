@@ -12,6 +12,7 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include "TICServiceThread.h"
 #include "Login.h"
 #include "ChangePassword.h"
+#include "ChangeMail.h"
 #include "Client.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -648,14 +649,15 @@ void __fastcall TClientForm::GetServerVersion()
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TClientForm::SetUserPassword(const String &login, const String &new_password)
+bool __fastcall TClientForm::SetUserPassword(int user_id, const String &new_password)
 {
   bool res;
 
   try
 	 {
 	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("SETPWD",
-	   																 login + ";" + MD5(new_password)));
+																	 IntToStr(user_id) + ";" +
+																	 MD5(new_password)));
 
 	   if (AskToServer(Server, data.get()))
 		 {
@@ -681,14 +683,15 @@ bool __fastcall TClientForm::SetUserPassword(const String &login, const String &
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TClientForm::ValidUserPassword(const String &login, const String &password)
+bool __fastcall TClientForm::ValidUserPassword(int user_id, const String &password)
 {
   bool res;
 
   try
 	 {
 	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("CHECKPWD",
-																	 login + ";" + MD5(password)));
+																	 IntToStr(user_id) + ";" +
+																	 MD5(password)));
 
 	   if (AskToServer(Server, data.get()))
 		 {
@@ -707,6 +710,40 @@ bool __fastcall TClientForm::ValidUserPassword(const String &login, const String
   catch (Exception &e)
 	 {
 	   AddActionLog("Помилка перевірки паролю");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::SetUserMail(int user_id, const String &new_mail)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("SETPWD",
+																	 IntToStr(user_id) + ";" +
+																	 MD5(new_mail)));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 res = true;
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка встановленя адреси ел. пошти");
 	   res = false;
 	 }
 
@@ -1202,13 +1239,13 @@ void __fastcall TClientForm::PPRefreshClick(TObject *Sender)
 
 void __fastcall TClientForm::ChangeMailClick(TObject *Sender)
 {
-  String NewMail = InputBox("Зміна адреси ел. пошти", "Нова адреса:", "");
+  ChangeMailForm->Show();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::ChangePasswordClick(TObject *Sender)
 {
-  PasswordChangeForm->Show();
+  ChangePasswordForm->Show();
 }
 //---------------------------------------------------------------------------
 

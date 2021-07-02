@@ -122,8 +122,14 @@
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
     </PropertyGroup>
     <ItemGroup>
+        <CppCompile Include="ChangeMail.cpp">
+            <Form>ChangeMailForm</Form>
+            <FormType>dfm</FormType>
+            <DependentOn>ChangeMail.h</DependentOn>
+            <BuildOrder>12</BuildOrder>
+        </CppCompile>
         <CppCompile Include="ChangePassword.cpp">
-            <Form>PasswordChangeForm</Form>
+            <Form>ChangePasswordForm</Form>
             <FormType>dfm</FormType>
             <DependentOn>ChangePassword.h</DependentOn>
             <BuildOrder>9</BuildOrder>
@@ -181,6 +187,7 @@
         <FormResources Include="ChangePassword.dfm"/>
         <FormResources Include="Registration.dfm"/>
         <FormResources Include="Login.dfm"/>
+        <FormResources Include="ChangeMail.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

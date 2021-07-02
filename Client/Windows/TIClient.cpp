@@ -8,9 +8,10 @@
 #include <Vcl.Themes.hpp>
 USEFORM("EditItem.cpp", EditItemForm);
 USEFORM("Client.cpp", ClientForm);
-USEFORM("ChangePassword.cpp", PasswordChangeForm);
+USEFORM("ChangePassword.cpp", ChangePasswordForm);
 USEFORM("Registration.cpp", RegistrationForm);
 USEFORM("Login.cpp", LoginForm);
+USEFORM("ChangeMail.cpp", ChangeMailForm);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
@@ -22,7 +23,8 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->CreateForm(__classid(TLoginForm), &LoginForm);
 		Application->CreateForm(__classid(TEditItemForm), &EditItemForm);
 		Application->CreateForm(__classid(TRegistrationForm), &RegistrationForm);
-		Application->CreateForm(__classid(TPasswordChangeForm), &PasswordChangeForm);
+		Application->CreateForm(__classid(TChangePasswordForm), &ChangePasswordForm);
+		Application->CreateForm(__classid(TChangeMailForm), &ChangeMailForm);
 		Application->Run();
 	}
 	catch (Exception &exception)
