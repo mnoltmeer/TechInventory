@@ -127,8 +127,9 @@ private:	// User declarations
 	UserInfo __fastcall Authorisation(const String &login, const String &pass);
 	bool __fastcall Registration(const String &login, const String &pass, const String &mail);
 	bool __fastcall IsLoginFree(const String &login);
-	bool __fastcall SetUserPassword(const String &login, const String &new_password);
-	bool __fastcall ValidUserPassword(const String &login, const String &password);
+	bool __fastcall SetUserPassword(int user_id, const String &new_password);
+	bool __fastcall ValidUserPassword(int user_id, const String &password);
+	bool __fastcall SetUserMail(int user_id, const String &new_mail);
 //---------------------------------------------------------------------------
 
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);

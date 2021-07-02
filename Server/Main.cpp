@@ -360,7 +360,7 @@ GEN_ID(GEN_AGENTS_ID, 1), :login, :pass, 'agent', :mail)";
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TServerForm::SetUserPassword(const String &login, const String &new_password)
+bool __fastcall TServerForm::SetUserPassword(int user_id, const String &new_password)
 {
   bool res;
 
@@ -369,10 +369,7 @@ bool __fastcall TServerForm::SetUserPassword(const String &login, const String &
        if (new_password == "")
 		 throw Exception("Порожній пароль");
 
-	   if (login == "")
-		 throw Exception("Порожній логін");
-
-	   String sqltext = "UPDATE AGENTS SET PASS = :pass WHERE LOGIN = :login";
+	   String sqltext = "UPDATE AGENTS SET PASS = :pass WHERE ID = :userid";
 
 	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
 	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
@@ -380,7 +377,7 @@ bool __fastcall TServerForm::SetUserPassword(const String &login, const String &
 	   tmp_tr->StartTransaction();
 	   tmp_query->SQL->Add(sqltext);
 
-	   tmp_query->ParamByName("login")->AsString = login;
+	   tmp_query->ParamByName("userid")->AsInteger = user_id;
 	   tmp_query->ParamByName("pass")->AsString = new_password;
 
 	   tmp_query->Prepare();
@@ -404,7 +401,7 @@ bool __fastcall TServerForm::SetUserPassword(const String &login, const String &
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TServerForm::ValidUserPassword(const String &login, const String &password)
+bool __fastcall TServerForm::ValidUserPassword(int user_id, const String &password)
 {
   bool res;
 
@@ -413,10 +410,7 @@ bool __fastcall TServerForm::ValidUserPassword(const String &login, const String
        if (password == "")
 		 throw Exception("Порожній пароль");
 
-	   if (login == "")
-		 throw Exception("Порожній логін");
-
-	   String sqltext = "SELECT ID FROM AGENTS WHERE LOGIN = :login AND PASS = :pass";
+	   String sqltext = "SELECT ID FROM AGENTS WHERE ID = :userid AND PASS = :pass";
 
 	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
 	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
@@ -424,7 +418,7 @@ bool __fastcall TServerForm::ValidUserPassword(const String &login, const String
 	   tmp_tr->StartTransaction();
 	   tmp_query->SQL->Add(sqltext);
 
-	   tmp_query->ParamByName("login")->AsString = login;
+	   tmp_query->ParamByName("userid")->AsInteger = user_id;
 	   tmp_query->ParamByName("pass")->AsString = password;
 
 	   tmp_query->Prepare();
@@ -432,6 +426,47 @@ bool __fastcall TServerForm::ValidUserPassword(const String &login, const String
 	   tmp_tr->Commit();
 
 	   if (tmp_query->RecordCount > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("SetUserPassword(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::SetUserMail(int user_id, const String &new_mail)
+{
+  bool res;
+
+  try
+	 {
+	   if (new_mail == "")
+		 throw Exception("Порожня адреса ел. пошти");
+
+	   String sqltext = "UPDATE AGENTS SET MAIL = :mail WHERE ID = :userid";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("userid")->AsInteger = user_id;
+	   tmp_query->ParamByName("mail")->AsString = new_mail;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected > 0)
 		 res = true;
 	   else
 		 res = false;
@@ -888,17 +923,24 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "SETPWD") //зміна паролю користувачу
 		 {
-		   if (SetUserPassword(params->Strings[0], params->Strings[1]))
+		   if (SetUserPassword(params->Strings[0].ToInt(), params->Strings[1]))
 			 res = CreateAnswer("SUCCESS");
 		   else
 			 res = CreateAnswer("ERROR");
 		 }
 	   else if (command == "CHECKPWD") //перевірка на правильність паролю
 		 {
-		   if (ValidUserPassword(params->Strings[0], params->Strings[1]))
+		   if (ValidUserPassword(params->Strings[0].ToInt(), params->Strings[1]))
 			 res = CreateAnswer("VALID");
 		   else
 			 res = CreateAnswer("INVALID");
+		 }
+	   else if (command == "SETMAIL") //зміна поштової скриньки
+		 {
+		   if (SetUserMail(params->Strings[0].ToInt(), params->Strings[1]))
+			 res = CreateAnswer("SUCCESS");
+		   else
+			 res = CreateAnswer("ERROR");
 		 }
 	 }
   catch (Exception &e)
