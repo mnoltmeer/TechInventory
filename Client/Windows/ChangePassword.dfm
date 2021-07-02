@@ -1,4 +1,4 @@
-object PasswordChangeForm: TPasswordChangeForm
+object ChangePasswordForm: TChangePasswordForm
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]

@@ -7,16 +7,16 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
-TPasswordChangeForm *PasswordChangeForm;
+TChangePasswordForm *ChangePasswordForm;
 
-extern String User;
+extern int UserID;
 //---------------------------------------------------------------------------
-__fastcall TPasswordChangeForm::TPasswordChangeForm(TComponent* Owner)
+__fastcall TChangePasswordForm::TChangePasswordForm(TComponent* Owner)
 	: TForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TPasswordChangeForm::ApplyClick(TObject *Sender)
+void __fastcall TChangePasswordForm::ApplyClick(TObject *Sender)
 {
   if (OldPassword->Text == "")
 	MessageBox(this->Handle, L"Не вказано старий пароль", L"Помилка", MB_OK|MB_ICONERROR);
@@ -26,11 +26,11 @@ void __fastcall TPasswordChangeForm::ApplyClick(TObject *Sender)
 	MessageBox(this->Handle, L"Не вказане підтвердження паролю", L"Помилка", MB_OK|MB_ICONERROR);
   else if (Password->Text != ConfirmPassword->Text)
 	MessageBox(this->Handle, L"Пароль та його підтвердження не збігаються", L"Помилка", MB_OK|MB_ICONERROR);
-  else if (!ClientForm->ValidUserPassword(User, OldPassword->Text))
-    MessageBox(this->Handle, L"Не вірно вказано старий пароль", L"Помилка", MB_OK|MB_ICONERROR);
+  else if (!ClientForm->ValidUserPassword(UserID, OldPassword->Text))
+    MessageBox(this->Handle, L"Невірно вказано старий пароль", L"Помилка", MB_OK|MB_ICONERROR);
   else
 	{
-	  if (ClientForm->SetUserPassword(User, Password->Text))
+	  if (ClientForm->SetUserPassword(UserID, Password->Text))
 		{
 		  MessageBox(this->Handle, L"Пароль успішно змінено", L"Успіх", MB_OK|MB_ICONINFORMATION);
           Close();
@@ -41,13 +41,13 @@ void __fastcall TPasswordChangeForm::ApplyClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TPasswordChangeForm::CancelClick(TObject *Sender)
+void __fastcall TChangePasswordForm::CancelClick(TObject *Sender)
 {
   Close();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TPasswordChangeForm::FormShow(TObject *Sender)
+void __fastcall TChangePasswordForm::FormShow(TObject *Sender)
 {
   Left = ClientForm->Left + ClientForm->ClientWidth / 2 - ClientWidth / 2;
   Top = ClientForm->Top + ClientForm->ClientHeight / 2 - ClientHeight / 2;
