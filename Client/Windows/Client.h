@@ -80,7 +80,6 @@ __published:	// IDE-managed Components
 	TImageCollection *LoadingAnimImageList;
 	TImageCollection *PanelImages;
 	TIdTCPServer *Listener;
-	TStringGrid *CheckItemResult;
 	TLabel *Label4;
 	TPanel *EditDataPanel;
 	TBitBtn *CheckItemRemove;
@@ -188,6 +187,17 @@ __published:	// IDE-managed Components
 	TLabel *CurrentMail;
 	TButton *ChangeMail;
 	TButton *ChangePassword;
+	TLabel *Label27;
+	TEdit *CheckItemInn;
+	TLabel *Label28;
+	TEdit *CheckItemSn;
+	TLabel *Label29;
+	TEdit *CheckItemModel;
+	TBitBtn *CheckItemShowHistory;
+	TLabel *CheckItemCurrentLocation;
+	TLabel *Label30;
+	TLabel *Label31;
+	TLabel *CheckItemLastAgent;
 	void __fastcall LoadAnimTimerTimer(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -267,6 +277,9 @@ public:		// User declarations
 	bool __fastcall SetUserPassword(int user_id, const String &new_password);
 	bool __fastcall ValidUserPassword(int user_id, const String &password);
 	bool __fastcall SetUserMail(int user_id, const String &new_mail);
+	String __fastcall AskItemInfo(const String &item_id);
+
+	void __fastcall ClearResultSet(TStringGrid *result_set);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TClientForm *ClientForm;

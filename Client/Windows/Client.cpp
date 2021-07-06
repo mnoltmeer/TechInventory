@@ -32,6 +32,7 @@ TPanel *ActivePanel; //поточна активна панель
 int CurrentRowInd, CurrentColInd; //індекси поточних рядка поля у таблиці відображення
 int SelectedLocation; //ід обраної локації для Пристрою
 TStringGrid *CurrentResultSet; //поточна активна таблиця для відображення результату
+TStringGrid *TmpResultSet; //тимчасова таблиця в яку вставляються дані із віповіді сервера
 //---------------------------------------------------------------------------
 __fastcall TClientForm::TClientForm(TComponent* Owner)
 	: TForm(Owner)
@@ -41,6 +42,8 @@ __fastcall TClientForm::TClientForm(TComponent* Owner)
   AppPath.Delete(pos, AppPath.Length() - (pos - 1));
 
   LogPath = GetEnvironmentVariable("USERPROFILE") + "\\Documents";
+
+  TmpResultSet = new TStringGrid(this);
 
   ReadSettings();
 }
@@ -73,6 +76,9 @@ void __fastcall TClientForm::FormShow(TObject *Sender)
 void __fastcall TClientForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
   WriteSettings();
+
+  if (TmpResultSet)
+    delete TmpResultSet;
 }
 //---------------------------------------------------------------------------
 
@@ -334,7 +340,6 @@ void __fastcall TClientForm::MnCheckItemClick(TObject *Sender)
   PnCheckItem->Show();
   ActivePanel = PnCheckItem;
   CheckItemScannedCode->SetFocus();
-  CurrentResultSet = CheckItemResult;
 }
 //---------------------------------------------------------------------------
 
@@ -629,12 +634,12 @@ void __fastcall TClientForm::GetServerVersion()
 {
   try
 	 {
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("GETVERSION"));
+	   std::unique_ptr<TStringStream> data(CreateRequest("GETVERSION"));
 
 	   if (AskToServer(Server, data.get()))
 		 {
 		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
 
 		   _di_IXMLNode Document = ixml->DocumentElement;
 		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
@@ -655,14 +660,13 @@ bool __fastcall TClientForm::SetUserPassword(int user_id, const String &new_pass
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("SETPWD",
-																	 IntToStr(user_id) + ";" +
-																	 MD5(new_password)));
+	   std::unique_ptr<TStringStream> data(CreateRequest("SETPWD", IntToStr(user_id) + ";" +
+																   MD5(new_password)));
 
 	   if (AskToServer(Server, data.get()))
 		 {
 		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
 
 		   _di_IXMLNode Document = ixml->DocumentElement;
 		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
@@ -689,14 +693,13 @@ bool __fastcall TClientForm::ValidUserPassword(int user_id, const String &passwo
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("CHECKPWD",
-																	 IntToStr(user_id) + ";" +
+	   std::unique_ptr<TStringStream> data(CreateRequest("CHECKPWD", IntToStr(user_id) + ";" +
 																	 MD5(password)));
 
 	   if (AskToServer(Server, data.get()))
 		 {
 		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
 
 		   _di_IXMLNode Document = ixml->DocumentElement;
 		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
@@ -723,14 +726,13 @@ bool __fastcall TClientForm::SetUserMail(int user_id, const String &new_mail)
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("SETPWD",
-																	 IntToStr(user_id) + ";" +
-																	 MD5(new_mail)));
+	   std::unique_ptr<TStringStream> data(CreateRequest("SETPWD", IntToStr(user_id) + ";" +
+																   MD5(new_mail)));
 
 	   if (AskToServer(Server, data.get()))
 		 {
 		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
 
 		   _di_IXMLNode Document = ixml->DocumentElement;
 		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
@@ -745,6 +747,55 @@ bool __fastcall TClientForm::SetUserMail(int user_id, const String &new_mail)
 	 {
 	   AddActionLog("Помилка встановленя адреси ел. пошти");
 	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+String __fastcall TClientForm::AskItemInfo(const String &item_id)
+{
+  String res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(CreateRequest("GETITEM", item_id));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 {
+			   _di_IXMLNode Data = Document->ChildNodes->Nodes[2];
+			   _di_IXMLNode Row = Data->ChildNodes->Nodes[0];
+			   String inn, sn, model, location, agent;
+
+			   inn = Row->ChildNodes->Nodes[0]->NodeValue;
+			   sn = Row->ChildNodes->Nodes[1]->NodeValue;
+			   model = Row->ChildNodes->Nodes[2]->NodeValue;
+			   location = Row->ChildNodes->Nodes[3]->NodeValue;
+			   agent = Row->ChildNodes->Nodes[4]->NodeValue;
+
+               res = inn + ";" + sn + ";" + model + ";" + location + ";" + agent;
+             }
+		   else if (Command->NodeValue == "DUPLICATE")
+			 {
+               MessageBox(this->Handle, L"Знайдено дубльовані записи у БД. Зверніться до адміністратора", L"Помилка", MB_OK|MB_ICONERROR);
+			   res = "";
+			 }
+		   else
+             res = "";
+		 }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка запиту даних про Пристрій");
+	   res = "";
 	 }
 
   return res;
@@ -907,13 +958,18 @@ void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml)
 	   int colsize;
 
 	   //за текстом команди визначаємо панель та таблицю у яку будемо зберігати дані
-	   TStringGrid *res;
+	   //if (Command->NodeValue == "CheckItemResult")
+		 //CurrentResultSet = CheckItemResult;
+	   //else
+		 //throw Exception("не визначено таблицю відображеня даних");
 
 	   try
 		  {
-			res->ColCount = Titles->ChildNodes->Count;
-			res->RowCount = Data->ChildNodes->Count + 1;
-			res->FixedRows = 1;
+			ClearResultSet(TmpResultSet);
+
+			TmpResultSet->ColCount = Titles->ChildNodes->Count;
+			TmpResultSet->RowCount = Data->ChildNodes->Count + 1;
+			TmpResultSet->FixedRows = 1;
 
 			for (int i = 0; i < Titles->ChildNodes->Count; i++)
 			   {
@@ -921,8 +977,8 @@ void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml)
 				 colsize = StrToInt(Title->GetAttribute("size"));
 				 value = Title->NodeValue;
 
-				 res->ColWidths[i] = colsize; //встановлюємо розмір полів
-				 res->Cells[i][0] = value; //заповнюємо перший рядок таблиці назвами полів
+				 TmpResultSet->ColWidths[i] = colsize; //встановлюємо розмір полів
+				 TmpResultSet->Cells[i][0] = value; //заповнюємо перший рядок таблиці назвами полів
 			   }
 		  }
 	   catch (Exception &e)
@@ -943,7 +999,7 @@ void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml)
 					  datatype = Field->GetAttribute("type");
 					  value = Field->NodeValue;
                       //заповнюємо таблицю, починаючи з 1-го рядка, 0-й це заголовки
-					  res->Cells[j][i + 1] = value;
+					  TmpResultSet->Cells[j][i + 1] = value;
 					}
 			   }
 		  }
@@ -951,6 +1007,9 @@ void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml)
 		  {
             throw Exception("Помилка виводу даних у таблицю");
 		  }
+
+	   //переносимо дані з тимчасової таблиці до поточної
+	   TICServiceThread *thread = new TICServiceThread(CurrentResultSet, TmpResultSet);
 	 }
   catch (Exception &e)
 	 {
@@ -991,41 +1050,55 @@ void __fastcall TClientForm::ProcessRequest(TXMLDocument *ixml)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TClientForm::ClearResultSet(TStringGrid *result_set)
+{
+  try
+	 {
+	   for (int i = 0; i < result_set->RowCount - 1; i++)
+		  result_set->Rows[i]->Clear();
+
+	   CurrentResultSet->ColCount = 0;
+	   CurrentResultSet->RowCount = 0;
+	   CurrentResultSet->FixedRows = 1;
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("ClearResultSet: " + e.ToString());
+	 }
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TClientForm::ListenerExecute(TIdContext *AContext)
 {
-  TXMLDocument *ixml;
-  TStringStream *ms = new TStringStream("", TEncoding::UTF8, true);
+  std::unique_ptr<TStringStream> ms(new TStringStream("", TEncoding::UTF8, true));
+  std::unique_ptr<TXMLDocument> ixml(nullptr);
 
-  AContext->Connection->IOHandler->ReadStream(ms);
+  AContext->Connection->IOHandler->ReadStream(ms.get());
 
   try
 	 {
-	   try
-		  {
-			ms->LoadFromStream(TSAESCypher::Encrypt(ms, DataCryptKey));
-			ms->Position = 0;
-		  }
-	   catch (Exception &e)
-		  {
-			AddActionLog("Listener: Розшифровка пакету: " + e.ToString());
-		  }
-
-	   try
-		  {
-			ixml = CreatXMLStream(ms);
-
-            try
-			   {
-				 ParseXML(ixml);
-			   }
-			catch (Exception &e)
-			   {
-				 AddActionLog("Listener: Парсинг: " + e.ToString());
-			   }
-		  }
-	   __finally {delete ixml;}
+	   ms->LoadFromStream(TSAESCypher::Encrypt(ms.get(), DataCryptKey));
+	   ms->Position = 0;
 	 }
-  __finally {delete ms;}
+  catch (Exception &e)
+	 {
+	   AddActionLog("Listener: Розшифровка пакету: " + e.ToString());
+
+	   return;
+	 }
+
+  try
+	 {
+	   ixml.reset(CreatXMLStream(ms.get()));
+
+	   ParseXML(ixml.get());
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Listener: Парсинг: " + e.ToString());
+
+	   return;
+	 }
 }
 //---------------------------------------------------------------------------
 
@@ -1045,37 +1118,8 @@ void __fastcall TClientForm::ListenerDisconnect(TIdContext *AContext)
 
 void __fastcall TClientForm::CheckItemScannedCodeKeyPress(TObject *Sender, System::WideChar &Key)
 {
-  try
-		  {
-			CheckItemResult->ColCount = 5;
-			CheckItemResult->RowCount = 10 + 1;
-			CheckItemResult->FixedRows = 1;
-
-			for (int i = 0; i < 5; i++)
-			   {
-				 CheckItemResult->ColWidths[i] = 50;
-				 CheckItemResult->Cells[i][0] = IntToStr(i);
-			   }
-		  }
-	   catch (Exception &e)
-		  {
-            throw Exception("Помилка форматування таблиці відображення даних");
-		  }
-
-       try
-		  {
-			for (int i = 1; i < 11; i++)
-			   {
-				 for (int j = 0; j < 5; j++)
-					{
-					  CheckItemResult->Cells[j][i] = IntToStr(i);
-					}
-			   }
-		  }
-	   catch (Exception &e)
-		  {
-            throw Exception("Помилка виводу даних у таблицю");
-		  }
+  if (Key == 13)
+    CheckItemRefresh->Click();
 }
 //---------------------------------------------------------------------------
 
@@ -1122,7 +1166,37 @@ void __fastcall TClientForm::CheckItemRemoveClick(TObject *Sender)
 
 void __fastcall TClientForm::CheckItemRefreshClick(TObject *Sender)
 {
-  //повторний запит до БД
+//повторний запит до БД
+  CheckItemInn->Text = "";
+  CheckItemSn->Text = "";
+  CheckItemModel->Text = "";
+  CheckItemCurrentLocation->Caption = "";
+  CheckItemLastAgent->Caption = "";
+
+  if (CheckItemScannedCode->Text != "")
+	{
+	  String item_data = AskItemInfo(CheckItemScannedCode->Text);
+
+	  if (item_data != "")
+		{
+		  std::unique_ptr<TStringList> lst(new TStringList());
+
+		  try
+			 {
+			   StrToList(lst.get(), item_data, ";");
+
+			   CheckItemInn->Text = lst->Strings[0];
+			   CheckItemSn->Text = lst->Strings[1];
+			   CheckItemModel->Text = lst->Strings[2];
+			   CheckItemCurrentLocation->Caption = lst->Strings[3];
+			   CheckItemLastAgent->Caption = lst->Strings[4];
+			 }
+          catch (Exception &e)
+			 {
+			   ClientForm->AddActionLog("Authorisation: " + e.ToString());
+			 }
+        }
+	}
 }
 //---------------------------------------------------------------------------
 

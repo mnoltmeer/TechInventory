@@ -31,13 +31,59 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 //      }
 //---------------------------------------------------------------------------
 
-__fastcall TICServiceThread::TICServiceThread(bool CreateSuspended)
-	: TThread(CreateSuspended)
+__fastcall TICServiceThread::TICServiceThread(TStringGrid *source, TStringGrid *target)
+	: TThread(true)
 {
+  FreeOnTerminate = true;
+  FSource = source;
+  FTarget = target;
 }
 //---------------------------------------------------------------------------
 void __fastcall TICServiceThread::Execute()
 {
-	//---- Place thread code here ----
+  Synchronize(&InsertIntoResultSet);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TICServiceThread::InsertIntoResultSet()
+{
+  try
+	 {
+	   ClearResultSet();
+
+	   FTarget->FixedCols = FSource->FixedCols;
+	   FTarget->FixedRows = FSource->FixedRows;
+
+	   FTarget->ColCount = FSource->ColCount;
+	   FTarget->RowCount = FSource->RowCount;
+
+	   for (int col = 0; FSource->ColCount - 1; col++)
+		  {
+			for (int row = 0; FSource->RowCount - 1; row++)
+			   FTarget->Cells[col][row] = FSource->Cells[col][row];
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   return;
+	 }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TICServiceThread::ClearResultSet()
+{
+  try
+	 {
+	   for (int i = 0; i < FTarget->RowCount - 1; i++)
+		  FTarget->Rows[i]->Clear();
+
+	   FTarget->ColCount = 0;
+	   FTarget->RowCount = 0;
+	   FTarget->FixedRows = 1;
+	 }
+  catch (Exception &e)
+	 {
+	   return;
+	 }
 }
 //---------------------------------------------------------------------------
