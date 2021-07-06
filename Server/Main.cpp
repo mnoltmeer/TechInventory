@@ -483,6 +483,46 @@ bool __fastcall TServerForm::SetUserMail(int user_id, const String &new_mail)
 }
 //---------------------------------------------------------------------------
 
+bool __fastcall TServerForm::GetItem(int item_id)
+{
+  bool res;
+
+  try
+	 {
+	   //if (new_mail == "")
+		 //throw Exception("Порожня адреса ел. пошти");
+
+	   String sqltext = "UPDATE AGENTS SET MAIL = :mail WHERE ID = :userid";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   //tmp_query->ParamByName("userid")->AsInteger = user_id;
+	   //tmp_query->ParamByName("mail")->AsString = new_mail;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   WriteLog("GetItem(): " + e.ToString());
+
+       res = false;
+	 }
+}
+//---------------------------------------------------------------------------
+
 bool __fastcall TServerForm::ConnectToSMTP()
 {
   MailSender->Username = "<none>";
@@ -892,7 +932,11 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		   if (user.ID < 0)
 			 res = CreateAnswer("DENIED");
 		   else
-			 res = CreateAnswer("GRANTED", IntToStr(user.ID) + ";" + user.Role + ";" + user.Mail);
+			 {
+			   WriteLog("Увійшов користувач: " + params->Strings[0]);
+
+			   res = CreateAnswer("GRANTED", IntToStr(user.ID) + ";" + user.Role + ";" + user.Mail);
+			 }
 		 }
 	   else if (command == "GETVERSION") //запит версії серверу
 		 {
@@ -903,14 +947,14 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		   if (IsLoginFree(params->Strings[0]))
 			 res = CreateAnswer("FREE");
 		   else
-             res = CreateAnswer("EXISTS");
+			 res = CreateAnswer("EXISTS");
 		 }
 	   else if (command == "REGISTER") //створення нового користувача
 		 {
 		   if (Registration(params->Strings[0], params->Strings[1], params->Strings[2]))
 			 res = CreateAnswer("SUCCESS");
 		   else
-             res = CreateAnswer("FAIL");
+			 res = CreateAnswer("FAIL");
 		 }
 	   else if (command == "VERIFY") //надсилання коду верифікації на пошту
 		 {
@@ -936,6 +980,13 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 			 res = CreateAnswer("INVALID");
 		 }
 	   else if (command == "SETMAIL") //зміна поштової скриньки
+		 {
+		   if (SetUserMail(params->Strings[0].ToInt(), params->Strings[1]))
+			 res = CreateAnswer("SUCCESS");
+		   else
+			 res = CreateAnswer("ERROR");
+		 }
+	   else if (command == "GETITEM") //запит даних про пристрій
 		 {
 		   if (SetUserMail(params->Strings[0].ToInt(), params->Strings[1]))
 			 res = CreateAnswer("SUCCESS");
@@ -1013,7 +1064,7 @@ TStringStream* __fastcall TServerForm::CreateAnswer(const String &command,
 	   std::unique_ptr<TStringList> rows(new TStringList());
 	   std::unique_ptr<TStringList> fields(new TStringList());
 
-	   StrToList(rows.get(), data, ";"); //розбиваємо дані на рядки
+	   StrToList(rows.get(), data, "%"); //розбиваємо дані на рядки
 
 	   for (int i = 0; i < rows->Count; i++)
 		  {
@@ -1056,36 +1107,6 @@ TStringStream* __fastcall TServerForm::CreateAnswer(const String &command)
   catch (Exception &e)
 	 {
        if (res) delete res;
-	   res = NULL;
-	   WriteLog("CreateAnswer: " + e.ToString());
-	 }
-
-  return res;
-}
-//---------------------------------------------------------------------------
-
-TStringStream* __fastcall TServerForm::CreateAnswer()
-{
-  TStringStream *res;
-
-  try
-	 {
-	   //беремо дані з джерела даних і формуємо xml-доку
-	   TStringStream *answer = new TStringStream("", TEncoding::UTF8, true);
-
-	   //визначаємо, чи треба надсилати відповідь одразу, чи окремими пакетом
-	   if (1) //треба надіслати відповідь одразу
-		 res = answer;
-	   else //відповідь надсилається в окремому потоку
-		 {
-		   delete answer;
-           answer = NULL;
-		 }
-	 }
-  catch (Exception &e)
-	 {
-	   if (res) delete res;
-
 	   res = NULL;
 	   WriteLog("CreateAnswer: " + e.ToString());
 	 }
@@ -1157,9 +1178,6 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 
 	   ixml.reset(CreatXMLStream(ms.get()));
 	   answer.reset(ParseXML(ixml.get()));
-
-	   answer->Position = 0;
-	   WriteLog(answer->ReadString(answer->Size));
 	 }
   catch (Exception &e)
 	 {
@@ -1172,6 +1190,8 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 	{
 	  try
 		 {
+           answer->Position = 0;
+		   WriteLog(answer->ReadString(answer->Size));
 		   answer->Position = 0;
 		   answer->LoadFromStream(TSAESCypher::Crypt(answer.get(), DataCryptKey));
 		   answer->Position = 0;
