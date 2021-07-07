@@ -778,16 +778,11 @@ String __fastcall TClientForm::AskItemInfo(const String &item_id)
 			   inn = Row->ChildNodes->Nodes[0]->NodeValue;
 			   sn = Row->ChildNodes->Nodes[1]->NodeValue;
 			   model = Row->ChildNodes->Nodes[2]->NodeValue;
-			   location = Row->ChildNodes->Nodes[3]->NodeValue;
-			   agent = Row->ChildNodes->Nodes[4]->NodeValue;
+			   agent = Row->ChildNodes->Nodes[3]->NodeValue;
+			   location = Row->ChildNodes->Nodes[4]->NodeValue;
 
                res = inn + ";" + sn + ";" + model + ";" + location + ";" + agent;
              }
-		   else if (Command->NodeValue == "DUPLICATE")
-			 {
-               MessageBox(this->Handle, L"Знайдено дубльовані записи у БД. Зверніться до адміністратора", L"Помилка", MB_OK|MB_ICONERROR);
-			   res = "";
-			 }
 		   else
              res = "";
 		 }
