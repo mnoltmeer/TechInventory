@@ -2,10 +2,10 @@ object LoginForm: TLoginForm
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]
-  BorderStyle = bsSingle
+  BorderStyle = bsNone
   Caption = #1042#1093#1110#1076' '#1091' '#1089#1080#1089#1090#1077#1084#1091
-  ClientHeight = 160
-  ClientWidth = 311
+  ClientHeight = 189
+  ClientWidth = 317
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,21 +19,21 @@ object LoginForm: TLoginForm
   TextHeight = 13
   object Label1: TLabel
     Left = 8
-    Top = 51
+    Top = 68
     Width = 60
     Height = 13
     Caption = #1050#1086#1088#1080#1089#1090#1091#1074#1072#1095
   end
   object Label2: TLabel
     Left = 8
-    Top = 83
+    Top = 95
     Width = 37
     Height = 13
     Caption = #1055#1072#1088#1086#1083#1100
   end
   object RegNewUser: TLabel
     Left = 8
-    Top = 136
+    Top = 153
     Width = 166
     Height = 13
     Cursor = crHandPoint
@@ -50,7 +50,7 @@ object LoginForm: TLoginForm
   end
   object ForgotPassword: TLabel
     Left = 225
-    Top = 136
+    Top = 153
     Width = 78
     Height = 13
     Cursor = crHandPoint
@@ -67,7 +67,7 @@ object LoginForm: TLoginForm
   end
   object AuthError: TLabel
     Left = 135
-    Top = 2
+    Top = 7
     Width = 47
     Height = 13
     Caption = 'AuthError'
@@ -81,14 +81,14 @@ object LoginForm: TLoginForm
   end
   object Label3: TLabel
     Left = 8
-    Top = 24
+    Top = 41
     Width = 37
     Height = 13
     Caption = #1057#1077#1088#1074#1077#1088
   end
   object UserName: TEdit
     Left = 83
-    Top = 48
+    Top = 65
     Width = 145
     Height = 21
     TabOrder = 0
@@ -96,7 +96,7 @@ object LoginForm: TLoginForm
   end
   object Password: TEdit
     Left = 83
-    Top = 75
+    Top = 92
     Width = 145
     Height = 21
     PasswordChar = '*'
@@ -104,8 +104,8 @@ object LoginForm: TLoginForm
     OnKeyPress = PasswordKeyPress
   end
   object StartAuth: TButton
-    Left = 115
-    Top = 102
+    Left = 35
+    Top = 119
     Width = 75
     Height = 25
     Caption = #1059#1074#1110#1081#1090#1080
@@ -114,10 +114,19 @@ object LoginForm: TLoginForm
   end
   object ServerName: TEdit
     Left = 83
-    Top = 21
+    Top = 38
     Width = 145
     Height = 21
     TabOrder = 3
     OnKeyPress = UserNameKeyPress
+  end
+  object Cancel: TButton
+    Left = 168
+    Top = 121
+    Width = 75
+    Height = 25
+    Caption = #1057#1082#1072#1089#1091#1074#1072#1090#1080
+    TabOrder = 4
+    OnClick = CancelClick
   end
 end

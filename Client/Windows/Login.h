@@ -29,12 +29,14 @@ __published:	// IDE-managed Components
 	TLabel *AuthError;
 	TLabel *Label3;
 	TEdit *ServerName;
+	TButton *Cancel;
 	void __fastcall StartAuthClick(TObject *Sender);
 	void __fastcall RegNewUserClick(TObject *Sender);
 	void __fastcall ForgotPasswordClick(TObject *Sender);
 	void __fastcall UserNameKeyPress(TObject *Sender, System::WideChar &Key);
 	void __fastcall PasswordKeyPress(TObject *Sender, System::WideChar &Key);
 	void __fastcall FormShow(TObject *Sender);
+	void __fastcall CancelClick(TObject *Sender);
 private:	// User declarations
 	void __fastcall ShowAuthError(const String &error);
 	AuthResult __fastcall Authorisation(const String &server,

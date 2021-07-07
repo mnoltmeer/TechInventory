@@ -40,6 +40,7 @@ void __fastcall TLoginForm::FormShow(TObject *Sender)
   ClientForm->LockUI();
   ServerName->Text = Server;
   UserName->Text = User;
+  Password->Text = "";
 }
 //---------------------------------------------------------------------------
 
@@ -191,4 +192,9 @@ void __fastcall TLoginForm::ShowAuthError(const String &error)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TLoginForm::CancelClick(TObject *Sender)
+{
+  ClientForm->Close();
+}
+//---------------------------------------------------------------------------
 
