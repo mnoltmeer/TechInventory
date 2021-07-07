@@ -130,7 +130,7 @@ private:	// User declarations
 	bool __fastcall SetUserPassword(int user_id, const String &new_password);
 	bool __fastcall ValidUserPassword(int user_id, const String &password);
 	bool __fastcall SetUserMail(int user_id, const String &new_mail);
-    bool __fastcall GetItem(int item_id);
+    TStringStream* __fastcall GetItem(int item_id);
 //---------------------------------------------------------------------------
 
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);
@@ -150,7 +150,9 @@ private:	// User declarations
 //оброблює результат виборки з БД та формує xml-файл
 	TStringStream* __fastcall CreateAnswer();
 //формує результат на основі набору даних
-	TStringStream* __fastcall CreateAnswer(const String &command, TStringList *data);
+	TStringStream* __fastcall CreateAnswer(const String &command,
+										   const String &titles,
+										   TStringList *data);
 //формує результат на базі строк. Сивол-роздільник стовпців - ; Символ-роздільик рядків - &&
 	TStringStream* __fastcall CreateAnswer(const String &command, const String &data);
 //формує результат з однієї лише команди

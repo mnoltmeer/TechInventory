@@ -483,16 +483,16 @@ bool __fastcall TServerForm::SetUserMail(int user_id, const String &new_mail)
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TServerForm::GetItem(int item_id)
+TStringStream* __fastcall TServerForm::GetItem(int item_id)
 {
-  bool res;
+  TStringStream *res;
 
   try
 	 {
-	   //if (new_mail == "")
-		 //throw Exception("Порожня адреса ел. пошти");
-
-	   String sqltext = "UPDATE AGENTS SET MAIL = :mail WHERE ID = :userid";
+	   String sqltext = "SELECT itm.INN, itm.SN, itm.MODEL, ag.LOGIN, COALESCE(loc.IND, ' ', loc.ADDRESS) as LOCATION FROM Items itm \
+LEFT JOIN Agents ag ON itm.LAST_AGENT_ID = ag.ID \
+LEFT JOIN LOCATIONS loc ON loc.ID = itm.LOCATION_ID \
+WHERE itm.ID = :itemid";
 
 	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
 	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
@@ -500,26 +500,49 @@ bool __fastcall TServerForm::GetItem(int item_id)
 	   tmp_tr->StartTransaction();
 	   tmp_query->SQL->Add(sqltext);
 
-	   //tmp_query->ParamByName("userid")->AsInteger = user_id;
-	   //tmp_query->ParamByName("mail")->AsString = new_mail;
+	   tmp_query->ParamByName("itemid")->AsInteger = item_id;
 
 	   tmp_query->Prepare();
-	   tmp_query->Execute();
+	   tmp_query->Open();
 	   tmp_tr->Commit();
 
-	   if (tmp_query->RowsAffected > 0)
-		 res = true;
+	   if (tmp_query->RecordCount == 0)
+		 res = CreateAnswer("NODATA");
 	   else
-		 res = false;
+		 {
+		   std::unique_ptr<TStringList> data(new TStringList());
+		   String inn, sn, model, login, location;
+
+		   tmp_query->First();
+
+		   data->Add(tmp_query->FieldByName("INN")->AsString);
+		   data->Add(tmp_query->FieldByName("SN")->AsString);
+		   data->Add(tmp_query->FieldByName("MODEL")->AsString);
+		   data->Add(tmp_query->FieldByName("LOGIN")->AsString);
+		   data->Add(tmp_query->FieldByName("LOCATION")->AsString);
+
+		   for (int i = 0; i < data->Count; i++)
+			  {
+				if (data->Strings[i] == "")
+				  data->Strings[i] = "???";
+			  }
+
+		   String str = ListToStr(data.get(), ";");
+		   data->Clear();
+		   data->Add(str);
+
+		   res = CreateAnswer("SUCCESS", "", data.get());
+		 }
 
 	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
+	   res = CreateAnswer("ERROR");
 	   WriteLog("GetItem(): " + e.ToString());
-
-       res = false;
 	 }
+
+  return res;
 }
 //---------------------------------------------------------------------------
 
@@ -987,12 +1010,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 			 res = CreateAnswer("ERROR");
 		 }
 	   else if (command == "GETITEM") //запит даних про пристрій
-		 {
-		   if (SetUserMail(params->Strings[0].ToInt(), params->Strings[1]))
-			 res = CreateAnswer("SUCCESS");
-		   else
-			 res = CreateAnswer("ERROR");
-		 }
+		 res = GetItem(params->Strings[0].ToInt());
 	 }
   catch (Exception &e)
 	 {
@@ -1006,6 +1024,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 //---------------------------------------------------------------------------
 
 TStringStream* __fastcall TServerForm::CreateAnswer(const String &command,
+                                                    const String &titles,
 													TStringList *data)
 {
   TStringStream *res;
@@ -1016,7 +1035,7 @@ TStringStream* __fastcall TServerForm::CreateAnswer(const String &command,
 
 	   res->WriteString("<Answer>");
 	   res->WriteString("<Command>" + command + "</Command>");
-	   res->WriteString("<Titles></Titles>");
+	   res->WriteString("<Titles>" + titles + "</Titles>");
 	   res->WriteString("<Data>");
 
 	   std::unique_ptr<TStringList> fields(new TStringList());
