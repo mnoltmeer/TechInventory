@@ -563,7 +563,7 @@ object ClientForm: TClientForm
     object Label23: TLabel
       Left = 1
       Top = 1
-      Width = 191
+      Width = 769
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -574,6 +574,7 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitWidth = 191
     end
     object Panel9: TPanel
       Left = 1
@@ -670,7 +671,7 @@ object ClientForm: TClientForm
     object Label17: TLabel
       Left = 1
       Top = 1
-      Width = 340
+      Width = 769
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -681,6 +682,7 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitWidth = 340
     end
     object Panel2: TPanel
       Left = 1
@@ -725,6 +727,7 @@ object ClientForm: TClientForm
         Width = 24
         Height = 24
         Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1055#1088#1080#1089#1090#1088#1110#1081' '#1079' '#1073#1072#1079#1080' '#1076#1072#1085#1080#1093
+        Enabled = False
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
@@ -777,7 +780,7 @@ object ClientForm: TClientForm
     object Label19: TLabel
       Left = 1
       Top = 1
-      Width = 189
+      Width = 769
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -788,6 +791,7 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitWidth = 189
     end
     object Panel6: TPanel
       Left = 1
@@ -865,7 +869,7 @@ object ClientForm: TClientForm
     object Label18: TLabel
       Left = 1
       Top = 1
-      Width = 230
+      Width = 769
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -876,6 +880,7 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitWidth = 230
     end
     object Panel5: TPanel
       Left = 1
@@ -953,7 +958,7 @@ object ClientForm: TClientForm
     object Label5: TLabel
       Left = 1
       Top = 1
-      Width = 319
+      Width = 769
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -964,6 +969,7 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitWidth = 319
     end
     object Label7: TLabel
       Left = 6
@@ -1066,7 +1072,7 @@ object ClientForm: TClientForm
     object Label3: TLabel
       Left = 1
       Top = 1
-      Width = 265
+      Width = 769
       Height = 23
       Align = alTop
       Alignment = taCenter
@@ -1077,6 +1083,7 @@ object ClientForm: TClientForm
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      ExplicitWidth = 265
     end
     object Label4: TLabel
       Left = 3
@@ -1156,6 +1163,7 @@ object ClientForm: TClientForm
         Width = 24
         Height = 24
         Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1055#1088#1080#1089#1090#1088#1110#1081' '#1079' '#1073#1072#1079#1080' '#1076#1072#1085#1080#1093
+        Enabled = False
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
@@ -4151,6 +4159,7 @@ object ClientForm: TClientForm
     end
     object PPRemove: TMenuItem
       Caption = #1042#1080#1076#1072#1083#1080#1090#1080' '#1055#1088#1080#1089#1090#1088#1110#1081
+      Enabled = False
       OnClick = PPRemoveClick
     end
   end

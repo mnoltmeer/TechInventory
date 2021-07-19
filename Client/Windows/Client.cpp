@@ -13,6 +13,7 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include "Login.h"
 #include "ChangePassword.h"
 #include "ChangeMail.h"
+#include "EditItem.h"
 #include "Client.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -21,6 +22,7 @@ TClientForm *ClientForm;
 
 String Server, User; //поточний сервер та логін користувача
 int UserID; //ID поточного користувача
+int ItemID; //ID поточного Пристрою
 bool IsAdmin; //флаг, що визначає, чи є поточний юзер адміном
 String AppPath;
 String LogPath;
@@ -30,9 +32,8 @@ bool MainFormFullScreen;
 int AnimFrameInd;    //індекс поточного кадру анімації завантаження
 TPanel *ActivePanel; //поточна активна панель
 int CurrentRowInd, CurrentColInd; //індекси поточних рядка поля у таблиці відображення
-int SelectedLocation; //ід обраної локації для Пристрою
-TStringGrid *CurrentResultSet; //поточна активна таблиця для відображення результату
-TStringGrid *TmpResultSet; //тимчасова таблиця в яку вставляються дані із віповіді сервера
+int LocationID; //ід обраної локації для Пристрою
+String LocationAddress; //адреса обраної локації
 //---------------------------------------------------------------------------
 __fastcall TClientForm::TClientForm(TComponent* Owner)
 	: TForm(Owner)
@@ -42,8 +43,6 @@ __fastcall TClientForm::TClientForm(TComponent* Owner)
   AppPath.Delete(pos, AppPath.Length() - (pos - 1));
 
   LogPath = GetEnvironmentVariable("USERPROFILE") + "\\Documents";
-
-  TmpResultSet = new TStringGrid(this);
 
   ReadSettings();
 }
@@ -76,9 +75,6 @@ void __fastcall TClientForm::FormShow(TObject *Sender)
 void __fastcall TClientForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
   WriteSettings();
-
-  if (TmpResultSet)
-    delete TmpResultSet;
 }
 //---------------------------------------------------------------------------
 
@@ -348,7 +344,6 @@ void __fastcall TClientForm::MnCheckItemsClick(TObject *Sender)
   HideAllPanels();
   PnCheckItems->Show();
   ActivePanel = PnCheckItems;
-  CurrentResultSet = CheckItemsResult;
 }
 //---------------------------------------------------------------------------
 
@@ -365,7 +360,6 @@ void __fastcall TClientForm::MnShowItemsClick(TObject *Sender)
   HideAllPanels();
   PnShowItems->Show();
   ActivePanel = PnShowItems;
-  CurrentResultSet = ShowItemsResult;
 }
 //---------------------------------------------------------------------------
 
@@ -374,7 +368,6 @@ void __fastcall TClientForm::MnShowEventsClick(TObject *Sender)
   HideAllPanels();
   PnShowEvents->Show();
   ActivePanel = PnShowEvents;
-  CurrentResultSet = ShowEventsResult;
 }
 //---------------------------------------------------------------------------
 
@@ -383,7 +376,6 @@ void __fastcall TClientForm::MnAdmUsersClick(TObject *Sender)
   HideAllPanels();
   PnAdmUsers->Show();
   ActivePanel = PnAdmUsers;
-  CurrentResultSet = AdmUsersResult;
 }
 //---------------------------------------------------------------------------
 
@@ -392,7 +384,6 @@ void __fastcall TClientForm::MnAdmLocationsClick(TObject *Sender)
   HideAllPanels();
   PnAdmLocations->Show();
   ActivePanel = PnAdmLocations;
-  CurrentResultSet = AdmLocationsResult;
 }
 //---------------------------------------------------------------------------
 
@@ -590,6 +581,10 @@ void __fastcall TClientForm::LockUI()
 	   MnAdmLocations->Visible = false;
 	   MnAdmLogs->Visible = false;
 	   MnAdmManage->Visible = false;
+
+	   CheckItemRemove->Enabled = false;
+	   ShowItemsRemove->Enabled = false;
+       PPRemove->Enabled = false;
 	 }
   catch (Exception &e)
 	 {
@@ -619,6 +614,9 @@ void __fastcall TClientForm::UnlockUI()
 		   MnAdmLocations->Visible = true;
 		   MnAdmLogs->Visible = true;
 		   MnAdmManage->Visible = true;
+		   PPRemove->Enabled = true;
+		   CheckItemRemove->Enabled = true;
+		   ShowItemsRemove->Enabled = true;
 		 }
 
        MnHome->Click();
@@ -644,7 +642,10 @@ void __fastcall TClientForm::GetServerVersion()
 		   _di_IXMLNode Document = ixml->DocumentElement;
 		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
 
-		   ServerInfo->Caption += Command->NodeValue;
+		   ServerInfo->Caption = "Сервер: " +
+						Server +
+						", версія: " +
+						Command->NodeValue;
          }
 	 }
   catch (Exception &e)
@@ -797,6 +798,45 @@ String __fastcall TClientForm::AskItemInfo(const String &item_id)
 }
 //---------------------------------------------------------------------------
 
+bool __fastcall TClientForm::SetItem(int item_id, const String &inn, const String &sn,
+									 const String &model, int location_id, int agent_id)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(CreateRequest("SETITEM",
+														 IntToStr(item_id) + ";" +
+														 inn + ";" +
+														 sn + ";" +
+														 model + ";" +
+														 IntToStr(location_id) + ";" +
+														 IntToStr(agent_id)));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 res = true;
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка зміни даних Пристрою");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
 TMemoryStream* __fastcall TClientForm::CryptData(String data, const char *pass)
 {
   TMemoryStream *res = new TMemoryStream();
@@ -931,6 +971,103 @@ void __fastcall TClientForm::ParseXML(TXMLDocument *ixml)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml, TStringGrid *grid)
+{
+  try
+	 {
+	   _di_IXMLNode Document = ixml->DocumentElement; //тип документу (запит/відповідь)
+	   _di_IXMLNode Command; //команда (вказує для чого призначені дані)
+
+	   _di_IXMLNode Titles; //перелік заголовків для полей таблиці результату
+	   _di_IXMLNode Title;
+
+	   _di_IXMLNode Data; //позначає секцію з даними
+	   _di_IXMLNode Row;
+	   _di_IXMLNode Field;
+
+       try
+		  {
+			Command = Document->ChildNodes->Nodes[0];
+			Titles = Document->ChildNodes->Nodes[1];
+			Data = Document->ChildNodes->Nodes[2];
+		  }
+	   catch (Exception &e)
+		  {
+			e.Message = "Помилка отримання даних з XML" + e.Message;
+			throw e;
+		  }
+
+	   String value;
+	   int colsize;
+
+	   if (!grid)
+		 throw Exception("Не визначено таблицю відображеня даних");
+
+	   try
+		  {
+			ClearResultSet(grid);
+
+			grid->ColCount = Titles->ChildNodes->Count;
+			grid->RowCount = Data->ChildNodes->Count + 1;
+			grid->FixedRows = 1;
+
+			for (int i = 0; i < Titles->ChildNodes->Count; i++)
+			   {
+				 Title = Titles->ChildNodes->Nodes[i];
+				 colsize = StrToInt(Title->GetAttribute("size"));
+				 value = Title->NodeValue;
+
+				 grid->ColWidths[i] = colsize; //встановлюємо розмір полів
+				 grid->Cells[i][0] = value; //заповнюємо перший рядок таблиці назвами полів
+			   }
+		  }
+	   catch (Exception &e)
+		  {
+			e.Message = "Помилка форматування таблиці відображення даних" + e.Message;
+			throw e;
+		  }
+
+       try
+		  {
+			grid->RowCount = Data->ChildNodes->Count + 1;
+		  }
+	   catch (Exception &e)
+		  {
+			e.Message = "Помилка встановлення рядків таблиці: " + e.Message;
+			throw e;
+		  }
+
+	   try
+		  {
+			grid->RowCount = Data->ChildNodes->Count + 1;
+
+			for (int i = 0; i < Data->ChildNodes->Count; i++)
+			   {
+				 Row = Data->ChildNodes->Nodes[i];
+
+				 for (int j = 0; j < Row->ChildNodes->Count; j++)
+					{
+					  Field = Row->ChildNodes->Nodes[j];
+
+					  value = Field->NodeValue;
+                      //заповнюємо таблицю, починаючи з 1-го рядка, 0-й це заголовки
+					  grid->Cells[j][i + 1] = value;
+					}
+			   }
+		  }
+	   catch (Exception &e)
+		  {
+			e.Message = "Помилка виводу даних у таблицю: " + e.Message;
+			throw e;
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("ProcessAnswer: " + e.ToString());
+	 }
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml)
 {
   try
@@ -945,66 +1082,17 @@ void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml)
 	   _di_IXMLNode Row;
 	   _di_IXMLNode Field;
 
-	   Command = Document->ChildNodes->Nodes[0];
-	   Titles = Document->ChildNodes->Nodes[1];
-	   Data = Document->ChildNodes->Nodes[2];
-
-	   String datatype, value;
-	   int colsize;
-
-	   //за текстом команди визначаємо панель та таблицю у яку будемо зберігати дані
-	   //if (Command->NodeValue == "CheckItemResult")
-		 //CurrentResultSet = CheckItemResult;
-	   //else
-		 //throw Exception("не визначено таблицю відображеня даних");
-
-	   try
+       try
 		  {
-			ClearResultSet(TmpResultSet);
-
-			TmpResultSet->ColCount = Titles->ChildNodes->Count;
-			TmpResultSet->RowCount = Data->ChildNodes->Count + 1;
-			TmpResultSet->FixedRows = 1;
-
-			for (int i = 0; i < Titles->ChildNodes->Count; i++)
-			   {
-				 Title = Titles->ChildNodes->Nodes[i];
-				 colsize = StrToInt(Title->GetAttribute("size"));
-				 value = Title->NodeValue;
-
-				 TmpResultSet->ColWidths[i] = colsize; //встановлюємо розмір полів
-				 TmpResultSet->Cells[i][0] = value; //заповнюємо перший рядок таблиці назвами полів
-			   }
+			Command = Document->ChildNodes->Nodes[0];
+			Titles = Document->ChildNodes->Nodes[1];
+			Data = Document->ChildNodes->Nodes[2];
 		  }
 	   catch (Exception &e)
 		  {
-            throw Exception("Помилка форматування таблиці відображення даних");
+			e.Message = "Помилка отримання даних з XML" + e.Message;
+			throw e;
 		  }
-
-	   try
-		  {
-			for (int i = 0; i < Data->ChildNodes->Count; i++)
-			   {
-				 Row = Data->ChildNodes->Nodes[i];
-
-				 for (int j = 0; j < Row->ChildNodes->Count; j++)
-					{
-					  Field = Row->ChildNodes->Nodes[j];
-
-					  datatype = Field->GetAttribute("type");
-					  value = Field->NodeValue;
-                      //заповнюємо таблицю, починаючи з 1-го рядка, 0-й це заголовки
-					  TmpResultSet->Cells[j][i + 1] = value;
-					}
-			   }
-		  }
-	   catch (Exception &e)
-		  {
-            throw Exception("Помилка виводу даних у таблицю");
-		  }
-
-	   //переносимо дані з тимчасової таблиці до поточної
-	   TICServiceThread *thread = new TICServiceThread(CurrentResultSet, TmpResultSet);
 	 }
   catch (Exception &e)
 	 {
@@ -1052,9 +1140,9 @@ void __fastcall TClientForm::ClearResultSet(TStringGrid *result_set)
 	   for (int i = 0; i < result_set->RowCount - 1; i++)
 		  result_set->Rows[i]->Clear();
 
-	   CurrentResultSet->ColCount = 0;
-	   CurrentResultSet->RowCount = 0;
-	   CurrentResultSet->FixedRows = 1;
+	   result_set->ColCount = 0;
+	   result_set->RowCount = 2;
+	   result_set->FixedRows = 1;
 	 }
   catch (Exception &e)
 	 {
@@ -1133,29 +1221,24 @@ void __fastcall TClientForm::PPRemoveClick(TObject *Sender)
 void __fastcall TClientForm::CheckItemResultMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
 		  int X, int Y)
 {
-  CurrentResultSet->MouseToCell(X, Y, CurrentColInd, CurrentRowInd);
+  CheckItemsResult->MouseToCell(X, Y, CurrentColInd, CurrentRowInd);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::CheckItemEditClick(TObject *Sender)
 {
-  if (CurrentRowInd > 0) //якщо поточний рядок не заголовки
-	{
-	  //відкриття форми редагування Пристрою
-	}
+  EditItemForm->Show();
 
-  CurrentRowInd = 0;
+  EditItemForm->Inn->Text = CheckItemInn->Text;
+  EditItemForm->Sn->Text = CheckItemSn->Text;
+  EditItemForm->Model->Text = CheckItemModel->Text;
+  EditItemForm->CurrentLocation->Caption = CheckItemCurrentLocation->Caption;
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::CheckItemRemoveClick(TObject *Sender)
 {
-  if (CurrentRowInd > 0) //якщо поточний рядок не заголовки
-	{
-	  //видалення Пристрою з БД
-	}
-
-  CurrentRowInd = 0;
+  //видалення Пристрою з БД
 }
 //---------------------------------------------------------------------------
 
@@ -1171,6 +1254,8 @@ void __fastcall TClientForm::CheckItemRefreshClick(TObject *Sender)
   if (CheckItemScannedCode->Text != "")
 	{
 	  String item_data = AskItemInfo(CheckItemScannedCode->Text);
+
+      ItemID = CheckItemScannedCode->Text.ToInt();
 
 	  if (item_data != "")
 		{

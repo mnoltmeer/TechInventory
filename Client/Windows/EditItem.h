@@ -22,8 +22,12 @@ __published:	// IDE-managed Components
 	TLabel *CurrentLocation;
 	TLabel *Label11;
 	TButton *Apply;
-	TButton *ClearFields;
+	TButton *Cancel;
 	TLabel *Label1;
+	void __fastcall CancelClick(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall ApplyClick(TObject *Sender);
+	void __fastcall SelectLocationClick(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
 	__fastcall TEditItemForm(TComponent* Owner);

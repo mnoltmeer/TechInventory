@@ -3,7 +3,7 @@ object EditItemForm: TEditItemForm
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = 'EditItemForm'
+  Caption = #1056#1077#1076#1072#1075#1091#1074#1072#1085#1085#1103' '#1055#1088#1080#1089#1090#1088#1086#1102
   ClientHeight = 253
   ClientWidth = 578
   Color = clBtnFace
@@ -13,6 +13,7 @@ object EditItemForm: TEditItemForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 16
   object Label7: TLabel
@@ -101,6 +102,7 @@ object EditItemForm: TEditItemForm
     Height = 25
     Caption = #1042#1080#1073#1088#1072#1090#1080
     TabOrder = 3
+    OnClick = SelectLocationClick
   end
   object Apply: TButton
     Left = 6
@@ -109,13 +111,15 @@ object EditItemForm: TEditItemForm
     Height = 25
     Caption = #1047#1072#1089#1090#1086#1089#1091#1074#1072#1090#1080
     TabOrder = 4
+    OnClick = ApplyClick
   end
-  object ClearFields: TButton
+  object Cancel: TButton
     Left = 120
     Top = 209
     Width = 75
     Height = 25
-    Caption = #1054#1095#1080#1089#1090#1080#1090#1080
+    Caption = #1057#1082#1072#1089#1091#1074#1072#1090#1080
     TabOrder = 5
+    OnClick = CancelClick
   end
 end

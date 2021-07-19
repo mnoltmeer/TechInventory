@@ -57,6 +57,7 @@ void __fastcall TLoginForm::StartAuthClick(TObject *Sender)
 		{
 		  Server = ServerName->Text;
 		  User = UserName->Text;
+          ClientForm->UserInfo->Caption = "Користувач: " + User;
 		  ClientForm->UnlockUI();
 		  ClientForm->GetServerVersion();
 		  Close();

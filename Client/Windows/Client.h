@@ -271,6 +271,7 @@ public:		// User declarations
 	bool __fastcall SendToServer(const String &host, TStringStream *buffer);
 //відправка запиту та очікування відповіді у той самий контекст підключення
 	bool __fastcall AskToServer(const String &host, TStringStream *buffer);
+	void __fastcall ProcessAnswer(TXMLDocument *ixml, TStringGrid *grid);
     void __fastcall ProcessAnswer(TXMLDocument *ixml);
 	void __fastcall ProcessRequest(TXMLDocument *ixml);
 	void __fastcall GetServerVersion();
@@ -278,6 +279,8 @@ public:		// User declarations
 	bool __fastcall ValidUserPassword(int user_id, const String &password);
 	bool __fastcall SetUserMail(int user_id, const String &new_mail);
 	String __fastcall AskItemInfo(const String &item_id);
+	bool __fastcall SetItem(int item_id, const String &inn, const String &sn,
+							const String &model, int location_id, int agent_id);
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 };
