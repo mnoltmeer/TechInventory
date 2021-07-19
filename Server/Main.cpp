@@ -489,7 +489,8 @@ TStringStream* __fastcall TServerForm::GetItem(int item_id)
 
   try
 	 {
-	   String sqltext = "SELECT itm.INN, itm.SN, itm.MODEL, ag.LOGIN, COALESCE(loc.IND, ' ', loc.ADDRESS) as LOCATION FROM Items itm \
+	   String sqltext = "SELECT itm.INN, itm.SN, itm.MODEL, ag.LOGIN, \
+loc.IND || ' ' || loc.ADDRESS as LOCATION FROM Items itm \
 LEFT JOIN Agents ag ON itm.LAST_AGENT_ID = ag.ID \
 LEFT JOIN LOCATIONS loc ON loc.ID = itm.LOCATION_ID \
 WHERE itm.ID = :itemid";
@@ -511,7 +512,6 @@ WHERE itm.ID = :itemid";
 	   else
 		 {
 		   std::unique_ptr<TStringList> data(new TStringList());
-		   String inn, sn, model, login, location;
 
 		   tmp_query->First();
 
@@ -532,6 +532,122 @@ WHERE itm.ID = :itemid";
 		   data->Add(str);
 
 		   res = CreateAnswer("SUCCESS", "", data.get());
+		 }
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = CreateAnswer("ERROR");
+	   WriteLog("GetItem(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::SetItem(int item_id, const String &inn, const String &sn,
+									 const String &model, int location_id, int agent_id)
+{
+  bool res;
+
+  try
+     {
+	   String sqltext = "UPDATE ITEMS SET INN = :inn, \
+SN = :sn, \
+MODEL = :model, \
+LOCATION_ID = :location, \
+LAST_AGENT_ID = :agent \
+WHERE ID = :itemid";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("itemid")->AsInteger = item_id;
+	   tmp_query->ParamByName("inn")->AsString = inn;
+	   tmp_query->ParamByName("sn")->AsString = sn;
+	   tmp_query->ParamByName("model")->AsString = model;
+	   tmp_query->ParamByName("location")->AsInteger = location_id;
+       tmp_query->ParamByName("agent")->AsInteger = agent_id;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("SetItem(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+TStringStream* __fastcall TServerForm::GetLocationList()
+{
+  TStringStream *res;
+
+  try
+	 {
+	   String sqltext = "SELECT * FROM Locations itm ORDER BY IND";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->Open();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RecordCount == 0)
+		 res = CreateAnswer("NODATA");
+	   else
+		 {
+		   std::unique_ptr<TStringList> data(new TStringList());
+		   std::unique_ptr<TStringList> row(new TStringList());
+
+		   tmp_query->First();
+
+		   String str;
+
+		   while (!tmp_query->Eof)
+			 {
+               row->Clear();
+
+			   row->Add(tmp_query->FieldByName("ID")->AsString);
+			   row->Add(tmp_query->FieldByName("IND")->AsString);
+			   row->Add(tmp_query->FieldByName("ADDRESS")->AsString);
+
+			   for (int i = 0; i < row->Count; i++)
+				  {
+					if (row->Strings[i] == "")
+					  row->Strings[i] = "???";
+				  }
+
+			   str = ListToStr(row.get(), ";");
+
+			   data->Add(str);
+
+               tmp_query->Next();
+			 }
+
+		   String titles = "<Title size='0'>ID</Title>\
+<Title size='50'>Індекс</Title>\
+<Title size='300'>Адреса</Title>";
+
+		   res = CreateAnswer("SUCCESS", titles, data.get());
 		 }
 
 	   tmp_query->Close();
@@ -1011,6 +1127,24 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "GETITEM") //запит даних про пристрій
 		 res = GetItem(params->Strings[0].ToInt());
+       else if (command == "SETITEM") //зміна поштової скриньки
+		 {
+		   if (SetItem(params->Strings[0].ToInt(),
+					   params->Strings[1],
+					   params->Strings[2],
+					   params->Strings[3],
+					   params->Strings[4].ToInt(),
+					   params->Strings[5].ToInt()))
+			 {
+			   res = CreateAnswer("SUCCESS");
+			 }
+		   else
+			 res = CreateAnswer("ERROR");
+		 }
+	   else if (command == "GETLOCATIONS") //запит даних про пристрій
+		 res = GetLocationList();
+	   else
+         throw Exception("Невідома команда");
 	 }
   catch (Exception &e)
 	 {

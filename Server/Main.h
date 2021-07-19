@@ -130,7 +130,14 @@ private:	// User declarations
 	bool __fastcall SetUserPassword(int user_id, const String &new_password);
 	bool __fastcall ValidUserPassword(int user_id, const String &password);
 	bool __fastcall SetUserMail(int user_id, const String &new_mail);
-    TStringStream* __fastcall GetItem(int item_id);
+	TStringStream* __fastcall GetItem(int item_id);
+    bool __fastcall SetItem(int item_id,
+							const String &inn,
+							const String &sn,
+							const String &model,
+							int location_id,
+							int agent_id);
+    TStringStream* __fastcall GetLocationList();
 //---------------------------------------------------------------------------
 
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);
@@ -164,7 +171,7 @@ private:	// User declarations
     bool __fastcall ConnectToSMTP();
 	bool __fastcall SendMsg(String mail_addr, String subject, String from, String text);
 	String __fastcall GenerateVerificationCode();
-    bool __fastcall SendVerificationCode(const String &mail, const String &code);
+	bool __fastcall SendVerificationCode(const String &mail, const String &code);
 
 public:		// User declarations
 	__fastcall TServerForm(TComponent* Owner);
