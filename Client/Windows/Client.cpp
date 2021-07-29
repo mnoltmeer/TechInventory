@@ -336,6 +336,12 @@ void __fastcall TClientForm::MnCheckItemClick(TObject *Sender)
   PnCheckItem->Show();
   ActivePanel = PnCheckItem;
   CheckItemScannedCode->SetFocus();
+  CheckItemScannedCode->Text = "";
+  CheckItemInn->Text = "";
+  CheckItemSn->Text = "";
+  CheckItemModel->Text = "";
+  CheckItemCurrentLocation->Caption = "";
+  CheckItemLastAgent->Caption = "";
 }
 //---------------------------------------------------------------------------
 
@@ -774,15 +780,21 @@ String __fastcall TClientForm::AskItemInfo(const String &item_id)
 			 {
 			   _di_IXMLNode Data = Document->ChildNodes->Nodes[2];
 			   _di_IXMLNode Row = Data->ChildNodes->Nodes[0];
-			   String inn, sn, model, location, agent;
+			   String inn, sn, model, location_id, location, agent;
 
 			   inn = Row->ChildNodes->Nodes[0]->NodeValue;
 			   sn = Row->ChildNodes->Nodes[1]->NodeValue;
 			   model = Row->ChildNodes->Nodes[2]->NodeValue;
 			   agent = Row->ChildNodes->Nodes[3]->NodeValue;
-			   location = Row->ChildNodes->Nodes[4]->NodeValue;
+			   location_id = Row->ChildNodes->Nodes[4]->NodeValue;
+			   location = Row->ChildNodes->Nodes[5]->NodeValue;
 
-               res = inn + ";" + sn + ";" + model + ";" + location + ";" + agent;
+			   res = inn + ";" +
+					 sn + ";" +
+					 model + ";" +
+					 location_id + ";" +
+					 location + ";" +
+					 agent;
              }
 		   else
              res = "";
@@ -830,6 +842,73 @@ bool __fastcall TClientForm::SetItem(int item_id, const String &inn, const Strin
   catch (Exception &e)
 	 {
 	   AddActionLog("Помилка зміни даних Пристрою");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::RemoveItem(const String &item_id)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(CreateRequest("REMOVEITEM", item_id));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 res = true;
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка видалення Пристрою");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::AddEvent(int event_id, int item_id, int agent_id)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(CreateRequest("ADDEVENT",
+														 IntToStr(event_id) + ";" +
+														 IntToStr(item_id) + ";" +
+														 IntToStr(agent_id)));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 res = true;
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка видалення Пристрою");
 	   res = false;
 	 }
 
@@ -1233,12 +1312,28 @@ void __fastcall TClientForm::CheckItemEditClick(TObject *Sender)
   EditItemForm->Sn->Text = CheckItemSn->Text;
   EditItemForm->Model->Text = CheckItemModel->Text;
   EditItemForm->CurrentLocation->Caption = CheckItemCurrentLocation->Caption;
+  EditItemForm->CurrentLocation->Tag = CheckItemCurrentLocation->Tag;
+
+  EditItemForm->Inn->Hint = EditItemForm->Inn->Text;
+  EditItemForm->Sn->Hint = EditItemForm->Sn->Text;
+  EditItemForm->Model->Hint = EditItemForm->Model->Text;
+  EditItemForm->CurrentLocation->Hint = IntToStr(EditItemForm->CurrentLocation->Tag);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::CheckItemRemoveClick(TObject *Sender)
 {
-  //видалення Пристрою з БД
+//видалення Пристрою з БД
+  if (CheckItemScannedCode->Text != "")
+	{
+	  if (MessageBox(this->Handle,
+					 L"Ви впевнені, що хочете видалити Пристрій?",
+					 L"Підтвердження",
+					 MB_YESNO|MB_ICONINFORMATION) == mrYes)
+		{
+		  RemoveItem(CheckItemScannedCode->Text);
+		}
+	}
 }
 //---------------------------------------------------------------------------
 
@@ -1268,8 +1363,9 @@ void __fastcall TClientForm::CheckItemRefreshClick(TObject *Sender)
 			   CheckItemInn->Text = lst->Strings[0];
 			   CheckItemSn->Text = lst->Strings[1];
 			   CheckItemModel->Text = lst->Strings[2];
-			   CheckItemCurrentLocation->Caption = lst->Strings[3];
-			   CheckItemLastAgent->Caption = lst->Strings[4];
+               CheckItemCurrentLocation->Tag = lst->Strings[3].ToInt();
+			   CheckItemCurrentLocation->Caption = lst->Strings[4];
+			   CheckItemLastAgent->Caption = lst->Strings[5];
 			 }
           catch (Exception &e)
 			 {

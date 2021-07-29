@@ -32,7 +32,6 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include <Xml.xmldom.hpp>
 #include <Xml.XMLIntf.hpp>
 #include <Xml.omnixmldom.hpp>
-//#include <Xml.Win.msxmldom.hpp>
 #include <Vcl.Menus.hpp>
 #include <IdExplicitTLSClientServerBase.hpp>
 #include <IdMessageClient.hpp>
@@ -41,6 +40,18 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 
 #define DEFAULT_SERVER_PORT 9874
 #define DEFAULT_CLIENT_PORT 9875
+
+enum {OP_ADD_ITM = 1,
+	  OP_CANCEL_ITM = 2,
+	  OP_SET_INN = 3,
+	  OP_SET_SN = 4,
+	  OP_SET_MOD = 5,
+	  OP_SET_LOC = 6,
+	  OP_REMOVE_ITM = 7,
+	  OP_ADD_USR = 8,
+	  OP_REMOVE_USR = 9,
+	  OP_CHANGE_PWD = 10,
+	  OP_SET_PWD = 11};
 
 //---------------------------------------------------------------------------
 class TClientForm : public TForm
@@ -281,6 +292,8 @@ public:		// User declarations
 	String __fastcall AskItemInfo(const String &item_id);
 	bool __fastcall SetItem(int item_id, const String &inn, const String &sn,
 							const String &model, int location_id, int agent_id);
+	bool __fastcall RemoveItem(const String &item_id);
+	bool __fastcall AddEvent(int event_id, int item_id, int agent_id);
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 };
