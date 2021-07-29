@@ -490,7 +490,7 @@ TStringStream* __fastcall TServerForm::GetItem(int item_id)
   try
 	 {
 	   String sqltext = "SELECT itm.INN, itm.SN, itm.MODEL, ag.LOGIN, \
-loc.IND || ' ' || loc.ADDRESS as LOCATION FROM Items itm \
+itm.LOCATION_ID, loc.IND || ' ' || loc.ADDRESS as LOCATION FROM Items itm \
 LEFT JOIN Agents ag ON itm.LAST_AGENT_ID = ag.ID \
 LEFT JOIN LOCATIONS loc ON loc.ID = itm.LOCATION_ID \
 WHERE itm.ID = :itemid";
@@ -519,6 +519,7 @@ WHERE itm.ID = :itemid";
 		   data->Add(tmp_query->FieldByName("SN")->AsString);
 		   data->Add(tmp_query->FieldByName("MODEL")->AsString);
 		   data->Add(tmp_query->FieldByName("LOGIN")->AsString);
+           data->Add(tmp_query->FieldByName("LOCATION_ID")->AsString);
 		   data->Add(tmp_query->FieldByName("LOCATION")->AsString);
 
 		   for (int i = 0; i < data->Count; i++)
@@ -656,6 +657,84 @@ TStringStream* __fastcall TServerForm::GetLocationList()
 	 {
 	   res = CreateAnswer("ERROR");
 	   WriteLog("GetItem(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::RemoveItem(int item_id)
+{
+  bool res;
+
+  try
+     {
+	   String sqltext = "DELETE FROM ITEMS WHERE ID = :itemid";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("itemid")->AsInteger = item_id;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("RemoveItem(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::AddEvent(int event_id, int item_id, int agent_id)
+{
+  bool res;
+
+  try
+     {
+	   String sqltext = "INSERT INTO CHANGES (ID, DATE_ADD, ITEM_ID, AGENT_ID, OPERATION_ID) \
+VALUES (GEN_ID(GEN_CHANGES_ID, 1), :date, :item, :agent, :operation)";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("date")->AsDateTime = Date().CurrentDateTime();
+	   tmp_query->ParamByName("item")->AsInteger = item_id;
+	   tmp_query->ParamByName("agent")->AsInteger = agent_id;
+	   tmp_query->ParamByName("operation")->AsInteger = event_id;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("RemoveItem(): " + e.ToString());
 	 }
 
   return res;
@@ -1143,6 +1222,24 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "GETLOCATIONS") //запит даних про пристрій
 		 res = GetLocationList();
+       else if (command == "REMOVEITEM") //видалення даних про пристрій
+		 {
+		   if (RemoveItem(params->Strings[0].ToInt()))
+             res = CreateAnswer("SUCCESS");
+		   else
+			 res = CreateAnswer("ERROR");
+		 }
+	   else if (command == "ADDEVENT") //реєстрація Події
+		 {
+		   if (AddEvent(params->Strings[0].ToInt(),
+						params->Strings[1].ToInt(),
+						params->Strings[2].ToInt()))
+			 {
+			   res = CreateAnswer("SUCCESS");
+			 }
+		   else
+			 res = CreateAnswer("ERROR");
+		 }
 	   else
          throw Exception("Невідома команда");
 	 }

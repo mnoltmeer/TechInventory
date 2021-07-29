@@ -362,8 +362,8 @@ object ServerForm: TServerForm
         object Label2: TLabel
           Left = 0
           Top = 0
-          Width = 201
-          Height = 30
+          Width = 159
+          Height = 19
           Align = alClient
           Alignment = taCenter
           Caption = #1040#1074#1090#1086#1088#1080#1079#1086#1074#1072#1085#1110' '#1082#1083#1110#1108#1085#1090#1080
@@ -373,8 +373,6 @@ object ServerForm: TServerForm
           Font.Name = 'Tahoma'
           Font.Style = []
           ParentFont = False
-          ExplicitWidth = 159
-          ExplicitHeight = 19
         end
       end
     end

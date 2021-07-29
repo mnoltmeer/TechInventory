@@ -51,7 +51,6 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include <Xml.xmldom.hpp>
 #include <Xml.omnixmldom.hpp>
 #include <Xml.XMLIntf.hpp>
-//#include <Xml.Win.msxmldom.hpp>
 #include <IdExplicitTLSClientServerBase.hpp>
 #include <IdMessageClient.hpp>
 #include <IdSMTP.hpp>
@@ -137,7 +136,9 @@ private:	// User declarations
 							const String &model,
 							int location_id,
 							int agent_id);
-    TStringStream* __fastcall GetLocationList();
+	TStringStream* __fastcall GetLocationList();
+	bool __fastcall RemoveItem(int item_id);
+	bool __fastcall AddEvent(int event_id, int item_id, int agent_id);
 //---------------------------------------------------------------------------
 
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);
