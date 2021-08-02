@@ -128,10 +128,7 @@ __published:	// IDE-managed Components
 	TStringGrid *ShowEventsResult;
 	TPanel *Panel4;
 	TLabel *Label13;
-	TLabel *Label14;
 	TEdit *ShowEventsInn;
-	TLabel *ShowEventsCurrentLocation;
-	TButton *ShowEventsSelectLocation;
 	TLabel *Label15;
 	TLabel *Label16;
 	TDateTimePicker *ShowEventsDateFrom;
@@ -209,6 +206,10 @@ __published:	// IDE-managed Components
 	TLabel *Label30;
 	TLabel *Label31;
 	TLabel *CheckItemLastAgent;
+	TCheckBox *ShowEventsDateFilter;
+	TComboBox *ShowEventsSearchType;
+	TLabel *Label14;
+	TLabel *Label32;
 	void __fastcall LoadAnimTimerTimer(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -254,6 +255,10 @@ __published:	// IDE-managed Components
 	void __fastcall PPAddLocationClick(TObject *Sender);
 	void __fastcall ChangeMailClick(TObject *Sender);
 	void __fastcall ChangePasswordClick(TObject *Sender);
+	void __fastcall ShowEventsDateFilterClick(TObject *Sender);
+	void __fastcall ShowEventsApplyClick(TObject *Sender);
+	void __fastcall ShowEventsInnKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall CheckItemShowHistoryClick(TObject *Sender);
 
 private:	// User declarations
 	void __fastcall ShowLoadingImage();
@@ -294,6 +299,10 @@ public:		// User declarations
 							const String &model, int location_id, int agent_id);
 	bool __fastcall RemoveItem(const String &item_id);
 	bool __fastcall AddEvent(int event_id, int item_id, int agent_id);
+	bool __fastcall AskEventList(int search_type,
+								 const String &item,
+								 const String &date_from,
+								 const String &date_to);
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 };

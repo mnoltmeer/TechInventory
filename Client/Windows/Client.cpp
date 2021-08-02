@@ -14,6 +14,7 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include "ChangePassword.h"
 #include "ChangeMail.h"
 #include "EditItem.h"
+#include "SelectLocation.h"
 #include "Client.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -32,8 +33,7 @@ bool MainFormFullScreen;
 int AnimFrameInd;    //індекс поточного кадру анімації завантаження
 TPanel *ActivePanel; //поточна активна панель
 int CurrentRowInd, CurrentColInd; //індекси поточних рядка поля у таблиці відображення
-int LocationID; //ід обраної локації для Пристрою
-String LocationAddress; //адреса обраної локації
+TLabel *Location; //лейбл для відображення обраної локації
 //---------------------------------------------------------------------------
 __fastcall TClientForm::TClientForm(TComponent* Owner)
 	: TForm(Owner)
@@ -374,6 +374,13 @@ void __fastcall TClientForm::MnShowEventsClick(TObject *Sender)
   HideAllPanels();
   PnShowEvents->Show();
   ActivePanel = PnShowEvents;
+  ShowEventsDateFrom->Date = Date().CurrentDate();
+  ShowEventsDateTo->Date = Date().CurrentDate();
+  ShowEventsDateFrom->Enabled = false;
+  ShowEventsDateTo->Enabled = false;
+  ShowEventsInn->Text = "";
+  ShowEventsSearchType->ItemIndex = 0;
+  ClearResultSet(ShowEventsResult);
 }
 //---------------------------------------------------------------------------
 
@@ -916,6 +923,52 @@ bool __fastcall TClientForm::AddEvent(int event_id, int item_id, int agent_id)
 }
 //---------------------------------------------------------------------------
 
+bool __fastcall TClientForm::AskEventList(int search_type,
+										  const String &item,
+										  const String &date_from,
+										  const String &date_to)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("GETEVENTS",
+																	 IntToStr(search_type) + ";" +
+																	 item + ";" +
+																	 date_from + ";" +
+																	 date_to));
+
+	   if (ClientForm->AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 {
+			   ClientForm->ProcessAnswer(ixml.get(), ShowEventsResult);
+			   CurrentRowInd = 1;
+			   res = true;
+			 }
+		   else
+			 {
+			   ClearResultSet(ShowEventsResult);
+			   res = false;
+			 }
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   ClientForm->AddActionLog("Помилка отримання переліку локацій");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
 TMemoryStream* __fastcall TClientForm::CryptData(String data, const char *pass)
 {
   TMemoryStream *res = new TMemoryStream();
@@ -1220,8 +1273,8 @@ void __fastcall TClientForm::ClearResultSet(TStringGrid *result_set)
 		  result_set->Rows[i]->Clear();
 
 	   result_set->ColCount = 0;
-	   result_set->RowCount = 2;
-	   result_set->FixedRows = 1;
+	   result_set->RowCount = 0;
+	   result_set->FixedRows = 0;
 	 }
   catch (Exception &e)
 	 {
@@ -1275,13 +1328,6 @@ void __fastcall TClientForm::ListenerDisconnect(TIdContext *AContext)
 {
   //клієнт від'єднався
   AddActionLog("Передачу даних з серверу завершено");
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TClientForm::CheckItemScannedCodeKeyPress(TObject *Sender, System::WideChar &Key)
-{
-  if (Key == 13)
-    CheckItemRefresh->Click();
 }
 //---------------------------------------------------------------------------
 
@@ -1373,6 +1419,22 @@ void __fastcall TClientForm::CheckItemRefreshClick(TObject *Sender)
 			 }
         }
 	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::CheckItemScannedCodeKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	CheckItemRefresh->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::CheckItemShowHistoryClick(TObject *Sender)
+{
+  MnShowEvents->Click();
+  ShowEventsInn->Text = IntToStr(ItemID);
+  ShowEventsSearchType->ItemIndex = 0;
+  ShowEventsApply->Click();
 }
 //---------------------------------------------------------------------------
 
@@ -1498,4 +1560,43 @@ void __fastcall TClientForm::ChangePasswordClick(TObject *Sender)
   ChangePasswordForm->Show();
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ShowEventsDateFilterClick(TObject *Sender)
+{
+  if (ShowEventsDateFilter->Checked)
+	{
+	  ShowEventsDateFrom->Enabled = true;
+	  ShowEventsDateTo->Enabled = true;
+	}
+  else
+	{
+	  ShowEventsDateFrom->Enabled = false;
+	  ShowEventsDateTo->Enabled = false;
+    }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ShowEventsApplyClick(TObject *Sender)
+{
+  //надсилання запиту до серверу
+
+  if (ShowEventsDateFilter->Checked)
+	{
+	  AskEventList(ShowEventsSearchType->ItemIndex,
+				   ShowEventsInn->Text,
+				   DateToStr(ShowEventsDateFrom->Date),
+				   DateToStr(ShowEventsDateTo->Date));
+	}
+  else
+	AskEventList(ShowEventsSearchType->ItemIndex, ShowEventsInn->Text, "-", "-");
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ShowEventsInnKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+    ShowEventsApply->Click();
+}
+//---------------------------------------------------------------------------
+
 

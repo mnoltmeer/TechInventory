@@ -11,9 +11,8 @@
 #pragma resource "*.dfm"
 extern int UserID; //ID поточного користувача
 extern int ItemID; //ID поточного Пристрою
-extern int LocationID; //ід обраної локації для Пристрою
 
-TLabel *Location;
+extern TLabel *Location;
 TEditItemForm *EditItemForm;
 //---------------------------------------------------------------------------
 __fastcall TEditItemForm::TEditItemForm(TComponent* Owner)

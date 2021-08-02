@@ -299,120 +299,6 @@ object ClientForm: TClientForm
       end
     end
   end
-  object PnShowEvents: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 7
-    object Label13: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1087#1086#1076#1110#1081
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 137
-    end
-    object ShowEventsResult: TStringGrid
-      Left = 1
-      Top = 107
-      Width = 769
-      Height = 368
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      PopupMenu = PPEditItem
-      TabOrder = 0
-      OnMouseUp = CheckItemResultMouseUp
-    end
-    object Panel4: TPanel
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 83
-      Align = alTop
-      TabOrder = 1
-      object Label14: TLabel
-        Left = 3
-        Top = 27
-        Width = 92
-        Height = 16
-        Caption = #1030#1085#1074#1077#1085#1090#1072#1088#1085#1080#1081' '#8470
-      end
-      object ShowEventsCurrentLocation: TLabel
-        Left = 425
-        Top = 25
-        Width = 159
-        Height = 16
-        Caption = 'ShowEventsCurrentLocation'
-      end
-      object Label15: TLabel
-        Left = 5
-        Top = 57
-        Width = 7
-        Height = 16
-        Caption = #1047
-      end
-      object Label16: TLabel
-        Left = 150
-        Top = 57
-        Width = 14
-        Height = 16
-        Caption = #1087#1086
-      end
-      object ShowEventsInn: TEdit
-        Left = 101
-        Top = 22
-        Width = 196
-        Height = 24
-        TabOrder = 0
-      end
-      object ShowEventsSelectLocation: TButton
-        Left = 305
-        Top = 21
-        Width = 114
-        Height = 25
-        Caption = #1042#1080#1073#1088#1072#1090#1080' '#1051#1086#1082#1072#1094#1110#1102
-        TabOrder = 1
-      end
-      object ShowEventsDateFrom: TDateTimePicker
-        Left = 23
-        Top = 53
-        Width = 121
-        Height = 24
-        Date = 44154.000000000000000000
-        Time = 0.639949120370147300
-        TabOrder = 2
-      end
-      object ShowEventsDateTo: TDateTimePicker
-        Left = 170
-        Top = 53
-        Width = 121
-        Height = 24
-        Date = 44154.000000000000000000
-        Time = 0.640191886574029900
-        TabOrder = 3
-      end
-      object ShowEventsApply: TButton
-        Left = 305
-        Top = 52
-        Width = 75
-        Height = 25
-        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
-        TabOrder = 4
-      end
-    end
-  end
   object PnAdmLogs: TPanel
     Left = 40
     Top = 33
@@ -1200,6 +1086,7 @@ object ClientForm: TClientForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 3
+        OnClick = CheckItemShowHistoryClick
       end
     end
     object CheckItemInn: TEdit
@@ -1225,6 +1112,136 @@ object ClientForm: TClientForm
       Height = 24
       Enabled = False
       TabOrder = 4
+    end
+  end
+  object PnShowEvents: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 7
+    object Label13: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1087#1086#1076#1110#1081
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 137
+    end
+    object ShowEventsResult: TStringGrid
+      Left = 1
+      Top = 118
+      Width = 769
+      Height = 357
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      PopupMenu = PPEditItem
+      TabOrder = 0
+      OnMouseUp = CheckItemResultMouseUp
+    end
+    object Panel4: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 94
+      Align = alTop
+      TabOrder = 1
+      object Label15: TLabel
+        Left = 81
+        Top = 62
+        Width = 7
+        Height = 16
+        Caption = #1047
+      end
+      object Label16: TLabel
+        Left = 209
+        Top = 62
+        Width = 14
+        Height = 16
+        Caption = #1087#1086
+      end
+      object Label14: TLabel
+        Left = 5
+        Top = 6
+        Width = 61
+        Height = 16
+        Caption = #1064#1091#1082#1072#1090#1080' '#1079#1072
+      end
+      object Label32: TLabel
+        Left = 165
+        Top = 6
+        Width = 103
+        Height = 16
+        Caption = #1042#1074#1077#1076#1110#1090#1100' '#1079#1085#1072#1095#1077#1085#1085#1103
+      end
+      object ShowEventsInn: TEdit
+        Left = 165
+        Top = 28
+        Width = 283
+        Height = 24
+        TabOrder = 0
+        OnKeyPress = ShowEventsInnKeyPress
+      end
+      object ShowEventsDateFrom: TDateTimePicker
+        Left = 99
+        Top = 58
+        Width = 104
+        Height = 24
+        Date = 44154.000000000000000000
+        Time = 0.639949120370147300
+        TabOrder = 1
+      end
+      object ShowEventsDateTo: TDateTimePicker
+        Left = 229
+        Top = 57
+        Width = 103
+        Height = 24
+        Date = 44154.000000000000000000
+        Time = 0.640191886574029900
+        TabOrder = 2
+      end
+      object ShowEventsApply: TButton
+        Left = 467
+        Top = 28
+        Width = 75
+        Height = 25
+        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
+        TabOrder = 3
+        OnClick = ShowEventsApplyClick
+      end
+      object ShowEventsDateFilter: TCheckBox
+        Left = 5
+        Top = 61
+        Width = 59
+        Height = 17
+        Caption = #1047#1072' '#1076#1072#1090#1091
+        TabOrder = 4
+        OnClick = ShowEventsDateFilterClick
+      end
+      object ShowEventsSearchType: TComboBox
+        Left = 5
+        Top = 28
+        Width = 154
+        Height = 24
+        ItemIndex = 0
+        TabOrder = 5
+        Text = 'ID '#1055#1088#1080#1089#1090#1088#1086#1102
+        Items.Strings = (
+          'ID '#1055#1088#1080#1089#1090#1088#1086#1102
+          #1030#1085#1074#1077#1085#1090#1072#1088#1085#1080#1084' '#1085#1086#1084#1077#1088#1086#1084
+          #1057#1077#1088#1110#1081#1085#1080#1084' '#1085#1086#1084#1077#1088#1086#1084)
+      end
     end
   end
   object SaveCfgDialog: TSaveDialog
