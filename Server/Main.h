@@ -61,14 +61,17 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #define DEFAULT_SERVER_PORT 9874
 #define DEFAULT_CLIENT_PORT 9875
 
-enum OperationType {
-OT_ADD = 1,	    //Ввод нового пристрою
-OT_REMOVE = 2,  //Вивід з експлуатації
-OT_CH_INN = 3,  //Зміна інвентарного номеру
-OT_CH_SN = 4,   //Зміна серійного номеру
-OT_CH_MODEL = 5,//Зміна моделі пристрою
-OT_CH_LOC = 6   //Зміна локації пристрою
-};
+enum OperationType {OT_ADD = 1,	    //Ввод нового пристрою
+					OT_REMOVE = 2,  //Вивід з експлуатації
+					OT_CH_INN = 3,  //Зміна інвентарного номеру
+					OT_CH_SN = 4,   //Зміна серійного номеру
+					OT_CH_MODEL = 5,//Зміна моделі пристрою
+					OT_CH_LOC = 6   //Зміна локації пристрою
+				   };
+
+enum SearchType {ST_ID = 0,
+				 ST_INN = 1,
+				 ST_SN = 2};
 
 struct UserInfo
 {
@@ -139,6 +142,10 @@ private:	// User declarations
 	TStringStream* __fastcall GetLocationList();
 	bool __fastcall RemoveItem(int item_id);
 	bool __fastcall AddEvent(int event_id, int item_id, int agent_id);
+	TStringStream* __fastcall GetEventList(int search_type,
+										   const String &item,
+										   const String &dt_from,
+										   const String &dt_to);
 //---------------------------------------------------------------------------
 
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);

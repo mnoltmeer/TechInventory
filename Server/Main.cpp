@@ -601,7 +601,7 @@ TStringStream* __fastcall TServerForm::GetLocationList()
 
   try
 	 {
-	   String sqltext = "SELECT * FROM Locations itm ORDER BY IND";
+	   String sqltext = "SELECT * FROM LOCATIONS ORDER BY IND";
 
 	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
 	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
@@ -734,7 +734,137 @@ VALUES (GEN_ID(GEN_CHANGES_ID, 1), :date, :item, :agent, :operation)";
   catch (Exception &e)
 	 {
 	   res = false;
-	   WriteLog("RemoveItem(): " + e.ToString());
+	   WriteLog("AddEvent(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+TStringStream* __fastcall TServerForm::GetEventList(int search_type,
+													const String &item,
+													const String &dt_from,
+													const String &dt_to)
+{
+  TStringStream *res;
+
+  try
+	 {
+       std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   String sqltext = "SELECT chn.DATE_ADD, \
+itm.INN || ', ' || itm.SN || ', ' || itm.Model as ITEM, \
+ag.LOGIN as AGENT, \
+op.CAPTION as OPERATION \
+FROM CHANGES chn \
+JOIN ITEMS itm on chn.ITEM_ID = itm.ID \
+JOIN AGENTS ag ON chn.AGENT_ID = ag.ID \
+JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
+
+	   tmp_query->SQL->Add(sqltext);
+
+	   switch (search_type)
+		 {
+		   case ST_ID:
+			 {
+			   if (item > 0)
+				 {
+				   tmp_query->SQL->Text += " WHERE chn.ITEM_ID = :item";
+				   tmp_query->ParamByName("item")->AsInteger = item.ToInt();
+				 }
+
+               break;
+			 }
+		   case ST_INN:
+			 {
+			   if (item > 0)
+				 {
+				   tmp_query->SQL->Text += " WHERE chn.ITEM_ID = (SELECT DISTINCT(ID) FROM ITEMS WHERE INN = :item)";
+				   tmp_query->ParamByName("item")->AsString = item;
+				 }
+
+               break;
+			 }
+		   case ST_SN:
+			 {
+			   if (item > 0)
+				 {
+				   tmp_query->SQL->Text += " WHERE chn.ITEM_ID = (SELECT DISTINCT(ID) FROM ITEMS WHERE SN = :item)";
+				   tmp_query->ParamByName("item")->AsString = item;
+				 }
+
+               break;
+			 }
+		 }
+
+	   if ((dt_from != "-") && (dt_to != "-"))
+		 {
+		   TDateTime fr = StrToDateTime(dt_from), to = StrToDateTime(dt_to);
+
+		   fr = fr + StrToTime("00:00:01");
+		   to = to + StrToTime("23:59:59");
+
+		   tmp_query->SQL->Text += " AND chn.DATE_ADD BETWEEN :fr AND :to";
+
+           tmp_query->ParamByName("fr")->AsDateTime = fr;
+		   tmp_query->ParamByName("to")->AsDateTime = to;
+		 }
+
+	   tmp_tr->StartTransaction();
+
+
+       tmp_query->Prepare();
+	   tmp_query->Open();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RecordCount == 0)
+		 res = CreateAnswer("NODATA");
+	   else
+		 {
+		   std::unique_ptr<TStringList> data(new TStringList());
+		   std::unique_ptr<TStringList> row(new TStringList());
+
+		   tmp_query->First();
+
+		   String str;
+
+		   while (!tmp_query->Eof)
+			 {
+               row->Clear();
+
+			   row->Add(tmp_query->FieldByName("DATE_ADD")->AsString);
+			   row->Add(tmp_query->FieldByName("ITEM")->AsString);
+               row->Add(tmp_query->FieldByName("OPERATION")->AsString);
+			   row->Add(tmp_query->FieldByName("AGENT")->AsString);
+
+			   for (int i = 0; i < row->Count; i++)
+				  {
+					if (row->Strings[i] == "")
+					  row->Strings[i] = "???";
+				  }
+
+			   str = ListToStr(row.get(), ";");
+
+			   data->Add(str);
+
+               tmp_query->Next();
+			 }
+
+		   String titles = "<Title size='130'>Дата</Title>\
+<Title size='350'>Пристрій</Title>\
+<Title size='300'>Операція</Title>\
+<Title size='100'>Агент</Title>";
+
+		   res = CreateAnswer("SUCCESS", titles, data.get());
+		 }
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = CreateAnswer("ERROR");
+	   WriteLog("GetEventList(): " + e.ToString());
 	 }
 
   return res;
@@ -997,7 +1127,6 @@ TXMLDocument *__fastcall TServerForm::CreatXMLStream(TStringStream *ms)
 	 {
 	   //if (CoInitializeEx(NULL, COINIT_MULTITHREADED) != S_OK)
 		 //throw Exception("Помилка CoInitializeEx");
-
 	   ixml = new TXMLDocument(this);
 
 	   ixml->DOMVendor = GetDOMVendor(sOmniXmlVendor);
@@ -1120,7 +1249,11 @@ TStringStream* __fastcall TServerForm::ProcessRequest(TXMLDocument *ixml)
 	   for (int i = 0; i < Params->ChildNodes->Count; i++)
 		  {
 			Param = Params->ChildNodes->Nodes[i];
-			params->Add(Param->NodeValue);
+
+			if (!Param->NodeValue.IsNull())
+			  params->Add(Param->NodeValue);
+			else
+			  params->Add("");
 		  }
 
 	   res = ExecuteCommand(command, params.get());
@@ -1136,7 +1269,7 @@ TStringStream* __fastcall TServerForm::ProcessRequest(TXMLDocument *ixml)
 //---------------------------------------------------------------------------
 
 TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
-													   TStringList *params)
+													  TStringList *params)
 {
   TStringStream *res;
 
@@ -1239,6 +1372,13 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 			 }
 		   else
 			 res = CreateAnswer("ERROR");
+		 }
+	   else if (command == "GETEVENTS") //запит передіку операцій
+		 {
+		   res = GetEventList(params->Strings[0].ToInt(),
+							  params->Strings[1],
+							  params->Strings[2],
+							  params->Strings[3]);
 		 }
 	   else
          throw Exception("Невідома команда");
@@ -1555,6 +1695,7 @@ TFDQuery *CreateNewQueryObj(TFDTransaction *t)
   return q;
 }
 //---------------------------------------------------------------------------
+
 
 
 
