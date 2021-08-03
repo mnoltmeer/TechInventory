@@ -13,6 +13,7 @@ extern int UserID; //ID поточного користувача
 extern int ItemID; //ID поточного ѕристрою
 
 extern TLabel *Location;
+extern TBitBtn *RefreshButton;
 TEditItemForm *EditItemForm;
 //---------------------------------------------------------------------------
 __fastcall TEditItemForm::TEditItemForm(TComponent* Owner)
@@ -54,7 +55,7 @@ void __fastcall TEditItemForm::ApplyClick(TObject *Sender)
 		ClientForm->AddEvent(OP_SET_MOD, ItemID, UserID);
 
 	  Close();
-	  ClientForm->CheckItemRefresh->Click();
+	  RefreshButton->Click();
 	}
 }
 //---------------------------------------------------------------------------

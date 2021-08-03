@@ -210,6 +210,7 @@ __published:	// IDE-managed Components
 	TComboBox *ShowEventsSearchType;
 	TLabel *Label14;
 	TLabel *Label32;
+	TButton *ShowItemsRequest;
 	void __fastcall LoadAnimTimerTimer(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -259,6 +260,11 @@ __published:	// IDE-managed Components
 	void __fastcall ShowEventsApplyClick(TObject *Sender);
 	void __fastcall ShowEventsInnKeyPress(TObject *Sender, System::WideChar &Key);
 	void __fastcall CheckItemShowHistoryClick(TObject *Sender);
+	void __fastcall ShowItemsSelectLocationClick(TObject *Sender);
+	void __fastcall ShowItemsEditClick(TObject *Sender);
+	void __fastcall ShowItemsRefreshClick(TObject *Sender);
+	void __fastcall ShowItemsRequestClick(TObject *Sender);
+	void __fastcall ShowItemsRemoveClick(TObject *Sender);
 
 private:	// User declarations
 	void __fastcall ShowLoadingImage();
@@ -303,6 +309,7 @@ public:		// User declarations
 								 const String &item,
 								 const String &date_from,
 								 const String &date_to);
+	bool __fastcall AskItemList(int loc_id);
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 };

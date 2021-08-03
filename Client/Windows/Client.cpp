@@ -34,6 +34,7 @@ int AnimFrameInd;    //індекс поточного кадру анімації завантаження
 TPanel *ActivePanel; //поточна активна панель
 int CurrentRowInd, CurrentColInd; //індекси поточних рядка поля у таблиці відображення
 TLabel *Location; //лейбл для відображення обраної локації
+TBitBtn *RefreshButton; //активна кнопка для оновлення даних
 //---------------------------------------------------------------------------
 __fastcall TClientForm::TClientForm(TComponent* Owner)
 	: TForm(Owner)
@@ -350,6 +351,7 @@ void __fastcall TClientForm::MnCheckItemsClick(TObject *Sender)
   HideAllPanels();
   PnCheckItems->Show();
   ActivePanel = PnCheckItems;
+  CheckItemsCurrentLocation->Caption = "";
 }
 //---------------------------------------------------------------------------
 
@@ -366,6 +368,8 @@ void __fastcall TClientForm::MnShowItemsClick(TObject *Sender)
   HideAllPanels();
   PnShowItems->Show();
   ActivePanel = PnShowItems;
+  ShowItemsCurrentLocation->Caption = "";
+  ClearResultSet(ShowItemsResult);
 }
 //---------------------------------------------------------------------------
 
@@ -466,6 +470,10 @@ void __fastcall TClientForm::SetUIImages()
 	   CheckItemRefresh->Glyph = PanelImages->GetBitmap(13, 18, 18);
 	   CheckItemRefresh->Glyph->Transparent = true;
 	   CheckItemRefresh->Glyph->TransparentColor = clBlack;
+
+	   CheckItemShowHistory->Glyph = PanelImages->GetBitmap(14, 18, 18);
+	   CheckItemShowHistory->Glyph->Transparent = true;
+	   CheckItemShowHistory->Glyph->TransparentColor = clBlack;
 
 	   PPEdit->Bitmap = PanelImages->GetBitmap(11, 16, 16);
 	   PPEdit->Bitmap->Transparent = true;
@@ -948,13 +956,53 @@ bool __fastcall TClientForm::AskEventList(int search_type,
 
 		   if (Command->NodeValue == "SUCCESS")
 			 {
-			   ClientForm->ProcessAnswer(ixml.get(), ShowEventsResult);
+			   ProcessAnswer(ixml.get(), ShowEventsResult);
 			   CurrentRowInd = 1;
 			   res = true;
 			 }
 		   else
 			 {
 			   ClearResultSet(ShowEventsResult);
+			   res = false;
+			 }
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   ClientForm->AddActionLog("Помилка отримання переліку локацій");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::AskItemList(int loc_id)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("GETITEMS",
+																	 IntToStr(loc_id)));
+
+	   if (ClientForm->AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 {
+			   ProcessAnswer(ixml.get(), ShowItemsResult);
+			   CurrentRowInd = 1;
+			   res = true;
+			 }
+		   else
+			 {
+			   ClearResultSet(ShowItemsResult);
 			   res = false;
 			 }
          }
@@ -1346,12 +1394,17 @@ void __fastcall TClientForm::PPRemoveClick(TObject *Sender)
 void __fastcall TClientForm::CheckItemResultMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
 		  int X, int Y)
 {
-  CheckItemsResult->MouseToCell(X, Y, CurrentColInd, CurrentRowInd);
+  TStringGrid *grid = dynamic_cast<TStringGrid*>(Sender);
+
+  if (grid)
+	grid->MouseToCell(X, Y, CurrentColInd, CurrentRowInd);
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::CheckItemEditClick(TObject *Sender)
 {
+  RefreshButton = CheckItemRefresh;
+
   EditItemForm->Show();
 
   EditItemForm->Inn->Text = CheckItemInn->Text;
@@ -1415,7 +1468,7 @@ void __fastcall TClientForm::CheckItemRefreshClick(TObject *Sender)
 			 }
           catch (Exception &e)
 			 {
-			   ClientForm->AddActionLog("Authorisation: " + e.ToString());
+			   ClientForm->AddActionLog("Запит даних про Пристрій: " + e.ToString());
 			 }
         }
 	}
@@ -1599,4 +1652,69 @@ void __fastcall TClientForm::ShowEventsInnKeyPress(TObject *Sender, System::Wide
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TClientForm::ShowItemsSelectLocationClick(TObject *Sender)
+{
+  Location = ShowItemsCurrentLocation;
+  SelectLocationForm->Show();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ShowItemsEditClick(TObject *Sender)
+{
+  if (CurrentRowInd > 0)
+	{
+	  RefreshButton = ShowItemsRefresh;
+
+	  EditItemForm->Show();
+
+      ItemID = ShowItemsResult->Cells[0][CurrentRowInd].ToInt();
+
+	  EditItemForm->Inn->Text = ShowItemsResult->Cells[1][CurrentRowInd];
+	  EditItemForm->Sn->Text = ShowItemsResult->Cells[2][CurrentRowInd];
+	  EditItemForm->Model->Text = ShowItemsResult->Cells[3][CurrentRowInd];
+	  EditItemForm->CurrentLocation->Caption = ShowItemsCurrentLocation->Caption;
+	  EditItemForm->CurrentLocation->Tag = ShowItemsCurrentLocation->Tag;
+
+	  EditItemForm->Inn->Hint = EditItemForm->Inn->Text;
+	  EditItemForm->Sn->Hint = EditItemForm->Sn->Text;
+	  EditItemForm->Model->Hint = EditItemForm->Model->Text;
+	  EditItemForm->CurrentLocation->Hint = IntToStr(EditItemForm->CurrentLocation->Tag);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ShowItemsRefreshClick(TObject *Sender)
+{
+  //запит переліку Пристроїв в локації
+  AskItemList(ShowItemsCurrentLocation->Tag);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ShowItemsRequestClick(TObject *Sender)
+{
+  ShowItemsRefresh->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ShowItemsRemoveClick(TObject *Sender)
+{
+  //запит на видалення Пристрою
+  String id;
+
+  if (CurrentRowInd > 0)
+	id = ShowItemsResult->Cells[0][CurrentRowInd];
+
+  if (id != "")
+	{
+	  if (MessageBox(this->Handle,
+					 L"Ви впевнені, що хочете видалити Пристрій?",
+					 L"Підтвердження",
+					 MB_YESNO|MB_ICONINFORMATION) == mrYes)
+		{
+		  RemoveItem(id);
+          ShowItemsRefresh->Click();
+		}
+	}
+}
+//---------------------------------------------------------------------------
 
