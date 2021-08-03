@@ -265,6 +265,7 @@ __published:	// IDE-managed Components
 	void __fastcall ShowItemsRefreshClick(TObject *Sender);
 	void __fastcall ShowItemsRequestClick(TObject *Sender);
 	void __fastcall ShowItemsRemoveClick(TObject *Sender);
+	void __fastcall ShowEventsInnChange(TObject *Sender);
 
 private:	// User declarations
 	void __fastcall ShowLoadingImage();

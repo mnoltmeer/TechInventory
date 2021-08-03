@@ -35,6 +35,7 @@ TPanel *ActivePanel; //поточна активна панель
 int CurrentRowInd, CurrentColInd; //індекси поточних рядка поля у таблиці відображення
 TLabel *Location; //лейбл для відображення обраної локації
 TBitBtn *RefreshButton; //активна кнопка для оновлення даних
+TBitBtn *EditButton;  //редагування пристрою
 //---------------------------------------------------------------------------
 __fastcall TClientForm::TClientForm(TComponent* Owner)
 	: TForm(Owner)
@@ -352,6 +353,8 @@ void __fastcall TClientForm::MnCheckItemsClick(TObject *Sender)
   PnCheckItems->Show();
   ActivePanel = PnCheckItems;
   CheckItemsCurrentLocation->Caption = "";
+  RefreshButton = CheckItemsRefresh;
+  EditButton = CheckItemsEdit;
 }
 //---------------------------------------------------------------------------
 
@@ -360,6 +363,7 @@ void __fastcall TClientForm::MnAddItemClick(TObject *Sender)
   HideAllPanels();
   PnAddItem->Show();
   ActivePanel = PnAddItem;
+  AddItemCurrentLocation->Caption = "";
 }
 //---------------------------------------------------------------------------
 
@@ -370,6 +374,8 @@ void __fastcall TClientForm::MnShowItemsClick(TObject *Sender)
   ActivePanel = PnShowItems;
   ShowItemsCurrentLocation->Caption = "";
   ClearResultSet(ShowItemsResult);
+  RefreshButton = ShowItemsRefresh;
+  EditButton = ShowItemsEdit;
 }
 //---------------------------------------------------------------------------
 
@@ -385,6 +391,7 @@ void __fastcall TClientForm::MnShowEventsClick(TObject *Sender)
   ShowEventsInn->Text = "";
   ShowEventsSearchType->ItemIndex = 0;
   ClearResultSet(ShowEventsResult);
+  ShowEventsApply->Enabled = false;
 }
 //---------------------------------------------------------------------------
 
@@ -1379,18 +1386,6 @@ void __fastcall TClientForm::ListenerDisconnect(TIdContext *AContext)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TClientForm::PPEditClick(TObject *Sender)
-{
-  CheckItemEdit->Click();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TClientForm::PPRemoveClick(TObject *Sender)
-{
-  CheckItemRemove->Click();
-}
-//---------------------------------------------------------------------------
-
 void __fastcall TClientForm::CheckItemResultMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
 		  int X, int Y)
 {
@@ -1560,9 +1555,27 @@ void __fastcall TClientForm::AdmLocationsRemoveClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TClientForm::PPRefreshClick(TObject *Sender)
+{
+  RefreshButton->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::PPEditClick(TObject *Sender)
+{
+  EditButton->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::PPRemoveClick(TObject *Sender)
+{
+  ShowItemsRemove->Click();
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TClientForm::PPLocationsRefreshClick(TObject *Sender)
 {
-  //
+  RefreshButton->Click();
 }
 //---------------------------------------------------------------------------
 
@@ -1591,12 +1604,6 @@ void __fastcall TClientForm::AdmLogsShowClick(TObject *Sender)
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::PPCheckSetUnknownClick(TObject *Sender)
-{
-  //
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TClientForm::PPRefreshClick(TObject *Sender)
 {
   //
 }
@@ -1649,6 +1656,15 @@ void __fastcall TClientForm::ShowEventsInnKeyPress(TObject *Sender, System::Wide
 {
   if (Key == 13)
     ShowEventsApply->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ShowEventsInnChange(TObject *Sender)
+{
+  if (ShowEventsInn->Text != "")
+	ShowEventsApply->Enabled = true;
+  else
+	ShowEventsApply->Enabled = false;
 }
 //---------------------------------------------------------------------------
 
@@ -1717,4 +1733,5 @@ void __fastcall TClientForm::ShowItemsRemoveClick(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
+
 
