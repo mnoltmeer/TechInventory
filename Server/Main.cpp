@@ -871,6 +871,86 @@ JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
 }
 //---------------------------------------------------------------------------
 
+TStringStream* __fastcall TServerForm::GetItemList(int loc_id)
+{
+  TStringStream *res;
+
+  try
+	 {
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   String sqltext = "SELECT itm.ID, \
+itm.INN, itm.SN, itm.Model, ag.LOGIN as AGENT \
+FROM ITEMS itm \
+JOIN AGENTS ag ON itm.LAST_AGENT_ID = ag.ID \
+WHERE itm.LOCATION_ID = :location";
+
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("location")->AsInteger = loc_id;
+
+	   tmp_tr->StartTransaction();
+
+       tmp_query->Prepare();
+	   tmp_query->Open();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RecordCount == 0)
+		 res = CreateAnswer("NODATA");
+	   else
+		 {
+		   std::unique_ptr<TStringList> data(new TStringList());
+		   std::unique_ptr<TStringList> row(new TStringList());
+
+		   tmp_query->First();
+
+		   String str;
+
+		   while (!tmp_query->Eof)
+			 {
+               row->Clear();
+
+			   row->Add(tmp_query->FieldByName("ID")->AsString);
+			   row->Add(tmp_query->FieldByName("INN")->AsString);
+			   row->Add(tmp_query->FieldByName("SN")->AsString);
+			   row->Add(tmp_query->FieldByName("MODEL")->AsString);
+			   row->Add(tmp_query->FieldByName("AGENT")->AsString);
+
+			   for (int i = 0; i < row->Count; i++)
+				  {
+					if (row->Strings[i] == "")
+					  row->Strings[i] = "???";
+				  }
+
+			   str = ListToStr(row.get(), ";");
+
+			   data->Add(str);
+
+               tmp_query->Next();
+			 }
+
+		   String titles = "<Title size='0'>ID</Title>\
+<Title size='200'>Інвентарний номер</Title>\
+<Title size='150'>Серійний номер</Title>\
+<Title size='300'>Модель</Title>\
+<Title size='130'>Востаннє змінено</Title>";
+
+		   res = CreateAnswer("SUCCESS", titles, data.get());
+		 }
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = CreateAnswer("ERROR");
+	   WriteLog("GetItemList(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
 bool __fastcall TServerForm::ConnectToSMTP()
 {
   MailSender->Username = "<none>";
@@ -1380,6 +1460,8 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 							  params->Strings[2],
 							  params->Strings[3]);
 		 }
+       else if (command == "GETITEMS") //запит передіку операцій
+		 res = GetItemList(params->Strings[0].ToInt());
 	   else
          throw Exception("Невідома команда");
 	 }

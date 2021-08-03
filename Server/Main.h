@@ -146,6 +146,7 @@ private:	// User declarations
 										   const String &item,
 										   const String &dt_from,
 										   const String &dt_to);
+    TStringStream* __fastcall GetItemList(int loc_id);
 //---------------------------------------------------------------------------
 
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);
