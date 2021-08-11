@@ -783,114 +783,6 @@ object ClientForm: TClientForm
       TabOrder = 4
     end
   end
-  object PnCheckItems: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 12
-    object Label23: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1047#1083#1110#1095#1091#1074#1072#1083#1100#1085#1072' '#1074#1110#1076#1086#1084#1110#1089#1090#1100
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 191
-    end
-    object Panel9: TPanel
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 41
-      Align = alTop
-      TabOrder = 0
-      object Label24: TLabel
-        Left = 23
-        Top = 8
-        Width = 99
-        Height = 16
-        Caption = #1054#1073#1077#1088#1110#1090#1100' '#1051#1086#1082#1072#1094#1110#1102
-      end
-      object CheckItemsCurrentLocation: TLabel
-        Left = 255
-        Top = 8
-        Width = 156
-        Height = 16
-        Caption = 'CheckItemsCurrentLocation'
-      end
-      object CheckItemsSelectLocation: TButton
-        Left = 146
-        Top = 5
-        Width = 75
-        Height = 25
-        Caption = #1042#1080#1073#1088#1072#1090#1080
-        TabOrder = 0
-      end
-    end
-    object Panel10: TPanel
-      Left = 1
-      Top = 450
-      Width = 769
-      Height = 25
-      Align = alBottom
-      TabOrder = 1
-      object CheckItemsSendToUnknown: TBitBtn
-        Left = 54
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1055#1077#1088#1077#1085#1077#1089#1090#1080' '#1055#1088#1080#1089#1090#1088#1110#1081' '#1076#1086' '#1053#1077#1079#39#1103#1089#1086#1074#1072#1085#1080#1093
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = CheckItemRemoveClick
-      end
-      object CheckItemsEdit: TBitBtn
-        Left = 27
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1056#1077#1076#1072#1075#1091#1074#1072#1090#1080' '#1076#1072#1085#1110' '#1055#1088#1080#1089#1090#1088#1086#1102
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-        OnClick = CheckItemEditClick
-      end
-      object CheckItemsRefresh: TBitBtn
-        Left = 0
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
-        OnClick = CheckItemRefreshClick
-      end
-    end
-    object CheckItemsResult: TStringGrid
-      Left = 1
-      Top = 65
-      Width = 769
-      Height = 385
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      PopupMenu = PPItemOptions
-      TabOrder = 2
-      OnMouseUp = CheckItemResultMouseUp
-    end
-  end
   object PnShowItems: TPanel
     Left = 40
     Top = 33
@@ -1165,95 +1057,256 @@ object ClientForm: TClientForm
       ParentFont = False
       ExplicitWidth = 319
     end
-    object Label7: TLabel
+    object LbInn: TLabel
       Left = 6
-      Top = 59
+      Top = 112
       Width = 104
       Height = 16
       Caption = #1030#1085#1074#1077#1085#1090#1072#1088#1085#1080#1081' '#8470' *'
     end
     object Label8: TLabel
       Left = 6
-      Top = 93
+      Top = 146
       Width = 72
       Height = 16
       Caption = #1057#1077#1088#1110#1081#1085#1080#1081' '#8470
     end
-    object Label9: TLabel
+    object LbModel: TLabel
       Left = 6
-      Top = 127
+      Top = 180
       Width = 97
       Height = 16
       Caption = #1052#1086#1076#1077#1083#1100'/'#1053#1072#1079#1074#1072' *'
     end
     object Label10: TLabel
       Left = 6
-      Top = 168
+      Top = 221
       Width = 99
       Height = 16
       Caption = #1054#1073#1077#1088#1110#1090#1100' '#1051#1086#1082#1072#1094#1110#1102
     end
     object AddItemCurrentLocation: TLabel
       Left = 208
-      Top = 168
+      Top = 221
       Width = 138
       Height = 16
       Caption = 'AddItemCurrentLocation'
     end
     object Label11: TLabel
       Left = 8
-      Top = 216
+      Top = 269
       Width = 275
       Height = 16
       Caption = #1087#1086#1083#1103', '#1087#1086#1079#1085#1072#1095#1077#1085#1110' * '#1086#1073#1086#1074#39#1103#1079#1082#1086#1074#1110' '#1076#1083#1103' '#1079#1072#1087#1086#1074#1085#1077#1085#1085#1103
     end
+    object LbID: TLabel
+      Left = 6
+      Top = 59
+      Width = 86
+      Height = 16
+      Caption = 'ID '#1055#1088#1080#1089#1090#1088#1086#1102' *'
+    end
+    object IDError: TLabel
+      Left = 249
+      Top = 59
+      Width = 41
+      Height = 16
+      Caption = 'IDError'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object InnError: TLabel
+      Left = 468
+      Top = 111
+      Width = 47
+      Height = 16
+      Caption = 'InnError'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object ModelError: TLabel
+      Left = 585
+      Top = 176
+      Width = 63
+      Height = 16
+      Caption = 'ModelError'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
     object AddItemNewInn: TEdit
       Left = 120
-      Top = 56
-      Width = 329
-      Height = 24
-      TabOrder = 0
-    end
-    object AddItemNewSn: TEdit
-      Left = 120
-      Top = 90
+      Top = 109
       Width = 329
       Height = 24
       TabOrder = 1
     end
-    object AddItemNewModel: TEdit
+    object AddItemNewSn: TEdit
       Left = 120
-      Top = 124
-      Width = 449
+      Top = 143
+      Width = 329
       Height = 24
       TabOrder = 2
     end
+    object AddItemNewModel: TEdit
+      Left = 120
+      Top = 177
+      Width = 449
+      Height = 24
+      TabOrder = 3
+    end
     object AddItemCreate: TButton
       Left = 6
-      Top = 254
+      Top = 307
       Width = 75
       Height = 25
       Caption = #1057#1090#1074#1086#1088#1080#1090#1080
-      TabOrder = 3
+      TabOrder = 5
       OnClick = AddItemCreateClick
     end
     object AddItemClearFields: TButton
       Left = 112
-      Top = 254
+      Top = 307
       Width = 75
       Height = 25
       Caption = #1054#1095#1080#1089#1090#1080#1090#1080
-      TabOrder = 4
+      TabOrder = 6
       OnClick = AddItemClearFieldsClick
     end
     object AddItemSelectLocation: TButton
       Left = 117
-      Top = 165
+      Top = 218
       Width = 75
       Height = 25
       Caption = #1042#1080#1073#1088#1072#1090#1080
-      TabOrder = 5
+      TabOrder = 4
       OnClick = AddItemSelectLocationClick
+    end
+    object AddItemNewID: TEdit
+      Left = 120
+      Top = 56
+      Width = 112
+      Height = 24
+      TabOrder = 0
+    end
+  end
+  object PnCheckItems: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 12
+    object Label23: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1047#1083#1110#1095#1091#1074#1072#1083#1100#1085#1072' '#1074#1110#1076#1086#1084#1110#1089#1090#1100
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 191
+    end
+    object Panel9: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 41
+      Align = alTop
+      TabOrder = 0
+      object Label24: TLabel
+        Left = 23
+        Top = 8
+        Width = 99
+        Height = 16
+        Caption = #1054#1073#1077#1088#1110#1090#1100' '#1051#1086#1082#1072#1094#1110#1102
+      end
+      object CheckItemsCurrentLocation: TLabel
+        Left = 255
+        Top = 8
+        Width = 156
+        Height = 16
+        Caption = 'CheckItemsCurrentLocation'
+      end
+      object CheckItemsSelectLocation: TButton
+        Left = 146
+        Top = 5
+        Width = 75
+        Height = 25
+        Caption = #1042#1080#1073#1088#1072#1090#1080
+        TabOrder = 0
+      end
+    end
+    object Panel10: TPanel
+      Left = 1
+      Top = 450
+      Width = 769
+      Height = 25
+      Align = alBottom
+      TabOrder = 1
+      object CheckItemsSendToUnknown: TBitBtn
+        Left = 54
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1055#1077#1088#1077#1085#1077#1089#1090#1080' '#1055#1088#1080#1089#1090#1088#1110#1081' '#1076#1086' '#1053#1077#1079#39#1103#1089#1086#1074#1072#1085#1080#1093
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = CheckItemRemoveClick
+      end
+      object CheckItemsEdit: TBitBtn
+        Left = 27
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1056#1077#1076#1072#1075#1091#1074#1072#1090#1080' '#1076#1072#1085#1110' '#1055#1088#1080#1089#1090#1088#1086#1102
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+        OnClick = CheckItemEditClick
+      end
+      object CheckItemsRefresh: TBitBtn
+        Left = 0
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        OnClick = CheckItemRefreshClick
+      end
+    end
+    object CheckItemsResult: TStringGrid
+      Left = 1
+      Top = 65
+      Width = 769
+      Height = 385
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      PopupMenu = PPItemOptions
+      TabOrder = 2
+      OnMouseUp = CheckItemResultMouseUp
     end
   end
   object SaveCfgDialog: TSaveDialog

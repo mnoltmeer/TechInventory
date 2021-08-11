@@ -364,6 +364,13 @@ void __fastcall TClientForm::MnAddItemClick(TObject *Sender)
   PnAddItem->Show();
   ActivePanel = PnAddItem;
   AddItemCurrentLocation->Caption = "";
+  IDError->Hide();
+  InnError->Hide();
+  ModelError->Hide();
+  AddItemNewID->Text = "";
+  AddItemNewInn->Text = "";
+  AddItemNewSn->Text = "";
+  AddItemNewModel->Text = "";
 }
 //---------------------------------------------------------------------------
 
@@ -930,7 +937,7 @@ bool __fastcall TClientForm::AddEvent(int event_id, int item_id, int agent_id)
 	 }
   catch (Exception &e)
 	 {
-	   AddActionLog("Помилка видалення Пристрою");
+	   AddActionLog("Помилка додання Події");
 	   res = false;
 	 }
 
@@ -976,7 +983,7 @@ bool __fastcall TClientForm::AskEventList(int search_type,
 	 }
   catch (Exception &e)
 	 {
-	   ClientForm->AddActionLog("Помилка отримання переліку локацій");
+	   ClientForm->AddActionLog("Помилка отримання переліку Подій");
 	   res = false;
 	 }
 
@@ -1016,7 +1023,136 @@ bool __fastcall TClientForm::AskItemList(int loc_id)
 	 }
   catch (Exception &e)
 	 {
-	   ClientForm->AddActionLog("Помилка отримання переліку локацій");
+	   AddActionLog("Помилка отримання переліку Пристроїв");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::IsInnFree(const String &inn)
+{
+  bool res;
+
+  try
+	 {
+	   //тут коннект до серверу, передача йому зашифрованих логіну та паролю
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("CHECKINN", inn));
+
+	   if (!ClientForm->AskToServer(Server, data.get()))
+		 res = false;
+	   else
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+
+		   try
+			  {
+				_di_IXMLNode Document = ixml->DocumentElement;
+				_di_IXMLNode Command;
+
+				Command = Document->ChildNodes->Nodes[0];
+
+				if (Command->NodeValue == "FREE")
+				  res = true;
+				else
+				  res = false;
+			  }
+		   catch (Exception &e)
+			  {
+				res = false;
+				ClientForm->AddActionLog("IsInnFree: Парсинг: " + e.ToString());
+			  }
+		 }
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   ClientForm->AddActionLog("IsInnFree: " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::CheckItemID(const String &id)
+{
+  bool res;
+
+  try
+	 {
+	   //тут коннект до серверу, передача йому зашифрованих логіну та паролю
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("CHECKID", id));
+
+	   if (!ClientForm->AskToServer(Server, data.get()))
+		 res = false;
+	   else
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+
+		   try
+			  {
+				_di_IXMLNode Document = ixml->DocumentElement;
+				_di_IXMLNode Command;
+
+				Command = Document->ChildNodes->Nodes[0];
+
+				if (Command->NodeValue == "FREE")
+				  res = true;
+				else
+				  res = false;
+			  }
+		   catch (Exception &e)
+			  {
+				res = false;
+				ClientForm->AddActionLog("CheckItemID: Парсинг: " + e.ToString());
+			  }
+		 }
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   ClientForm->AddActionLog("CheckItemID: " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::AddItem(int item_id, const String &inn, const String &sn,
+									 const String &model, int location_id, int agent_id)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(CreateRequest("ADDITEM",
+														 IntToStr(item_id) + ";" +
+														 inn + ";" +
+														 sn + ";" +
+														 model + ";" +
+														 IntToStr(location_id) + ";" +
+														 IntToStr(agent_id)));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 res = true;
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка зміни даних Пристрою");
 	   res = false;
 	 }
 
@@ -1463,7 +1599,7 @@ void __fastcall TClientForm::CheckItemRefreshClick(TObject *Sender)
 			 }
           catch (Exception &e)
 			 {
-			   ClientForm->AddActionLog("Запит даних про Пристрій: " + e.ToString());
+			   AddActionLog("Запит даних про Пристрій: " + e.ToString());
 			 }
         }
 	}
@@ -1490,6 +1626,62 @@ void __fastcall TClientForm::AddItemCreateClick(TObject *Sender)
 {
   //створюємо запит на додання Пристрою в БД
   //перед створенням треба перевіряти інв. № чи існує такий в БД
+  IDError->Hide();
+  InnError->Hide();
+  ModelError->Hide();
+
+  if (AddItemNewID->Text == "")
+	{
+	  IDError->Caption = "Не вказано ID Пристрою";
+	  IDError->Show();
+	}
+  else if (AddItemNewInn->Text == "")
+	{
+	  InnError->Caption = "Не вказано нівентарний номер";
+	  InnError->Show();
+	}
+  else if (AddItemNewModel->Text == "")
+	{
+	  ModelError->Caption = "Не вказано модель";
+	  ModelError->Show();
+	}
+  else if (!CheckItemID(AddItemNewID->Text))
+	{
+	  IDError->Caption = "Пристрій з даним ID вже існує";
+	  IDError->Show();
+	}
+  else if (!IsInnFree(AddItemNewInn->Text))
+    {
+	  InnError->Caption = "Даний інвентарний номер вже існує";
+	  InnError->Show();
+	}
+  else
+	{
+	  int item_id = -1, location_id = 0;
+
+	  try
+		 {
+		   item_id = AddItemNewID->Text.ToInt();
+		 }
+	  catch (Exception &e)
+		 {
+		   IDError->Caption = "Невірний ID Пристрою";
+		   IDError->Show();
+		 }
+
+	  if (AddItemCurrentLocation->Caption != "")
+		location_id = AddItemCurrentLocation->Tag;
+
+	  if (AddItem(item_id, AddItemNewInn->Text, AddItemNewSn->Text,
+				  AddItemNewModel->Text, location_id, UserID))
+		{
+		  AddActionLog("Пристрій успішно додано");
+		}
+	  else
+		{
+		  AddActionLog("Не вдалося додати Пристрій");
+		}
+    }
 }
 //---------------------------------------------------------------------------
 
@@ -1503,7 +1695,8 @@ void __fastcall TClientForm::AddItemClearFieldsClick(TObject *Sender)
 
 void __fastcall TClientForm::AddItemSelectLocationClick(TObject *Sender)
 {
-  //вивід форми вибору локації
+  Location = AddItemCurrentLocation;
+  SelectLocationForm->Show();
 }
 //---------------------------------------------------------------------------
 

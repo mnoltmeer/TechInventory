@@ -103,9 +103,9 @@ __published:	// IDE-managed Components
 	TMenuItem *PPRefresh;
 	TPanel *PnAddItem;
 	TLabel *Label5;
-	TLabel *Label7;
+	TLabel *LbInn;
 	TLabel *Label8;
-	TLabel *Label9;
+	TLabel *LbModel;
 	TLabel *Label10;
 	TEdit *AddItemNewInn;
 	TEdit *AddItemNewSn;
@@ -211,6 +211,11 @@ __published:	// IDE-managed Components
 	TLabel *Label14;
 	TLabel *Label32;
 	TButton *ShowItemsRequest;
+	TEdit *AddItemNewID;
+	TLabel *LbID;
+	TLabel *IDError;
+	TLabel *InnError;
+	TLabel *ModelError;
 	void __fastcall LoadAnimTimerTimer(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -311,6 +316,10 @@ public:		// User declarations
 								 const String &date_from,
 								 const String &date_to);
 	bool __fastcall AskItemList(int loc_id);
+	bool __fastcall IsInnFree(const String &inn);
+    bool __fastcall CheckItemID(const String &id);
+    bool __fastcall AddItem(int item_id, const String &inn, const String &sn,
+							const String &model, int location_id, int agent_id);
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 };
