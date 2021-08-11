@@ -951,6 +951,126 @@ WHERE itm.LOCATION_ID = :location";
 }
 //---------------------------------------------------------------------------
 
+bool __fastcall TServerForm::IsInnFree(const String &inn)
+{
+  bool res;
+
+  try
+	 {
+	   if (inn == "")
+		 throw Exception("Порожній інвентарний номер");
+
+	   String sqltext = "SELECT ID FROM ITEMS WHERE INN = :inn";
+
+       std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("inn")->AsString = inn;
+
+	   tmp_query->Prepare();
+	   tmp_query->Open();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RecordCount > 0)
+		 res = false;
+	   else
+		 res = true;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("IsInnFree(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::CheckItemID(int id)
+{
+  bool res;
+
+  try
+	 {
+	   String sqltext = "SELECT ID FROM ITEMS WHERE ID = :id";
+
+       std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("id")->AsInteger = id;
+
+	   tmp_query->Prepare();
+	   tmp_query->Open();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RecordCount > 0)
+		 res = false;
+	   else
+		 res = true;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("CheckItemID(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::AddItem(int item_id, const String &inn, const String &sn,
+									 const String &model, int location_id, int agent_id)
+{
+  bool res;
+
+  try
+	 {
+	   String sqltext = "INSERT INTO ITEMS VALUES(:itemid, :inn, :sn, :model, :location, :agent)";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("itemid")->AsInteger = item_id;
+	   tmp_query->ParamByName("inn")->AsString = inn;
+	   tmp_query->ParamByName("sn")->AsString = sn;
+	   tmp_query->ParamByName("model")->AsString = model;
+	   tmp_query->ParamByName("location")->AsInteger = location_id;
+       tmp_query->ParamByName("agent")->AsInteger = agent_id;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("AddItem(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
 bool __fastcall TServerForm::ConnectToSMTP()
 {
   MailSender->Username = "<none>";
@@ -1438,7 +1558,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
        else if (command == "REMOVEITEM") //видалення даних про пристрій
 		 {
 		   if (RemoveItem(params->Strings[0].ToInt()))
-             res = CreateAnswer("SUCCESS");
+			 res = CreateAnswer("SUCCESS");
 		   else
 			 res = CreateAnswer("ERROR");
 		 }
@@ -1462,6 +1582,34 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
        else if (command == "GETITEMS") //запит передіку операцій
 		 res = GetItemList(params->Strings[0].ToInt());
+	   else if (command == "CHECKINN") //перевірка доступності інв. номеру
+		 {
+		   if (IsInnFree(params->Strings[0]))
+			 res = CreateAnswer("FREE");
+		   else
+			 res = CreateAnswer("EXISTS");
+		 }
+	   else if (command == "CHECKID") //перевірка доступності id пристрою
+		 {
+		   if (CheckItemID(params->Strings[0].ToInt()))
+			 res = CreateAnswer("FREE");
+		   else
+			 res = CreateAnswer("EXISTS");
+		 }
+	   else if (command == "ADDITEM") //додання нового пристрою
+		 {
+		   if (AddItem(params->Strings[0].ToInt(),
+					   params->Strings[1],
+					   params->Strings[2],
+					   params->Strings[3],
+					   params->Strings[4].ToInt(),
+					   params->Strings[5].ToInt()))
+			 {
+			   res = CreateAnswer("SUCCESS");
+			 }
+		   else
+			 res = CreateAnswer("ERROR");
+		 }
 	   else
          throw Exception("Невідома команда");
 	 }

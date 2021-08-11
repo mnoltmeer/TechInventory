@@ -146,7 +146,16 @@ private:	// User declarations
 										   const String &item,
 										   const String &dt_from,
 										   const String &dt_to);
-    TStringStream* __fastcall GetItemList(int loc_id);
+	TStringStream* __fastcall GetItemList(int loc_id);
+	bool __fastcall IsInnFree(const String &inn);
+	bool __fastcall CheckItemID(int id);
+    bool __fastcall AddItem(int item_id,
+							const String &inn,
+							const String &sn,
+							const String &model,
+							int location_id,
+							int agent_id);
+
 //---------------------------------------------------------------------------
 
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);
