@@ -17,7 +17,6 @@ __published:	// IDE-managed Components
 	TLabel *Label8;
 	TLabel *Label9;
 	TEdit *Model;
-	TLabel *Label10;
 	TButton *SelectLocation;
 	TLabel *CurrentLocation;
 	TLabel *Label11;

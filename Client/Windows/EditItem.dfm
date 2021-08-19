@@ -4,7 +4,7 @@ object EditItemForm: TEditItemForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1056#1077#1076#1072#1075#1091#1074#1072#1085#1085#1103' '#1055#1088#1080#1089#1090#1088#1086#1102
-  ClientHeight = 253
+  ClientHeight = 255
   ClientWidth = 578
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -37,23 +37,16 @@ object EditItemForm: TEditItemForm
     Height = 16
     Caption = #1052#1086#1076#1077#1083#1100'/'#1053#1072#1079#1074#1072' *'
   end
-  object Label10: TLabel
-    Left = 6
-    Top = 144
-    Width = 99
-    Height = 16
-    Caption = #1054#1073#1077#1088#1110#1090#1100' '#1051#1086#1082#1072#1094#1110#1102
-  end
   object CurrentLocation: TLabel
-    Left = 208
-    Top = 144
+    Left = 144
+    Top = 153
     Width = 90
     Height = 16
     Caption = 'CurrentLocation'
   end
   object Label11: TLabel
-    Left = 6
-    Top = 181
+    Left = 8
+    Top = 189
     Width = 275
     Height = 16
     Caption = #1087#1086#1083#1103', '#1087#1086#1079#1085#1072#1095#1077#1085#1110' * '#1086#1073#1086#1074#39#1103#1079#1082#1086#1074#1110' '#1076#1083#1103' '#1079#1072#1087#1086#1074#1085#1077#1085#1085#1103
@@ -96,17 +89,17 @@ object EditItemForm: TEditItemForm
     TabOrder = 2
   end
   object SelectLocation: TButton
-    Left = 117
-    Top = 139
-    Width = 75
+    Left = 8
+    Top = 148
+    Width = 120
     Height = 25
-    Caption = #1042#1080#1073#1088#1072#1090#1080
+    Caption = #1054#1073#1088#1072#1090#1080' '#1051#1086#1082#1072#1094#1110#1102
     TabOrder = 3
     OnClick = SelectLocationClick
   end
   object Apply: TButton
-    Left = 6
-    Top = 209
+    Left = 8
+    Top = 217
     Width = 95
     Height = 25
     Caption = #1047#1072#1089#1090#1086#1089#1091#1074#1072#1090#1080
@@ -114,8 +107,8 @@ object EditItemForm: TEditItemForm
     OnClick = ApplyClick
   end
   object Cancel: TButton
-    Left = 120
-    Top = 209
+    Left = 122
+    Top = 217
     Width = 75
     Height = 25
     Caption = #1057#1082#1072#1089#1091#1074#1072#1090#1080

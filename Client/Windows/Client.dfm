@@ -32,6 +32,296 @@ object ClientForm: TClientForm
     ExplicitWidth = 105
     ExplicitHeight = 105
   end
+  object PnShowEvents: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 7
+    object Label13: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1087#1086#1076#1110#1081
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 137
+    end
+    object ShowEventsResult: TStringGrid
+      Left = 1
+      Top = 118
+      Width = 769
+      Height = 357
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 0
+      OnMouseUp = CheckItemResultMouseUp
+    end
+    object Panel4: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 94
+      Align = alTop
+      TabOrder = 1
+      object Label15: TLabel
+        Left = 81
+        Top = 62
+        Width = 7
+        Height = 16
+        Caption = #1047
+      end
+      object Label16: TLabel
+        Left = 209
+        Top = 62
+        Width = 14
+        Height = 16
+        Caption = #1087#1086
+      end
+      object Label14: TLabel
+        Left = 5
+        Top = 6
+        Width = 61
+        Height = 16
+        Caption = #1064#1091#1082#1072#1090#1080' '#1079#1072
+      end
+      object Label32: TLabel
+        Left = 165
+        Top = 6
+        Width = 103
+        Height = 16
+        Caption = #1042#1074#1077#1076#1110#1090#1100' '#1079#1085#1072#1095#1077#1085#1085#1103
+      end
+      object ShowEventsInn: TEdit
+        Left = 165
+        Top = 27
+        Width = 283
+        Height = 24
+        TabOrder = 0
+        OnChange = ShowEventsInnChange
+        OnKeyPress = ShowEventsInnKeyPress
+      end
+      object ShowEventsDateFrom: TDateTimePicker
+        Left = 99
+        Top = 58
+        Width = 104
+        Height = 24
+        Date = 44154.000000000000000000
+        Time = 0.639949120370147300
+        TabOrder = 1
+      end
+      object ShowEventsDateTo: TDateTimePicker
+        Left = 229
+        Top = 57
+        Width = 103
+        Height = 24
+        Date = 44154.000000000000000000
+        Time = 0.640191886574030000
+        TabOrder = 2
+      end
+      object ShowEventsApply: TButton
+        Left = 467
+        Top = 28
+        Width = 75
+        Height = 25
+        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
+        TabOrder = 3
+        OnClick = ShowEventsApplyClick
+      end
+      object ShowEventsDateFilter: TCheckBox
+        Left = 5
+        Top = 61
+        Width = 59
+        Height = 17
+        Caption = #1047#1072' '#1076#1072#1090#1091
+        TabOrder = 4
+        OnClick = ShowEventsDateFilterClick
+      end
+      object ShowEventsSearchType: TComboBox
+        Left = 5
+        Top = 28
+        Width = 154
+        Height = 24
+        ItemIndex = 0
+        TabOrder = 5
+        Text = 'ID '#1055#1088#1080#1089#1090#1088#1086#1102
+        Items.Strings = (
+          'ID '#1055#1088#1080#1089#1090#1088#1086#1102
+          #1030#1085#1074#1077#1085#1090#1072#1088#1085#1080#1084' '#1085#1086#1084#1077#1088#1086#1084
+          #1057#1077#1088#1110#1081#1085#1080#1084' '#1085#1086#1084#1077#1088#1086#1084)
+      end
+    end
+  end
+  object PnAddItem: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 5
+    object Label5: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1042#1074#1086#1076' '#1074' '#1073#1072#1079#1091' '#1076#1072#1085#1080#1093' '#1085#1086#1074#1086#1075#1086' '#1055#1088#1080#1089#1090#1088#1086#1102
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 319
+    end
+    object LbInn: TLabel
+      Left = 6
+      Top = 112
+      Width = 104
+      Height = 16
+      Caption = #1030#1085#1074#1077#1085#1090#1072#1088#1085#1080#1081' '#8470' *'
+    end
+    object Label8: TLabel
+      Left = 6
+      Top = 146
+      Width = 72
+      Height = 16
+      Caption = #1057#1077#1088#1110#1081#1085#1080#1081' '#8470
+    end
+    object LbModel: TLabel
+      Left = 6
+      Top = 180
+      Width = 97
+      Height = 16
+      Caption = #1052#1086#1076#1077#1083#1100'/'#1053#1072#1079#1074#1072' *'
+    end
+    object AddItemCurrentLocation: TLabel
+      Left = 150
+      Top = 226
+      Width = 138
+      Height = 16
+      Caption = 'AddItemCurrentLocation'
+    end
+    object Label11: TLabel
+      Left = 8
+      Top = 269
+      Width = 275
+      Height = 16
+      Caption = #1087#1086#1083#1103', '#1087#1086#1079#1085#1072#1095#1077#1085#1110' * '#1086#1073#1086#1074#39#1103#1079#1082#1086#1074#1110' '#1076#1083#1103' '#1079#1072#1087#1086#1074#1085#1077#1085#1085#1103
+    end
+    object LbID: TLabel
+      Left = 6
+      Top = 59
+      Width = 86
+      Height = 16
+      Caption = 'ID '#1055#1088#1080#1089#1090#1088#1086#1102' *'
+    end
+    object IDError: TLabel
+      Left = 249
+      Top = 59
+      Width = 41
+      Height = 16
+      Caption = 'IDError'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object InnError: TLabel
+      Left = 468
+      Top = 111
+      Width = 47
+      Height = 16
+      Caption = 'InnError'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object ModelError: TLabel
+      Left = 585
+      Top = 176
+      Width = 63
+      Height = 16
+      Caption = 'ModelError'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object AddItemNewInn: TEdit
+      Left = 120
+      Top = 109
+      Width = 329
+      Height = 24
+      TabOrder = 1
+    end
+    object AddItemNewSn: TEdit
+      Left = 120
+      Top = 143
+      Width = 329
+      Height = 24
+      TabOrder = 2
+    end
+    object AddItemNewModel: TEdit
+      Left = 120
+      Top = 177
+      Width = 449
+      Height = 24
+      TabOrder = 3
+    end
+    object AddItemCreate: TButton
+      Left = 6
+      Top = 307
+      Width = 75
+      Height = 25
+      Caption = #1057#1090#1074#1086#1088#1080#1090#1080
+      TabOrder = 5
+      OnClick = AddItemCreateClick
+    end
+    object AddItemClearFields: TButton
+      Left = 112
+      Top = 307
+      Width = 75
+      Height = 25
+      Caption = #1054#1095#1080#1089#1090#1080#1090#1080
+      TabOrder = 6
+      OnClick = AddItemClearFieldsClick
+    end
+    object AddItemSelectLocation: TButton
+      Left = 6
+      Top = 223
+      Width = 128
+      Height = 25
+      Caption = #1054#1073#1088#1072#1090#1080' '#1051#1086#1082#1072#1094#1110#1102
+      TabOrder = 4
+      OnClick = AddItemSelectLocationClick
+    end
+    object AddItemNewID: TEdit
+      Left = 120
+      Top = 56
+      Width = 112
+      Height = 24
+      TabOrder = 0
+    end
+  end
   object PnHome: TPanel
     Left = 40
     Top = 33
@@ -335,7 +625,7 @@ object ClientForm: TClientForm
         Width = 121
         Height = 24
         Date = 44154.000000000000000000
-        Time = 0.640191886574029900
+        Time = 0.640191886574030000
         TabOrder = 0
       end
       object AdmLogsShow: TButton
@@ -617,6 +907,120 @@ object ClientForm: TClientForm
       OnMouseUp = CheckItemResultMouseUp
     end
   end
+  object PnShowItems: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 6
+    object Label17: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1055#1088#1080#1089#1090#1088#1086#1111#1074' '#1091' '#1074#1082#1072#1079#1072#1085#1110#1081' '#1051#1086#1082#1072#1094#1110#1111
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 340
+    end
+    object Panel2: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 35
+      Align = alTop
+      TabOrder = 0
+      object ShowItemsCurrentLocation: TLabel
+        Left = 128
+        Top = 10
+        Width = 154
+        Height = 16
+        Caption = 'ShowItemsCurrentLocation'
+      end
+      object ShowItemsSelectLocation: TButton
+        Left = 2
+        Top = 6
+        Width = 120
+        Height = 25
+        Caption = #1054#1073#1088#1072#1090#1080' '#1051#1086#1082#1072#1094#1110#1102
+        TabOrder = 0
+        OnClick = ShowItemsSelectLocationClick
+      end
+      object ShowItemsRequest: TButton
+        Left = 507
+        Top = 6
+        Width = 108
+        Height = 25
+        Caption = #1054#1090#1088#1080#1084#1072#1090#1080' '#1076#1072#1085#1110
+        TabOrder = 1
+        OnClick = ShowItemsRequestClick
+      end
+    end
+    object Panel3: TPanel
+      Left = 1
+      Top = 450
+      Width = 769
+      Height = 25
+      Align = alBottom
+      TabOrder = 1
+      object ShowItemsRemove: TBitBtn
+        Left = 54
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1055#1088#1080#1089#1090#1088#1110#1081' '#1079' '#1073#1072#1079#1080' '#1076#1072#1085#1080#1093
+        Enabled = False
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = ShowItemsRemoveClick
+      end
+      object ShowItemsEdit: TBitBtn
+        Left = 27
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1056#1077#1076#1072#1075#1091#1074#1072#1090#1080' '#1076#1072#1085#1110' '#1055#1088#1080#1089#1090#1088#1086#1102
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+        OnClick = ShowItemsEditClick
+      end
+      object ShowItemsRefresh: TBitBtn
+        Left = 0
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        OnClick = ShowItemsRefreshClick
+      end
+    end
+    object ShowItemsResult: TStringGrid
+      Left = 1
+      Top = 59
+      Width = 769
+      Height = 391
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      PopupMenu = PPEditItem
+      TabOrder = 2
+      OnMouseUp = CheckItemResultMouseUp
+      ExplicitTop = 150
+      ExplicitHeight = 300
+    end
+  end
   object PnCheckItem: TPanel
     Left = 40
     Top = 33
@@ -783,424 +1187,6 @@ object ClientForm: TClientForm
       TabOrder = 4
     end
   end
-  object PnShowItems: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 6
-    object Label17: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1055#1088#1080#1089#1090#1088#1086#1111#1074' '#1091' '#1074#1082#1072#1079#1072#1085#1110#1081' '#1051#1086#1082#1072#1094#1110#1111
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 340
-    end
-    object Panel2: TPanel
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 35
-      Align = alTop
-      TabOrder = 0
-      object Label12: TLabel
-        Left = 143
-        Top = 8
-        Width = 99
-        Height = 16
-        Caption = #1054#1073#1077#1088#1110#1090#1100' '#1051#1086#1082#1072#1094#1110#1102
-      end
-      object ShowItemsCurrentLocation: TLabel
-        Left = 375
-        Top = 8
-        Width = 154
-        Height = 16
-        Caption = 'ShowItemsCurrentLocation'
-      end
-      object ShowItemsSelectLocation: TButton
-        Left = 266
-        Top = 5
-        Width = 75
-        Height = 25
-        Caption = #1042#1080#1073#1088#1072#1090#1080
-        TabOrder = 0
-        OnClick = ShowItemsSelectLocationClick
-      end
-      object ShowItemsRequest: TButton
-        Left = 5
-        Top = 5
-        Width = 108
-        Height = 25
-        Caption = #1054#1090#1088#1080#1084#1072#1090#1080' '#1076#1072#1085#1110
-        TabOrder = 1
-        OnClick = ShowItemsRequestClick
-      end
-    end
-    object Panel3: TPanel
-      Left = 1
-      Top = 450
-      Width = 769
-      Height = 25
-      Align = alBottom
-      TabOrder = 1
-      object ShowItemsRemove: TBitBtn
-        Left = 54
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1055#1088#1080#1089#1090#1088#1110#1081' '#1079' '#1073#1072#1079#1080' '#1076#1072#1085#1080#1093
-        Enabled = False
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = ShowItemsRemoveClick
-      end
-      object ShowItemsEdit: TBitBtn
-        Left = 27
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1056#1077#1076#1072#1075#1091#1074#1072#1090#1080' '#1076#1072#1085#1110' '#1055#1088#1080#1089#1090#1088#1086#1102
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-        OnClick = ShowItemsEditClick
-      end
-      object ShowItemsRefresh: TBitBtn
-        Left = 0
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
-        OnClick = ShowItemsRefreshClick
-      end
-    end
-    object ShowItemsResult: TStringGrid
-      Left = 1
-      Top = 59
-      Width = 769
-      Height = 391
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      PopupMenu = PPEditItem
-      TabOrder = 2
-      OnMouseUp = CheckItemResultMouseUp
-      ExplicitTop = 65
-      ExplicitHeight = 385
-    end
-  end
-  object PnShowEvents: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 7
-    object Label13: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1087#1086#1076#1110#1081
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 137
-    end
-    object ShowEventsResult: TStringGrid
-      Left = 1
-      Top = 118
-      Width = 769
-      Height = 357
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      TabOrder = 0
-      OnMouseUp = CheckItemResultMouseUp
-    end
-    object Panel4: TPanel
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 94
-      Align = alTop
-      TabOrder = 1
-      object Label15: TLabel
-        Left = 81
-        Top = 62
-        Width = 7
-        Height = 16
-        Caption = #1047
-      end
-      object Label16: TLabel
-        Left = 209
-        Top = 62
-        Width = 14
-        Height = 16
-        Caption = #1087#1086
-      end
-      object Label14: TLabel
-        Left = 5
-        Top = 6
-        Width = 61
-        Height = 16
-        Caption = #1064#1091#1082#1072#1090#1080' '#1079#1072
-      end
-      object Label32: TLabel
-        Left = 165
-        Top = 6
-        Width = 103
-        Height = 16
-        Caption = #1042#1074#1077#1076#1110#1090#1100' '#1079#1085#1072#1095#1077#1085#1085#1103
-      end
-      object ShowEventsInn: TEdit
-        Left = 165
-        Top = 27
-        Width = 283
-        Height = 24
-        TabOrder = 0
-        OnChange = ShowEventsInnChange
-        OnKeyPress = ShowEventsInnKeyPress
-      end
-      object ShowEventsDateFrom: TDateTimePicker
-        Left = 99
-        Top = 58
-        Width = 104
-        Height = 24
-        Date = 44154.000000000000000000
-        Time = 0.639949120370147300
-        TabOrder = 1
-      end
-      object ShowEventsDateTo: TDateTimePicker
-        Left = 229
-        Top = 57
-        Width = 103
-        Height = 24
-        Date = 44154.000000000000000000
-        Time = 0.640191886574029900
-        TabOrder = 2
-      end
-      object ShowEventsApply: TButton
-        Left = 467
-        Top = 28
-        Width = 75
-        Height = 25
-        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
-        TabOrder = 3
-        OnClick = ShowEventsApplyClick
-      end
-      object ShowEventsDateFilter: TCheckBox
-        Left = 5
-        Top = 61
-        Width = 59
-        Height = 17
-        Caption = #1047#1072' '#1076#1072#1090#1091
-        TabOrder = 4
-        OnClick = ShowEventsDateFilterClick
-      end
-      object ShowEventsSearchType: TComboBox
-        Left = 5
-        Top = 28
-        Width = 154
-        Height = 24
-        ItemIndex = 0
-        TabOrder = 5
-        Text = 'ID '#1055#1088#1080#1089#1090#1088#1086#1102
-        Items.Strings = (
-          'ID '#1055#1088#1080#1089#1090#1088#1086#1102
-          #1030#1085#1074#1077#1085#1090#1072#1088#1085#1080#1084' '#1085#1086#1084#1077#1088#1086#1084
-          #1057#1077#1088#1110#1081#1085#1080#1084' '#1085#1086#1084#1077#1088#1086#1084)
-      end
-    end
-  end
-  object PnAddItem: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 5
-    object Label5: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1042#1074#1086#1076' '#1074' '#1073#1072#1079#1091' '#1076#1072#1085#1080#1093' '#1085#1086#1074#1086#1075#1086' '#1055#1088#1080#1089#1090#1088#1086#1102
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 319
-    end
-    object LbInn: TLabel
-      Left = 6
-      Top = 112
-      Width = 104
-      Height = 16
-      Caption = #1030#1085#1074#1077#1085#1090#1072#1088#1085#1080#1081' '#8470' *'
-    end
-    object Label8: TLabel
-      Left = 6
-      Top = 146
-      Width = 72
-      Height = 16
-      Caption = #1057#1077#1088#1110#1081#1085#1080#1081' '#8470
-    end
-    object LbModel: TLabel
-      Left = 6
-      Top = 180
-      Width = 97
-      Height = 16
-      Caption = #1052#1086#1076#1077#1083#1100'/'#1053#1072#1079#1074#1072' *'
-    end
-    object Label10: TLabel
-      Left = 6
-      Top = 221
-      Width = 99
-      Height = 16
-      Caption = #1054#1073#1077#1088#1110#1090#1100' '#1051#1086#1082#1072#1094#1110#1102
-    end
-    object AddItemCurrentLocation: TLabel
-      Left = 208
-      Top = 221
-      Width = 138
-      Height = 16
-      Caption = 'AddItemCurrentLocation'
-    end
-    object Label11: TLabel
-      Left = 8
-      Top = 269
-      Width = 275
-      Height = 16
-      Caption = #1087#1086#1083#1103', '#1087#1086#1079#1085#1072#1095#1077#1085#1110' * '#1086#1073#1086#1074#39#1103#1079#1082#1086#1074#1110' '#1076#1083#1103' '#1079#1072#1087#1086#1074#1085#1077#1085#1085#1103
-    end
-    object LbID: TLabel
-      Left = 6
-      Top = 59
-      Width = 86
-      Height = 16
-      Caption = 'ID '#1055#1088#1080#1089#1090#1088#1086#1102' *'
-    end
-    object IDError: TLabel
-      Left = 249
-      Top = 59
-      Width = 41
-      Height = 16
-      Caption = 'IDError'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clRed
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-    end
-    object InnError: TLabel
-      Left = 468
-      Top = 111
-      Width = 47
-      Height = 16
-      Caption = 'InnError'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clRed
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-    end
-    object ModelError: TLabel
-      Left = 585
-      Top = 176
-      Width = 63
-      Height = 16
-      Caption = 'ModelError'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clRed
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-    end
-    object AddItemNewInn: TEdit
-      Left = 120
-      Top = 109
-      Width = 329
-      Height = 24
-      TabOrder = 1
-    end
-    object AddItemNewSn: TEdit
-      Left = 120
-      Top = 143
-      Width = 329
-      Height = 24
-      TabOrder = 2
-    end
-    object AddItemNewModel: TEdit
-      Left = 120
-      Top = 177
-      Width = 449
-      Height = 24
-      TabOrder = 3
-    end
-    object AddItemCreate: TButton
-      Left = 6
-      Top = 307
-      Width = 75
-      Height = 25
-      Caption = #1057#1090#1074#1086#1088#1080#1090#1080
-      TabOrder = 5
-      OnClick = AddItemCreateClick
-    end
-    object AddItemClearFields: TButton
-      Left = 112
-      Top = 307
-      Width = 75
-      Height = 25
-      Caption = #1054#1095#1080#1089#1090#1080#1090#1080
-      TabOrder = 6
-      OnClick = AddItemClearFieldsClick
-    end
-    object AddItemSelectLocation: TButton
-      Left = 117
-      Top = 218
-      Width = 75
-      Height = 25
-      Caption = #1042#1080#1073#1088#1072#1090#1080
-      TabOrder = 4
-      OnClick = AddItemSelectLocationClick
-    end
-    object AddItemNewID: TEdit
-      Left = 120
-      Top = 56
-      Width = 112
-      Height = 24
-      TabOrder = 0
-    end
-  end
   object PnCheckItems: TPanel
     Left = 40
     Top = 33
@@ -1228,30 +1214,58 @@ object ClientForm: TClientForm
       Left = 1
       Top = 24
       Width = 769
-      Height = 41
+      Height = 76
       Align = alTop
       TabOrder = 0
-      object Label24: TLabel
-        Left = 23
-        Top = 8
-        Width = 99
-        Height = 16
-        Caption = #1054#1073#1077#1088#1110#1090#1100' '#1051#1086#1082#1072#1094#1110#1102
-      end
       object CheckItemsCurrentLocation: TLabel
-        Left = 255
-        Top = 8
+        Left = 132
+        Top = 14
         Width = 156
         Height = 16
         Caption = 'CheckItemsCurrentLocation'
       end
+      object CheckError: TLabel
+        Left = 528
+        Top = 44
+        Width = 63
+        Height = 16
+        Caption = 'CheckError'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clRed
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
       object CheckItemsSelectLocation: TButton
-        Left = 146
-        Top = 5
-        Width = 75
+        Left = 2
+        Top = 10
+        Width = 121
         Height = 25
-        Caption = #1042#1080#1073#1088#1072#1090#1080
+        Caption = #1054#1073#1088#1072#1090#1080' '#1051#1086#1082#1072#1094#1110#1102
         TabOrder = 0
+        OnClick = CheckItemsSelectLocationClick
+      end
+      object CheckItemsScannedCode: TLabeledEdit
+        Left = 237
+        Top = 41
+        Width = 138
+        Height = 24
+        EditLabel.Width = 228
+        EditLabel.Height = 16
+        EditLabel.Caption = #1042#1074#1077#1076#1110#1090#1100' '#1072#1073#1086' '#1074#1110#1076#1089#1082#1072#1085#1091#1081#1090#1077' '#1082#1086#1076' '#1055#1088#1080#1089#1090#1088#1086#1102
+        LabelPosition = lpLeft
+        TabOrder = 1
+        OnKeyPress = CheckItemsScannedCodeKeyPress
+      end
+      object CheckItemsAddToList: TButton
+        Left = 381
+        Top = 41
+        Width = 137
+        Height = 25
+        Caption = #1044#1086#1076#1072#1090#1080' '#1076#1086' '#1074#1110#1076#1086#1084#1086#1089#1090#1110
+        TabOrder = 2
+        OnClick = CheckItemsAddToListClick
       end
     end
     object Panel10: TPanel
@@ -1270,7 +1284,7 @@ object ClientForm: TClientForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
-        OnClick = CheckItemRemoveClick
+        OnClick = CheckItemsSendToUnknownClick
       end
       object CheckItemsEdit: TBitBtn
         Left = 27
@@ -1281,32 +1295,35 @@ object ClientForm: TClientForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 1
-        OnClick = CheckItemEditClick
+        OnClick = CheckItemsEditClick
       end
-      object CheckItemsRefresh: TBitBtn
+      object CheckItemsDelete: TBitBtn
         Left = 0
         Top = 0
         Width = 24
         Height = 24
-        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
+        Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1055#1088#1080#1089#1090#1088#1110#1081' '#1079' '#1074#1110#1076#1086#1084#1086#1089#1090#1110
         ParentShowHint = False
         ShowHint = True
         TabOrder = 2
-        OnClick = CheckItemRefreshClick
+        OnClick = CheckItemsDeleteClick
       end
     end
     object CheckItemsResult: TStringGrid
       Left = 1
-      Top = 65
+      Top = 100
       Width = 769
-      Height = 385
+      Height = 350
       Align = alClient
       FixedCols = 0
       RowCount = 2
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       PopupMenu = PPItemOptions
       TabOrder = 2
+      OnDrawCell = CheckItemsResultDrawCell
       OnMouseUp = CheckItemResultMouseUp
+      ExplicitTop = 65
+      ExplicitHeight = 385
     end
   end
   object SaveCfgDialog: TSaveDialog
@@ -4260,6 +4277,71 @@ object ClientForm: TClientForm
               652D6F66666963652D706167652D70617065725F3130373737362E706E67A1E2
               102C0000000049454E44AE426082}
           end>
+      end
+      item
+        Name = '3592828-general-key-key-lock-lock-office-password'
+        SourceImages = <
+          item
+            Image.Data = {
+              89504E470D0A1A0A0000000D494844520000002000000020080300000044A48A
+              C60000000467414D410000B18F0BFC6105000000017352474200AECE1CE90000
+              00206348524D00007A26000080840000FA00000080E8000075300000EA600000
+              3A98000017709CBA513C00000231504C5445000000647F9456769F6480946681
+              8F657E94647E9567819668839865809595AEC27F99AD869FB496AEC289AEB294
+              AEC295B0C196ACBD95AEC196AFC496ADC294AFC2647F94647F94647F94647F94
+              647F94647F94647F94647F94647F94647F94647F94647F94647F94647F94647F
+              94647F94647F94647F94647F94647F94647F94647F94647F94647F94647F9464
+              7F94647F94647F94647F94647F94647F94647F94647F94647F94647F94647F94
+              647F94647F94647F94647F94647F94647F94647F94647F94647F94647F94647F
+              94647F94647F94648193647F94647F94647F94647F94647F94647F94647F9464
+              7F94647F9495AEC295AEC295AEC295AEC295AEC295AEC295AEC29BB4C8627D92
+              6D889D97B0C495AEC295AEC295AEC295AEC295AEC295AEC295AEC292ABBF6882
+              978DA7BB95AEC295AEC288A2B6668196748EA38AA4B891AABE89A3B795AEC295
+              AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC2
+              95AEC295AEC295AEC295AEC295AEC295AEC294AEC295AEC295AEC295AEC295AE
+              C295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295
+              AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC2
+              95AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AE
+              C295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC295AEC264
+              7F94637E93658095758FA495AEC26F8A9E7A94A993ACC096AEC296AFC38FA9BD
+              FFFFFFD1EF25F5000000AF74524E530000000000000000000000000000000000
+              00000000000D539ECADBDAC19140063FB3F4EB9C2959E5F9F2F3FBCF36DC814B
+              383A54962109B1BB2D0346D68437EEE03055F5D116630110F1697B07BAF678B8
+              07203C3F40381A04079069B3E0F4F6F2D8A55EC3F4FBF9F869F680FA5427D9B6
+              0E7FFDFEF74ED56478EB86197603AC041EE16996C009BB0811CC6E9E9D02A1C6
+              455BE37054F5F8E22B0BAA7B2CCD13981473D2FAC15A0A0161DAD7B78B52CBB2
+              F28800000001624B4744BAA3B147DA0000000970485973000053110000531101
+              0DF187490000018D4944415438CB63608003463171094929691959397946064C
+              C0C8A8A0A8B41E0C9455541931943032A9A903E53434B5B481948E2E2333BA02
+              39A0BC9EBE81A191B189F2FAF592A66846309A99AF5F6F61C9021466B4B2B659
+              BFDE96155505A39DFD7A074788181BA393F37A175734056EEBD7ABB843ED65F4
+              905CEF6987A6C06BFD7A6F9810A38FEF7A3F054C05FE080501642A600F0C0A0E
+              090D0B8F88C4AA604354744C6C5C7C7C42625272CA064C051B37A5A66D8682F4
+              8C2DE80A3832B76EDBBE190E76ECCC52E04496E7E2CEDEB61905E4E4F2A028C8
+              CBDF8C060A0AB910F2BC5C4530F1E21228A3B40C490157600154B8BCA2B20ACA
+              ACE6E24328A881D950CB55970465D637F02314343641459BB9B85AA0CCD636AE
+              0157D0DE81A4A0B30B2ADACD25D00365F60A0A2114F4F54345274C9C3419CA9C
+              8214500C5C534BA1C2D3A643193366A22898351B2D2A8AE708232B60E09A3B0F
+              55C1ECF928F20C5C5C730B8A11D2A50B6A50E5414A162E5ABC04EA8EA5CB9663
+              C80355AC685CD9B274D5EA356BD7CD1711850B03003F5327435E32F842000000
+              2574455874646174653A63726561746500323031382D30392D32365431373A34
+              363A35322B30323A3030B2192E1C0000002574455874646174653A6D6F646966
+              7900323031382D30392D32365431373A34363A35322B30323A3030C34496A000
+              00004674455874736F66747761726500496D6167654D616769636B20362E372E
+              382D3920323031362D30362D31362051313620687474703A2F2F7777772E696D
+              6167656D616769636B2E6F7267E6BF34B600000018744558745468756D623A3A
+              446F63756D656E743A3A50616765730031A7FFBB2F0000001874455874546875
+              6D623A3A496D6167653A3A68656967687400353132C0D0505100000017744558
+              745468756D623A3A496D6167653A3A5769647468003531321C7C03DC00000019
+              744558745468756D623A3A4D696D657479706500696D6167652F706E673FB256
+              4E00000017744558745468756D623A3A4D54696D650031353337393736383132
+              39E8A91A00000013744558745468756D623A3A53697A650031342E364B42422C
+              97D77300000071744558745468756D623A3A5552490066696C653A2F2F2E2F75
+              706C6F6164732F35362F57666E596667322F313537322F333539323832382D67
+              656E6572616C2D6B65792D6B65792D6C6F636B2D6C6F636B2D6F66666963652D
+              70617373776F72642D73656375726974795F3130373735392E706E679B612056
+              0000000049454E44AE426082}
+          end>
       end>
     Left = 424
     Top = 545
@@ -4332,9 +4414,9 @@ object ClientForm: TClientForm
   object PPItemOptions: TPopupMenu
     Left = 680
     Top = 545
-    object PPCheckRefresh: TMenuItem
-      Caption = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
-      OnClick = PPRefreshClick
+    object PPCheckDelFromTable: TMenuItem
+      Caption = #1055#1088#1080#1073#1088#1072#1090#1080' '#1079' '#1074#1110#1076#1086#1084#1086#1089#1090#1110
+      OnClick = PPCheckDelFromTableClick
     end
     object PPCheckEdit: TMenuItem
       Caption = #1056#1077#1076#1072#1075#1091#1074#1072#1090#1080' '#1055#1088#1080#1089#1090#1088#1110#1081

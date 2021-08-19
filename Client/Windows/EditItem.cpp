@@ -42,8 +42,17 @@ void __fastcall TEditItemForm::ApplyClick(TObject *Sender)
 	ClientForm->AddActionLog("Не вдалося змінити дані Пристрою");
   else
 	{
-	  if (Location->Hint.ToInt() != IntToStr(Location->Tag))
-		ClientForm->AddEvent(OP_SET_LOC, ItemID, UserID);
+	  if (Location->Hint.ToInt() != Location->Tag)
+		{
+		  if ((Location->Hint.ToInt() == 0) && (Location->Tag > 0))
+			ClientForm->AddEvent(OP_ADD_ITM, ItemID, UserID);
+		  else if (Location->Tag == 0)
+			ClientForm->AddEvent(OP_CANCEL_ITM, ItemID, UserID);
+		  else if (Location->Tag == -1)
+			ClientForm->AddEvent(OP_SEND_UNK, ItemID, UserID);
+		  else
+			ClientForm->AddEvent(OP_SET_LOC, ItemID, UserID);
+		}
 
 	  if (Inn->Hint != Inn->Text)
 		ClientForm->AddEvent(OP_SET_INN, ItemID, UserID);
@@ -65,4 +74,3 @@ void __fastcall TEditItemForm::SelectLocationClick(TObject *Sender)
   SelectLocationForm->Show();
 }
 //---------------------------------------------------------------------------
-

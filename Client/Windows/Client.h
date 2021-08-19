@@ -51,7 +51,9 @@ enum {OP_ADD_ITM = 1,
 	  OP_ADD_USR = 8,
 	  OP_REMOVE_USR = 9,
 	  OP_CHANGE_PWD = 10,
-	  OP_SET_PWD = 11};
+	  OP_SET_PWD = 11,
+	  OP_SEND_UNK = 12,
+	  OP_CREATE_ITM = 13};
 
 //---------------------------------------------------------------------------
 class TClientForm : public TForm
@@ -106,7 +108,6 @@ __published:	// IDE-managed Components
 	TLabel *LbInn;
 	TLabel *Label8;
 	TLabel *LbModel;
-	TLabel *Label10;
 	TEdit *AddItemNewInn;
 	TEdit *AddItemNewSn;
 	TEdit *AddItemNewModel;
@@ -117,7 +118,6 @@ __published:	// IDE-managed Components
 	TLabel *Label11;
 	TPanel *PnShowItems;
 	TPanel *Panel2;
-	TLabel *Label12;
 	TLabel *ShowItemsCurrentLocation;
 	TPanel *Panel3;
 	TBitBtn *ShowItemsRemove;
@@ -172,20 +172,17 @@ __published:	// IDE-managed Components
 	TPanel *PnCheckItems;
 	TLabel *Label23;
 	TPanel *Panel9;
-	TLabel *Label24;
 	TLabel *CheckItemsCurrentLocation;
 	TButton *CheckItemsSelectLocation;
 	TPanel *Panel10;
 	TBitBtn *CheckItemsSendToUnknown;
 	TBitBtn *CheckItemsEdit;
-	TBitBtn *CheckItemsRefresh;
 	TStringGrid *CheckItemsResult;
 	TLabel *Label25;
 	TEdit *AdmManageConnectionPort;
 	TButton *AdmManageSetConnectionPort;
 	TLabel *Label26;
 	TPopupMenu *PPItemOptions;
-	TMenuItem *PPCheckRefresh;
 	TMenuItem *PPCheckEdit;
 	TMenuItem *PPCheckSetUnknown;
 	TMenuItem *PPAddLocation;
@@ -216,6 +213,11 @@ __published:	// IDE-managed Components
 	TLabel *IDError;
 	TLabel *InnError;
 	TLabel *ModelError;
+	TLabeledEdit *CheckItemsScannedCode;
+	TButton *CheckItemsAddToList;
+	TBitBtn *CheckItemsDelete;
+	TLabel *CheckError;
+	TMenuItem *PPCheckDelFromTable;
 	void __fastcall LoadAnimTimerTimer(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -271,6 +273,16 @@ __published:	// IDE-managed Components
 	void __fastcall ShowItemsRequestClick(TObject *Sender);
 	void __fastcall ShowItemsRemoveClick(TObject *Sender);
 	void __fastcall ShowEventsInnChange(TObject *Sender);
+	void __fastcall CheckItemsSelectLocationClick(TObject *Sender);
+	void __fastcall CheckItemsEditClick(TObject *Sender);
+	void __fastcall CheckItemsSendToUnknownClick(TObject *Sender);
+	void __fastcall CheckItemsScannedCodeKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall CheckItemsAddToListClick(TObject *Sender);
+	void __fastcall CheckItemsDeleteClick(TObject *Sender);
+	void __fastcall CheckItemsResultDrawCell(TObject *Sender, int ACol, int ARow, TRect &Rect,
+          TGridDrawState State);
+	void __fastcall PPCheckDelFromTableClick(TObject *Sender);
+
 
 private:	// User declarations
 	void __fastcall ShowLoadingImage();
@@ -302,6 +314,7 @@ public:		// User declarations
 	void __fastcall ProcessAnswer(TXMLDocument *ixml, TStringGrid *grid);
     void __fastcall ProcessAnswer(TXMLDocument *ixml);
 	void __fastcall ProcessRequest(TXMLDocument *ixml);
+
 	void __fastcall GetServerVersion();
 	bool __fastcall SetUserPassword(int user_id, const String &new_password);
 	bool __fastcall ValidUserPassword(int user_id, const String &password);
@@ -317,11 +330,14 @@ public:		// User declarations
 								 const String &date_to);
 	bool __fastcall AskItemList(int loc_id);
 	bool __fastcall IsInnFree(const String &inn);
-    bool __fastcall CheckItemID(const String &id);
-    bool __fastcall AddItem(int item_id, const String &inn, const String &sn,
+	bool __fastcall CheckItemID(const String &id);
+	bool __fastcall AddItem(int item_id, const String &inn, const String &sn,
 							const String &model, int location_id, int agent_id);
+	void __fastcall CheckItemInLocation(const String &item_id, int loc_id, TStringGrid *grid);
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
+	bool __fastcall IsItemExistInCheckTable(const String &id);
+    void __fastcall PrepareCheckTable();
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TClientForm *ClientForm;

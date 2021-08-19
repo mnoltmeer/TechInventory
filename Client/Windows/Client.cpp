@@ -344,6 +344,7 @@ void __fastcall TClientForm::MnCheckItemClick(TObject *Sender)
   CheckItemModel->Text = "";
   CheckItemCurrentLocation->Caption = "";
   CheckItemLastAgent->Caption = "";
+  RefreshButton = CheckItemRefresh;
 }
 //---------------------------------------------------------------------------
 
@@ -353,8 +354,11 @@ void __fastcall TClientForm::MnCheckItemsClick(TObject *Sender)
   PnCheckItems->Show();
   ActivePanel = PnCheckItems;
   CheckItemsCurrentLocation->Caption = "";
-  RefreshButton = CheckItemsRefresh;
+  RefreshButton = nullptr;
   EditButton = CheckItemsEdit;
+  ClearResultSet(CheckItemsResult);
+  PrepareCheckTable();
+  CheckError->Hide();
 }
 //---------------------------------------------------------------------------
 
@@ -507,12 +511,11 @@ void __fastcall TClientForm::SetUIImages()
 	   PPCheckEdit->Bitmap->Transparent = true;
 	   PPCheckEdit->Bitmap->TransparentColor = clBlack;
 
-	   PPCheckSetUnknown->Bitmap = PanelImages->GetBitmap(10, 16, 16);
+	   PPCheckSetUnknown->Bitmap = PanelImages->GetBitmap(15, 16, 16);
 	   PPCheckSetUnknown->Bitmap->Transparent = true;
 
-	   PPCheckRefresh->Bitmap = PanelImages->GetBitmap(13, 18, 18);
-	   PPCheckRefresh->Bitmap->Transparent = true;
-	   PPCheckRefresh->Bitmap->TransparentColor = clBlack;
+	   PPCheckDelFromTable->Bitmap = PanelImages->GetBitmap(10, 16, 16);
+	   PPCheckDelFromTable->Bitmap->Transparent = true;
 
 	   ShowItemsEdit->Glyph = PanelImages->GetBitmap(11, 18, 18);
 	   ShowItemsEdit->Glyph->Transparent = true;
@@ -529,12 +532,11 @@ void __fastcall TClientForm::SetUIImages()
 	   CheckItemsEdit->Glyph->Transparent = true;
 	   CheckItemsEdit->Glyph->TransparentColor = clBlack;
 
-	   CheckItemsSendToUnknown->Glyph = PanelImages->GetBitmap(10, 18, 18);
+	   CheckItemsSendToUnknown->Glyph = PanelImages->GetBitmap(15, 18, 18);
 	   CheckItemsSendToUnknown->Glyph->Transparent = true;
 
-	   CheckItemsRefresh->Glyph = PanelImages->GetBitmap(13, 18, 18);
-	   CheckItemsRefresh->Glyph->Transparent = true;
-	   CheckItemsRefresh->Glyph->TransparentColor = clBlack;
+	   CheckItemsDelete->Glyph = PanelImages->GetBitmap(10, 18, 18);
+	   CheckItemsDelete->Glyph->Transparent = true;
 
 	   AdmLocationsAdd->Glyph = PanelImages->GetBitmap(10, 18, 18);
 	   AdmLocationsAdd->Glyph->Transparent = true;
@@ -1160,6 +1162,65 @@ bool __fastcall TClientForm::AddItem(int item_id, const String &inn, const Strin
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TClientForm::CheckItemInLocation(const String &item_id, int loc_id,
+												 TStringGrid *grid)
+{
+  try
+	 {
+	   std::unique_ptr<TStringList> lst(new TStringList());
+	   String item_data = AskItemInfo(item_id);
+
+	   if (item_data == "")
+		 {
+           if (MessageBox(this->Handle,
+						  L"Пристрій відсутній у БД. Бажаєте додати його?",
+						  L"Запит",
+						  MB_YESNO|MB_ICONINFORMATION) == mrYes)
+			{
+			  MnAddItem->Click();
+			  AddItemNewID->Text = item_id;
+			}
+
+		   throw Exception("Невідомий Пристрій");
+		 }
+
+	   StrToList(lst.get(), item_data, ";");
+
+       try
+		  {
+			grid->RowCount++;
+
+			if (lst->Strings[3] == "???")
+			  grid->Cells[0][grid->RowCount - 1] = "?";
+			else if (lst->Strings[3].ToInt() == 0)
+			  grid->Cells[0][grid->RowCount - 1] = "*";
+			else if (lst->Strings[3].ToInt() == -1)
+			  grid->Cells[0][grid->RowCount - 1] = "*";
+			else if (lst->Strings[3].ToInt() == -2)
+			  grid->Cells[0][grid->RowCount - 1] = "?";
+			else if (lst->Strings[3].ToInt() == loc_id)
+			  grid->Cells[0][grid->RowCount - 1] = "+";
+			else if (lst->Strings[3].ToInt() != loc_id)
+			  grid->Cells[0][grid->RowCount - 1] = "-";
+
+			grid->Cells[1][grid->RowCount - 1] = item_id;
+			grid->Cells[2][grid->RowCount - 1] = lst->Strings[0];
+			grid->Cells[3][grid->RowCount - 1] = lst->Strings[1];
+			grid->Cells[4][grid->RowCount - 1] = lst->Strings[2];
+		  }
+	   catch (Exception &e)
+		  {
+			e.Message = "Помилка виводу даних у таблицю: " + e.Message;
+			throw e;
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка звірки даних Пристрою: " + e.ToString());
+	 }
+}
+//---------------------------------------------------------------------------
+
 TMemoryStream* __fastcall TClientForm::CryptData(String data, const char *pass)
 {
   TMemoryStream *res = new TMemoryStream();
@@ -1474,6 +1535,56 @@ void __fastcall TClientForm::ClearResultSet(TStringGrid *result_set)
 }
 //---------------------------------------------------------------------------
 
+bool __fastcall TClientForm::IsItemExistInCheckTable(const String &id)
+{
+  bool res;
+
+  try
+	 {
+	   res = false;
+
+	   for (int i = 1; i < CheckItemsResult->RowCount; i++)
+		  {
+			if (CheckItemsResult->Cells[1][i] == id)
+			  {
+				res = true;
+				break;
+			  }
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   res = true;
+	   AddActionLog("IsItemExistInCheckTable: " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::PrepareCheckTable()
+{
+  try
+	 {
+	   CheckItemsResult->ColCount = 5;
+	   CheckItemsResult->ColWidths[0] = 0;
+	   CheckItemsResult->ColWidths[1] = 50;
+	   CheckItemsResult->ColWidths[2] = 150;
+	   CheckItemsResult->ColWidths[3] = 150;
+	   CheckItemsResult->ColWidths[4] = 300;
+	   CheckItemsResult->Cells[0][0] = "";
+	   CheckItemsResult->Cells[1][0] = "ID";
+	   CheckItemsResult->Cells[2][0] = "Інвентарний номер";
+	   CheckItemsResult->Cells[3][0] = "Серійний номер";
+	   CheckItemsResult->Cells[4][0] = "Модель";
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("PrepareCheckTable: " + e.ToString());
+	 }
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TClientForm::ListenerExecute(TIdContext *AContext)
 {
   std::unique_ptr<TStringStream> ms(new TStringStream("", TEncoding::UTF8, true));
@@ -1534,8 +1645,6 @@ void __fastcall TClientForm::CheckItemResultMouseUp(TObject *Sender, TMouseButto
 
 void __fastcall TClientForm::CheckItemEditClick(TObject *Sender)
 {
-  RefreshButton = CheckItemRefresh;
-
   EditItemForm->Show();
 
   EditItemForm->Inn->Text = CheckItemInn->Text;
@@ -1676,6 +1785,10 @@ void __fastcall TClientForm::AddItemCreateClick(TObject *Sender)
 				  AddItemNewModel->Text, location_id, UserID))
 		{
 		  AddActionLog("Пристрій успішно додано");
+		  AddEvent(OP_CREATE_ITM, item_id, UserID);
+
+		  if (location_id > 0)
+			AddEvent(OP_ADD_ITM, item_id, UserID);
 		}
 	  else
 		{
@@ -1790,13 +1903,19 @@ void __fastcall TClientForm::PPRemoveLocationClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TClientForm::AdmLogsShowClick(TObject *Sender)
+void __fastcall TClientForm::PPCheckSetUnknownClick(TObject *Sender)
 {
-  //
+  CheckItemsSendToUnknown->Click();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TClientForm::PPCheckSetUnknownClick(TObject *Sender)
+void __fastcall TClientForm::PPCheckDelFromTableClick(TObject *Sender)
+{
+  CheckItemsDelete->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::AdmLogsShowClick(TObject *Sender)
 {
   //
 }
@@ -1872,11 +1991,9 @@ void __fastcall TClientForm::ShowItemsEditClick(TObject *Sender)
 {
   if (CurrentRowInd > 0)
 	{
-	  RefreshButton = ShowItemsRefresh;
-
 	  EditItemForm->Show();
 
-      ItemID = ShowItemsResult->Cells[0][CurrentRowInd].ToInt();
+	  ItemID = ShowItemsResult->Cells[0][CurrentRowInd].ToInt();
 
 	  EditItemForm->Inn->Text = ShowItemsResult->Cells[1][CurrentRowInd];
 	  EditItemForm->Sn->Text = ShowItemsResult->Cells[2][CurrentRowInd];
@@ -1895,7 +2012,9 @@ void __fastcall TClientForm::ShowItemsEditClick(TObject *Sender)
 void __fastcall TClientForm::ShowItemsRefreshClick(TObject *Sender)
 {
   //запит переліку Пристроїв в локації
-  AskItemList(ShowItemsCurrentLocation->Tag);
+
+  if (ShowItemsCurrentLocation->Caption != "")
+    AskItemList(ShowItemsCurrentLocation->Tag);
 }
 //---------------------------------------------------------------------------
 
@@ -1927,4 +2046,143 @@ void __fastcall TClientForm::ShowItemsRemoveClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TClientForm::CheckItemsSelectLocationClick(TObject *Sender)
+{
+  Location = CheckItemsCurrentLocation;
+  SelectLocationForm->Show();
+  ClearResultSet(CheckItemsResult);
+  PrepareCheckTable();
+}
+//---------------------------------------------------------------------------
 
+void __fastcall TClientForm::CheckItemsEditClick(TObject *Sender)
+{
+  if (CurrentRowInd > 0)
+	{
+	  EditItemForm->Show();
+
+	  ItemID = CheckItemsResult->Cells[1][CurrentRowInd].ToInt();
+
+	  EditItemForm->Inn->Text = CheckItemsResult->Cells[2][CurrentRowInd];
+	  EditItemForm->Sn->Text = CheckItemsResult->Cells[3][CurrentRowInd];
+	  EditItemForm->Model->Text = CheckItemsResult->Cells[4][CurrentRowInd];
+	  EditItemForm->CurrentLocation->Caption = CheckItemsCurrentLocation->Caption;
+	  EditItemForm->CurrentLocation->Tag = CheckItemsCurrentLocation->Tag;
+
+	  EditItemForm->Inn->Hint = EditItemForm->Inn->Text;
+	  EditItemForm->Sn->Hint = EditItemForm->Sn->Text;
+	  EditItemForm->Model->Hint = EditItemForm->Model->Text;
+	  EditItemForm->CurrentLocation->Hint = IntToStr(EditItemForm->CurrentLocation->Tag);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::CheckItemsSendToUnknownClick(TObject *Sender)
+{
+  //запит на перенесення пристрою до нез'ясованих (ід локації = -1)
+  if (CurrentRowInd > 0)
+	{
+	  if (MessageBox(this->Handle,
+					 L"Перенести Пристрій до нез'ясованих?",
+					 L"Підтвердження",
+					 MB_YESNO|MB_ICONINFORMATION) == mrYes)
+		{
+		  try
+			 {
+			   String inn = CheckItemsResult->Cells[2][CurrentRowInd],
+					  sn = CheckItemsResult->Cells[3][CurrentRowInd],
+					  model = CheckItemsResult->Cells[4][CurrentRowInd];
+			   int id = CheckItemsResult->Cells[1][CurrentRowInd].ToInt();
+
+			   if (SetItem(id, inn, sn, model, -1, UserID))
+				 {
+				   AddEvent(OP_SEND_UNK, id, UserID);
+				   CheckItemsDelete->Click();
+				 }
+			 }
+		  catch (Exception &e)
+			 {
+			   AddActionLog("Не вдалося перенести Пристрій до нез'ясованих");
+			 }
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::CheckItemsScannedCodeKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	CheckItemsAddToList->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::CheckItemsAddToListClick(TObject *Sender)
+{
+  //додавання пристрою до відомості
+  CheckError->Hide();
+
+  if (CheckItemsCurrentLocation->Caption == "")
+	{
+	  CheckError->Caption = "Не вказано Локацію";
+	  CheckError->Show();
+	}
+  else if (CheckItemsScannedCode->Text == "")
+	{
+	  CheckError->Caption = "Не вказано ID Пристрою";
+	  CheckError->Show();
+	}
+  else if (IsItemExistInCheckTable(CheckItemsScannedCode->Text))
+	{
+	  CheckError->Caption = "Вказаний ID вже присутній у відомості";
+	  CheckError->Show();
+	}
+  else
+	{
+	  CheckItemInLocation(CheckItemsScannedCode->Text,
+						  CheckItemsCurrentLocation->Tag,
+						  CheckItemsResult);
+
+      CheckItemsScannedCode->Text = "";
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::CheckItemsDeleteClick(TObject *Sender)
+{
+  //видалити пристрій з відомості
+  if (CurrentRowInd > 0)
+	{
+	  for (int i = CurrentRowInd; i <= CheckItemsResult->RowCount - 2; i++)
+		 CheckItemsResult->Rows[i]->Assign(CheckItemsResult->Rows[i + 1]);
+
+      CheckItemsResult->RowCount = CheckItemsResult->RowCount - 1;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::CheckItemsResultDrawCell(TObject *Sender, int ACol, int ARow,
+													  TRect &Rect, TGridDrawState State)
+{
+  String cell_text = CheckItemsResult->Cells[ACol][ARow];
+
+  Rect.SetLocation(Rect.Location.X - 3, Rect.Location.Y);
+  Rect.SetWidth(Rect.Size.Width + 6);
+
+  if (CheckItemsResult->Cells[0][ARow] == "+")
+	CheckItemsResult->Canvas->Brush->Color = clGreen;
+  else if (CheckItemsResult->Cells[0][ARow] == "-")
+	CheckItemsResult->Canvas->Brush->Color = clRed;
+  else if (CheckItemsResult->Cells[0][ARow] == "?")
+	CheckItemsResult->Canvas->Brush->Color = clYellow;
+  else if (CheckItemsResult->Cells[0][ARow] == "*")
+	CheckItemsResult->Canvas->Brush->Color = clGray;
+  else
+    CheckItemsResult->Canvas->Brush->Color = clWindow;
+
+  CheckItemsResult->Canvas->FillRect(Rect);
+  CheckItemsResult->Canvas->Font->Color = clBlack;
+  CheckItemsResult->Canvas->TextOut(Rect.Left + 2,
+									Rect.Top + 2,
+									CheckItemsResult->Cells[ACol][ARow]);
+}
+//---------------------------------------------------------------------------
