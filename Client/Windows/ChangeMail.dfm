@@ -62,14 +62,14 @@ object ChangeMailForm: TChangeMailForm
     Width = 169
     Height = 21
     PasswordChar = '*'
-    TabOrder = 0
+    TabOrder = 1
   end
   object EMail: TEdit
     Left = 8
     Top = 27
     Width = 289
-    Height = 24
-    TabOrder = 1
+    Height = 21
+    TabOrder = 0
   end
   object Apply: TButton
     Left = 8

@@ -1,5 +1,5 @@
 /*!
-Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
+Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 */
 //---------------------------------------------------------------------------
 
@@ -40,6 +40,8 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 
 #define DEFAULT_SERVER_PORT 9874
 #define DEFAULT_CLIENT_PORT 9875
+#define LOCK 1
+#define UNLOCK 0
 
 enum {OP_ADD_ITM = 1,
 	  OP_CANCEL_ITM = 2,
@@ -49,11 +51,12 @@ enum {OP_ADD_ITM = 1,
 	  OP_SET_LOC = 6,
 	  OP_REMOVE_ITM = 7,
 	  OP_ADD_USR = 8,
-	  OP_REMOVE_USR = 9,
+	  OP_LOCK_USR = 9,
 	  OP_CHANGE_PWD = 10,
 	  OP_SET_PWD = 11,
 	  OP_SEND_UNK = 12,
-	  OP_CREATE_ITM = 13};
+	  OP_CREATE_ITM = 13,
+	  OP_UNLOCK_USR = 14};
 
 //---------------------------------------------------------------------------
 class TClientForm : public TForm
@@ -142,7 +145,7 @@ __published:	// IDE-managed Components
 	TStringGrid *AdmUsersResult;
 	TPopupMenu *PPEditUser;
 	TMenuItem *PPSetPwd;
-	TMenuItem *PPRemoveUser;
+	TMenuItem *PPLockUser;
 	TPanel *PnAdmLocations;
 	TLabel *Label19;
 	TBitBtn *AdmUsersRefresh;
@@ -153,7 +156,7 @@ __published:	// IDE-managed Components
 	TBitBtn *AdmLocationsRemove;
 	TBitBtn *AdmUsersAdd;
 	TBitBtn *AdmUsersSetPwd;
-	TBitBtn *AdmUsersRemove;
+	TBitBtn *AdmUsersLock;
 	TPopupMenu *PPEditLoc;
 	TMenuItem *PPEditLocation;
 	TMenuItem *PPRemoveLocation;
@@ -218,6 +221,8 @@ __published:	// IDE-managed Components
 	TBitBtn *CheckItemsDelete;
 	TLabel *CheckError;
 	TMenuItem *PPCheckDelFromTable;
+	TBitBtn *AdmUsersUnlock;
+	TMenuItem *PPUnlockUser;
 	void __fastcall LoadAnimTimerTimer(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -247,10 +252,10 @@ __published:	// IDE-managed Components
 	void __fastcall AddItemClearFieldsClick(TObject *Sender);
 	void __fastcall AddItemSelectLocationClick(TObject *Sender);
 	void __fastcall PPSetPwdClick(TObject *Sender);
-	void __fastcall PPRemoveUserClick(TObject *Sender);
+	void __fastcall PPLockUserClick(TObject *Sender);
 	void __fastcall AdmUsersAddClick(TObject *Sender);
 	void __fastcall AdmUsersSetPwdClick(TObject *Sender);
-	void __fastcall AdmUsersRemoveClick(TObject *Sender);
+	void __fastcall AdmUsersLockClick(TObject *Sender);
 	void __fastcall AdmLocationsAddClick(TObject *Sender);
 	void __fastcall AdmLocationsEditClick(TObject *Sender);
 	void __fastcall AdmLocationsRemoveClick(TObject *Sender);
@@ -282,6 +287,9 @@ __published:	// IDE-managed Components
 	void __fastcall CheckItemsResultDrawCell(TObject *Sender, int ACol, int ARow, TRect &Rect,
           TGridDrawState State);
 	void __fastcall PPCheckDelFromTableClick(TObject *Sender);
+	void __fastcall PPUnlockUserClick(TObject *Sender);
+	void __fastcall AdmUsersUnlockClick(TObject *Sender);
+	void __fastcall AdmUsersRefreshClick(TObject *Sender);
 
 
 private:	// User declarations
@@ -334,6 +342,8 @@ public:		// User declarations
 	bool __fastcall AddItem(int item_id, const String &inn, const String &sn,
 							const String &model, int location_id, int agent_id);
 	void __fastcall CheckItemInLocation(const String &item_id, int loc_id, TStringGrid *grid);
+	bool __fastcall AskUserList();
+    bool __fastcall ControlUser(int user_id, int lock);
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 	bool __fastcall IsItemExistInCheckTable(const String &id);

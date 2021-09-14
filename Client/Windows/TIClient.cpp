@@ -9,10 +9,12 @@
 USEFORM("Client.cpp", ClientForm);
 USEFORM("ChangePassword.cpp", ChangePasswordForm);
 USEFORM("ChangeMail.cpp", ChangeMailForm);
-USEFORM("Registration.cpp", RegistrationForm);
-USEFORM("Login.cpp", LoginForm);
 USEFORM("EditItem.cpp", EditItemForm);
 USEFORM("SelectLocation.cpp", SelectLocationForm);
+USEFORM("Registration.cpp", RegistrationForm);
+USEFORM("Login.cpp", LoginForm);
+USEFORM("SetPassword.cpp", SetPasswordForm);
+USEFORM("AddUser.cpp", AddUserForm);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
@@ -27,6 +29,8 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->CreateForm(__classid(TChangePasswordForm), &ChangePasswordForm);
 		Application->CreateForm(__classid(TChangeMailForm), &ChangeMailForm);
 		Application->CreateForm(__classid(TSelectLocationForm), &SelectLocationForm);
+		Application->CreateForm(__classid(TSetPasswordForm), &SetPasswordForm);
+		Application->CreateForm(__classid(TAddUserForm), &AddUserForm);
 		Application->Run();
 	}
 	catch (Exception &exception)

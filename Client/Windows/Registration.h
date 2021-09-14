@@ -1,3 +1,6 @@
+/*!
+Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
+*/
 //---------------------------------------------------------------------------
 
 #ifndef RegistrationH
@@ -36,14 +39,15 @@ __published:	// IDE-managed Components
 	void __fastcall VerificationCodeKeyPress(TObject *Sender, System::WideChar &Key);
 
 private:	// User declarations
-	bool __fastcall IsLoginFree(const String &login);
-	bool __fastcall Registration(const String &login,
-								 const String &pass,
-								 const String &mail);
 	bool __fastcall SendVerificationCode(const String &mail);
 
 public:		// User declarations
 	__fastcall TRegistrationForm(TComponent* Owner);
+    bool __fastcall IsLoginFree(const String &login);
+	bool __fastcall Registration(const String &login,
+								 const String &pass,
+								 const String &mail,
+								 bool admin);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TRegistrationForm *RegistrationForm;

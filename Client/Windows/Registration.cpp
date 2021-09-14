@@ -1,3 +1,6 @@
+/*!
+Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
+*/
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
@@ -90,7 +93,8 @@ bool __fastcall TRegistrationForm::IsLoginFree(const String &login)
 
 bool __fastcall TRegistrationForm::Registration(const String &login,
 												const String &pass,
-												const String &mail)
+												const String &mail,
+												bool admin)
 {
   bool res;
 
@@ -103,7 +107,8 @@ bool __fastcall TRegistrationForm::Registration(const String &login,
 	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("REGISTER",
 																	 login + ";" +
 																	 hash_pwd + ";" +
-																	 mail));
+																	 mail + ";" +
+																	 (unsigned int)admin));
 
 	   if (!ClientForm->AskToServer(Server, data.get()))
 		 res = false;
@@ -257,7 +262,7 @@ void __fastcall TRegistrationForm::ConfirmClick(TObject *Sender)
 	}
   else
 	{
-	  if (Registration(Login->Text, Password->Text, EMail->Text))
+	  if (Registration(Login->Text, Password->Text, EMail->Text, false))
 		{
 		  LoginForm->UserName->Text = Login->Text;
 		  LoginForm->Password->Text = Password->Text;

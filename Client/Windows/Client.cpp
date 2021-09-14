@@ -1,5 +1,5 @@
 /*!
-Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
+Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 */
 //---------------------------------------------------------------------------
 
@@ -12,9 +12,11 @@ Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include "TICServiceThread.h"
 #include "Login.h"
 #include "ChangePassword.h"
+#include "SetPassword.h"
 #include "ChangeMail.h"
 #include "EditItem.h"
 #include "SelectLocation.h"
+#include "AddUser.h"
 #include "Client.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -411,6 +413,7 @@ void __fastcall TClientForm::MnAdmUsersClick(TObject *Sender)
   HideAllPanels();
   PnAdmUsers->Show();
   ActivePanel = PnAdmUsers;
+  AskUserList();
 }
 //---------------------------------------------------------------------------
 
@@ -566,26 +569,30 @@ void __fastcall TClientForm::SetUIImages()
 	   PPLocationsRefresh->Bitmap->Transparent = true;
 	   PPLocationsRefresh->Bitmap->TransparentColor = clBlack;
 
-	   AdmUsersAdd->Glyph = PanelImages->GetBitmap(10, 18, 18);
+	   AdmUsersAdd->Glyph = PanelImages->GetBitmap(17, 18, 18);
 	   AdmUsersAdd->Glyph->Transparent = true;
 
-	   AdmUsersSetPwd->Glyph = PanelImages->GetBitmap(11, 18, 18);
+	   AdmUsersSetPwd->Glyph = PanelImages->GetBitmap(16, 18, 18);
 	   AdmUsersSetPwd->Glyph->Transparent = true;
-	   AdmUsersSetPwd->Glyph->TransparentColor = clBlack;
 
-	   AdmUsersRemove->Glyph = PanelImages->GetBitmap(10, 18, 18);
-	   AdmUsersRemove->Glyph->Transparent = true;
+	   AdmUsersLock->Glyph = PanelImages->GetBitmap(15, 18, 18);
+	   AdmUsersLock->Glyph->Transparent = true;
+
+	   AdmUsersUnlock->Glyph = PanelImages->GetBitmap(18, 18, 18);
+	   AdmUsersUnlock->Glyph->Transparent = true;
 
 	   AdmUsersRefresh->Glyph = PanelImages->GetBitmap(13, 18, 18);
 	   AdmUsersRefresh->Glyph->Transparent = true;
 	   AdmUsersRefresh->Glyph->TransparentColor = clBlack;
 
-	   PPSetPwd->Bitmap = PanelImages->GetBitmap(11, 16, 16);
+	   PPSetPwd->Bitmap = PanelImages->GetBitmap(16, 16, 16);
 	   PPSetPwd->Bitmap->Transparent = true;
-	   PPSetPwd->Bitmap->TransparentColor = clBlack;
 
-	   PPRemoveUser->Bitmap = PanelImages->GetBitmap(10, 16, 16);
-	   PPRemoveUser->Bitmap->Transparent = true;
+	   PPLockUser->Bitmap = PanelImages->GetBitmap(15, 16, 16);
+	   PPLockUser->Bitmap->Transparent = true;
+
+	   PPUnlockUser->Bitmap = PanelImages->GetBitmap(18, 16, 16);
+	   PPUnlockUser->Bitmap->Transparent = true;
 
 	   PPUsersRefresh->Bitmap = PanelImages->GetBitmap(13, 18, 18);
 	   PPUsersRefresh->Bitmap->Transparent = true;
@@ -1221,6 +1228,74 @@ void __fastcall TClientForm::CheckItemInLocation(const String &item_id, int loc_
 }
 //---------------------------------------------------------------------------
 
+bool __fastcall TClientForm::AskUserList()
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("GETUSERLIST"));
+
+	   if (ClientForm->AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 {
+			   ProcessAnswer(ixml.get(), AdmUsersResult);
+               CurrentRowInd = 1;
+			 }
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка отримання переліку користувачів");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::ControlUser(int user_id, int lock)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(CreateRequest("CTRLUSER", IntToStr(user_id) + ";" +
+																	 IntToStr(lock)));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 res = true;
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка зміни активності користувача");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
 TMemoryStream* __fastcall TClientForm::CryptData(String data, const char *pass)
 {
   TMemoryStream *res = new TMemoryStream();
@@ -1292,7 +1367,7 @@ TStringStream* __fastcall TClientForm::CreateRequest(const String &command,
 
 	   if (ms) {delete ms;}
 
-       ms = NULL;
+       ms = nullptr;
 	 }
 
   return ms;
@@ -1319,7 +1394,7 @@ TStringStream* __fastcall TClientForm::CreateRequest(const String &command)
 
 	   if (ms) {delete ms;}
 
-       ms = NULL;
+       ms = nullptr;
 	 }
 
   return ms;
@@ -1815,31 +1890,88 @@ void __fastcall TClientForm::AddItemSelectLocationClick(TObject *Sender)
 
 void __fastcall TClientForm::PPSetPwdClick(TObject *Sender)
 {
-  //
+  AdmUsersSetPwd->Click();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TClientForm::PPRemoveUserClick(TObject *Sender)
+void __fastcall TClientForm::PPLockUserClick(TObject *Sender)
 {
-  //
+  AdmUsersLock->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::PPUnlockUserClick(TObject *Sender)
+{
+  AdmUsersUnlock->Click();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::AdmUsersAddClick(TObject *Sender)
 {
-  //
+  AddUserForm->Show();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::AdmUsersSetPwdClick(TObject *Sender)
 {
-  //
+  int id = 0;
+
+  if (CurrentRowInd > 0)
+	id = AdmUsersResult->Cells[0][CurrentRowInd].ToInt();
+
+  if (id)
+	{
+      SetPasswordForm->UserID = id;
+	  SetPasswordForm->Show();
+	}
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TClientForm::AdmUsersRemoveClick(TObject *Sender)
+void __fastcall TClientForm::AdmUsersLockClick(TObject *Sender)
 {
-  //
+  String id;
+
+  if (CurrentRowInd > 0)
+	id = AdmUsersResult->Cells[0][CurrentRowInd];
+
+  if (id != "")
+	{
+	  if (MessageBox(this->Handle,
+					 L"Заблокувати користувача?",
+					 L"Підтвердження",
+					 MB_YESNO|MB_ICONINFORMATION) == mrYes)
+		{
+		  ControlUser(id.ToInt(), true);
+		  AskUserList();
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::AdmUsersUnlockClick(TObject *Sender)
+{
+  String id;
+
+  if (CurrentRowInd > 0)
+	id = AdmUsersResult->Cells[0][CurrentRowInd];
+
+  if (id != "")
+	{
+	  if (MessageBox(this->Handle,
+					 L"Разблокувати користувача?",
+					 L"Підтвердження",
+					 MB_YESNO|MB_ICONINFORMATION) == mrYes)
+		{
+		  ControlUser(id.ToInt(), false);
+		  AskUserList();
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::AdmUsersRefreshClick(TObject *Sender)
+{
+  AskUserList();
 }
 //---------------------------------------------------------------------------
 
@@ -2186,3 +2318,4 @@ void __fastcall TClientForm::CheckItemsResultDrawCell(TObject *Sender, int ACol,
 									CheckItemsResult->Cells[ACol][ARow]);
 }
 //---------------------------------------------------------------------------
+

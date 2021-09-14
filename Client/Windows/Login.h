@@ -1,5 +1,5 @@
 /*!
-Copyright 2020 Maxim Noltmeer (m.noltmeer@gmail.com)
+Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 */
 //---------------------------------------------------------------------------
 
