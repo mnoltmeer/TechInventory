@@ -127,7 +127,10 @@ private:	// User declarations
 //методи, що викликаються з ExecuteCommand() і повертають туди результат
 //авторизує користувача, якщо успішно повертає ІД Агента та роль, інакше повертає NULL
 	UserInfo __fastcall Authorisation(const String &login, const String &pass);
-	bool __fastcall Registration(const String &login, const String &pass, const String &mail);
+	bool __fastcall Registration(const String &login,
+								 const String &pass,
+								 const String &mail,
+								 bool admin);
 	bool __fastcall IsLoginFree(const String &login);
 	bool __fastcall SetUserPassword(int user_id, const String &new_password);
 	bool __fastcall ValidUserPassword(int user_id, const String &password);
@@ -149,12 +152,14 @@ private:	// User declarations
 	TStringStream* __fastcall GetItemList(int loc_id);
 	bool __fastcall IsInnFree(const String &inn);
 	bool __fastcall CheckItemID(int id);
-    bool __fastcall AddItem(int item_id,
+	bool __fastcall AddItem(int item_id,
 							const String &inn,
 							const String &sn,
 							const String &model,
 							int location_id,
 							int agent_id);
+	TStringStream* __fastcall GetUserList();
+	bool __fastcall ControlUser(int user_id, int lock);
 
 //---------------------------------------------------------------------------
 

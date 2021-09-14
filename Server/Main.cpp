@@ -224,7 +224,7 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
 	   if (login == "")
 		 throw Exception("Порожній логін");
 
-	   String sqltext = "SELECT ID, PASS, ROLE, MAIL FROM AGENTS WHERE LOGIN = :login";
+	   String sqltext = "SELECT ID, PASS, ROLE, MAIL FROM AGENTS WHERE LOGIN = :login AND LOCKED = 0";
 
 	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
 	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
@@ -310,7 +310,8 @@ bool __fastcall TServerForm::IsLoginFree(const String &login)
 
 bool __fastcall TServerForm::Registration(const String &login,
 										  const String &pass,
-										  const String &mail)
+										  const String &mail,
+										  bool admin)
 {
 //реєстрація нового користувача
   bool res;
@@ -326,8 +327,15 @@ bool __fastcall TServerForm::Registration(const String &login,
        if (mail == "")
 		 throw Exception("Порожній email");
 
-	   String sqltext = "INSERT INTO AGENTS (ID, LOGIN, PASS, ROLE, MAIL) VALUES (\
-GEN_ID(GEN_AGENTS_ID, 1), :login, :pass, 'agent', :mail)";
+	   String role;
+
+	   if (admin)
+		 role = "admin";
+	   else
+		 role = "agent";
+
+	   String sqltext = "INSERT INTO AGENTS VALUES (GEN_ID(GEN_AGENTS_ID, 1), \
+	   :login, :pass, :mail, :role, :lock)";
 
 	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
 	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
@@ -338,6 +346,8 @@ GEN_ID(GEN_AGENTS_ID, 1), :login, :pass, 'agent', :mail)";
 	   tmp_query->ParamByName("login")->AsString = login;
 	   tmp_query->ParamByName("pass")->AsString = pass;
 	   tmp_query->ParamByName("mail")->AsString = mail;
+	   tmp_query->ParamByName("role")->AsString = role;
+	   tmp_query->ParamByName("lock")->AsInteger = (unsigned int)admin;
 
 	   tmp_query->Prepare();
 	   tmp_query->Execute();
@@ -410,7 +420,7 @@ bool __fastcall TServerForm::ValidUserPassword(int user_id, const String &passwo
        if (password == "")
 		 throw Exception("Порожній пароль");
 
-	   String sqltext = "SELECT ID FROM AGENTS WHERE ID = :userid AND PASS = :pass";
+	   String sqltext = "SELECT ID FROM AGENTS WHERE ID = :userid AND PASS = :pass AND LOCKED = 0";
 
 	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
 	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
@@ -435,7 +445,7 @@ bool __fastcall TServerForm::ValidUserPassword(int user_id, const String &passwo
   catch (Exception &e)
 	 {
 	   res = false;
-	   WriteLog("SetUserPassword(): " + e.ToString());
+	   WriteLog("ValidUserPassword(): " + e.ToString());
 	 }
 
   return res;
@@ -476,7 +486,7 @@ bool __fastcall TServerForm::SetUserMail(int user_id, const String &new_mail)
   catch (Exception &e)
 	 {
 	   res = false;
-	   WriteLog("SetUserPassword(): " + e.ToString());
+	   WriteLog("SetUserMail(): " + e.ToString());
 	 }
 
   return res;
@@ -656,7 +666,7 @@ TStringStream* __fastcall TServerForm::GetLocationList()
   catch (Exception &e)
 	 {
 	   res = CreateAnswer("ERROR");
-	   WriteLog("GetItem(): " + e.ToString());
+	   WriteLog("GetLocationList(): " + e.ToString());
 	 }
 
   return res;
@@ -1071,6 +1081,120 @@ bool __fastcall TServerForm::AddItem(int item_id, const String &inn, const Strin
 }
 //---------------------------------------------------------------------------
 
+TStringStream* __fastcall TServerForm::GetUserList()
+{
+  TStringStream *res;
+
+  try
+	 {
+	   String sqltext = "SELECT ID, LOGIN, MAIL, ROLE, LOCKED FROM AGENTS ORDER BY LOGIN";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->Open();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RecordCount == 0)
+		 res = CreateAnswer("NODATA");
+	   else
+		 {
+		   std::unique_ptr<TStringList> data(new TStringList());
+		   std::unique_ptr<TStringList> row(new TStringList());
+
+		   tmp_query->First();
+
+		   String str;
+
+		   while (!tmp_query->Eof)
+			 {
+               row->Clear();
+
+			   row->Add(tmp_query->FieldByName("ID")->AsString);
+			   row->Add(tmp_query->FieldByName("LOGIN")->AsString);
+			   row->Add(tmp_query->FieldByName("MAIL")->AsString);
+			   row->Add(tmp_query->FieldByName("ROLE")->AsString);
+
+			   if (tmp_query->FieldByName("LOCKED")->AsInteger)
+				 row->Add("Ні");
+			   else
+                 row->Add("Так");
+
+			   for (int i = 0; i < row->Count; i++)
+				  {
+					if (row->Strings[i] == "")
+					  row->Strings[i] = "???";
+				  }
+
+			   str = ListToStr(row.get(), ";");
+
+			   data->Add(str);
+
+               tmp_query->Next();
+			 }
+
+		   String titles = "<Title size='0'>ID</Title>\
+<Title size='100'>Користувач</Title>\
+<Title size='300'>Ел. пошта</Title>\
+<Title size='50'>Роль</Title>\
+<Title size='80'>Активний</Title>";
+
+		   res = CreateAnswer("SUCCESS", titles, data.get());
+		 }
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = CreateAnswer("ERROR");
+	   WriteLog("GetUserList(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::ControlUser(int user_id, int lock)
+{
+  bool res;
+
+  try
+	 {
+	   String sqltext = "UPDATE AGENTS SET LOCKED = :locked WHERE ID = :userid";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("userid")->AsInteger = user_id;
+	   tmp_query->ParamByName("locked")->AsInteger = lock;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("ControlUser(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
 bool __fastcall TServerForm::ConnectToSMTP()
 {
   MailSender->Username = "<none>";
@@ -1417,7 +1541,7 @@ TStringStream* __fastcall TServerForm::ParseXML(TXMLDocument *ixml)
 	 }
   catch (Exception &e)
 	 {
-	   res = NULL;
+	   res = nullptr;
 	   WriteLog("ParseXML: " + e.ToString());
 	 }
 
@@ -1460,7 +1584,7 @@ TStringStream* __fastcall TServerForm::ProcessRequest(TXMLDocument *ixml)
 	 }
   catch (Exception &e)
 	 {
-       res = NULL;
+       res = nullptr;
 	   WriteLog("ProcessRequest: " + e.ToString());
 	 }
 
@@ -1502,7 +1626,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "REGISTER") //створення нового користувача
 		 {
-		   if (Registration(params->Strings[0], params->Strings[1], params->Strings[2]))
+		   if (Registration(params->Strings[0], params->Strings[1], params->Strings[2], StrToBool(params->Strings[3])))
 			 res = CreateAnswer("SUCCESS");
 		   else
 			 res = CreateAnswer("FAIL");
@@ -1610,13 +1734,21 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		   else
 			 res = CreateAnswer("ERROR");
 		 }
+	   else if (command == "GETUSERLIST") //запит переліку користувачів
+		 res = GetUserList();
+	   else if (command == "CTRLUSER") //керування користувачем
+		 {
+		   if (ControlUser(params->Strings[0].ToInt(), params->Strings[1].ToInt()))
+			 res = CreateAnswer("SUCCESS");
+		   else
+			 res = CreateAnswer("ERROR");
+		 }
 	   else
          throw Exception("Невідома команда");
 	 }
   catch (Exception &e)
 	 {
-       if (res) delete res;
-	   res = NULL;
+	   res = nullptr;
 	   WriteLog("ExecuteCommand: " + e.ToString());
 	 }
 
@@ -1659,7 +1791,7 @@ TStringStream* __fastcall TServerForm::CreateAnswer(const String &command,
   catch (Exception &e)
 	 {
        if (res) delete res;
-	   res = NULL;
+	   res = nullptr;
 	   WriteLog("CreateAnswer: " + e.ToString());
 	 }
 
@@ -1704,7 +1836,7 @@ TStringStream* __fastcall TServerForm::CreateAnswer(const String &command,
   catch (Exception &e)
 	 {
        if (res) delete res;
-	   res = NULL;
+	   res = nullptr;
 	   WriteLog("CreateAnswer: " + e.ToString());
 	 }
 
@@ -1727,7 +1859,7 @@ TStringStream* __fastcall TServerForm::CreateAnswer(const String &command)
   catch (Exception &e)
 	 {
        if (res) delete res;
-	   res = NULL;
+	   res = nullptr;
 	   WriteLog("CreateAnswer: " + e.ToString());
 	 }
 
@@ -1902,7 +2034,7 @@ void __fastcall TServerForm::TrayIconDblClick(TObject *Sender)
 
 TFDTransaction *CreateNewTransactionObj()
 {
-  TFDTransaction *t = new TFDTransaction(NULL);
+  TFDTransaction *t = new TFDTransaction(nullptr);
 
   t->Connection = ServerForm->StatConnection;
   t->Options->AutoCommit = false;
@@ -1917,7 +2049,7 @@ TFDTransaction *CreateNewTransactionObj()
 
 TFDQuery *CreateNewQueryObj(TFDTransaction *t)
 {
-  TFDQuery * q = new TFDQuery(NULL);
+  TFDQuery * q = new TFDQuery(nullptr);
 
   q->Connection = ServerForm->StatConnection;
   q->Transaction = t;
