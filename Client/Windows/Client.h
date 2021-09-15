@@ -343,7 +343,8 @@ public:		// User declarations
 							const String &model, int location_id, int agent_id);
 	void __fastcall CheckItemInLocation(const String &item_id, int loc_id, TStringGrid *grid);
 	bool __fastcall AskUserList();
-    bool __fastcall ControlUser(int user_id, int lock);
+	bool __fastcall ControlUser(int user_id, int lock);
+    bool __fastcall AskLocationList();
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 	bool __fastcall IsItemExistInCheckTable(const String &id);

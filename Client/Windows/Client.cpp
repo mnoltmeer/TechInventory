@@ -1296,6 +1296,41 @@ bool __fastcall TClientForm::ControlUser(int user_id, int lock)
 }
 //---------------------------------------------------------------------------
 
+bool __fastcall TClientForm::AskLocationList()
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("GETLOCATIONS"));
+
+	   if (ClientForm->AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 {
+			   ClientForm->ProcessAnswer(ixml.get(), SelectLocationForm->LocationGrid);
+               CurrentRowInd = 1;
+			 }
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   ClientForm->AddActionLog("Помилка отримання переліку локацій");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
 TMemoryStream* __fastcall TClientForm::CryptData(String data, const char *pass)
 {
   TMemoryStream *res = new TMemoryStream();

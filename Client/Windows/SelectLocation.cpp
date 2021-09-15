@@ -33,42 +33,7 @@ void __fastcall TSelectLocationForm::FormShow(TObject *Sender)
   CurrentRowInd = 0;
   CurrentColInd = 0;
 
-  AskLocationList();
-}
-//---------------------------------------------------------------------------
-
-bool __fastcall TSelectLocationForm::AskLocationList()
-{
-  bool res;
-
-  try
-	 {
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("GETLOCATIONS"));
-
-	   if (ClientForm->AskToServer(Server, data.get()))
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 {
-			   ClientForm->ProcessAnswer(ixml.get(), LocationGrid);
-               CurrentRowInd = 1;
-			 }
-		   else
-			 res = false;
-         }
-	 }
-  catch (Exception &e)
-	 {
-	   ClientForm->AddActionLog("Помилка отримання переліку локацій");
-	   res = false;
-	 }
-
-  return res;
+  ClientForm->AskLocationList();
 }
 //---------------------------------------------------------------------------
 

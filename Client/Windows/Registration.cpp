@@ -148,6 +148,8 @@ bool __fastcall TRegistrationForm::SendVerificationCode(const String &mail)
 {
   bool res;
 
+  Sleep(200);
+
   try
 	 {
 	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("VERIFY", mail));

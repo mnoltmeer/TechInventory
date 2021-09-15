@@ -27,8 +27,6 @@ __published:	// IDE-managed Components
           int X, int Y);
 	void __fastcall LocationGridDblClick(TObject *Sender);
 private:	// User declarations
-	bool __fastcall AskLocationList();
-
 public:		// User declarations
 	__fastcall TSelectLocationForm(TComponent* Owner);
 };
