@@ -344,7 +344,7 @@ public:		// User declarations
 	void __fastcall CheckItemInLocation(const String &item_id, int loc_id, TStringGrid *grid);
 	bool __fastcall AskUserList();
 	bool __fastcall ControlUser(int user_id, int lock);
-    bool __fastcall AskLocationList();
+	bool __fastcall AskLocationList(TStringGrid *grid);
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 	bool __fastcall IsItemExistInCheckTable(const String &id);

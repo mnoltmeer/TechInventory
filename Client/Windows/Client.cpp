@@ -1296,7 +1296,7 @@ bool __fastcall TClientForm::ControlUser(int user_id, int lock)
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TClientForm::AskLocationList()
+bool __fastcall TClientForm::AskLocationList(TStringGrid *grid)
 {
   bool res;
 
@@ -1314,8 +1314,8 @@ bool __fastcall TClientForm::AskLocationList()
 
 		   if (Command->NodeValue == "SUCCESS")
 			 {
-			   ClientForm->ProcessAnswer(ixml.get(), SelectLocationForm->LocationGrid);
-               CurrentRowInd = 1;
+			   ClientForm->ProcessAnswer(ixml.get(), grid);
+			   CurrentRowInd = 1;
 			 }
 		   else
 			 res = false;

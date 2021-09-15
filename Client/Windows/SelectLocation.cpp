@@ -33,7 +33,7 @@ void __fastcall TSelectLocationForm::FormShow(TObject *Sender)
   CurrentRowInd = 0;
   CurrentColInd = 0;
 
-  ClientForm->AskLocationList();
+  ClientForm->AskLocationList(LocationGrid);
 }
 //---------------------------------------------------------------------------
 
