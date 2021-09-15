@@ -4,7 +4,7 @@ object AddUserForm: TAddUserForm
   BorderStyle = bsSingle
   Caption = 'AddUserForm'
   ClientHeight = 319
-  ClientWidth = 463
+  ClientWidth = 437
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -114,7 +114,7 @@ object AddUserForm: TAddUserForm
     Left = 8
     Top = 27
     Width = 201
-    Height = 24
+    Height = 21
     TabOrder = 0
   end
   object Password: TEdit
@@ -137,7 +137,7 @@ object AddUserForm: TAddUserForm
     Left = 8
     Top = 185
     Width = 289
-    Height = 24
+    Height = 21
     TabOrder = 3
   end
   object UserRole: TComboBox

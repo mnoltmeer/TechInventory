@@ -235,6 +235,7 @@ void __fastcall TRegistrationForm::SendCodeClick(TObject *Sender)
 	{
 	  RegistrationResult->Caption = "Код верифікації не надіслано. Зверніться до адміністратора серверу";
 	  RegistrationResult->Font->Color = clRed;
+      RegistrationResult->Show();
 	}
   else
 	{

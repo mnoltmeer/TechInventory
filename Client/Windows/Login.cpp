@@ -29,7 +29,6 @@ extern String AppPath;
 __fastcall TLoginForm::TLoginForm(TComponent* Owner)
 	: TForm(Owner)
 {
-
 }
 //---------------------------------------------------------------------------
 
@@ -88,8 +87,14 @@ void __fastcall TLoginForm::StartAuthClick(TObject *Sender)
 void __fastcall TLoginForm::RegNewUserClick(TObject *Sender)
 {
   //відкриття форми реєстрації
-  RegistrationForm->Show();
-  Hide();
+  if (ServerName->Text == "")
+	ShowAuthError("Вказані невірні облікові дані");
+  else
+	{
+      Server = ServerName->Text;
+	  RegistrationForm->Show();
+  	  Hide();
+	}
 }
 //---------------------------------------------------------------------------
 

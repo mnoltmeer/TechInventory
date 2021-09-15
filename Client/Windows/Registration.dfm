@@ -183,7 +183,7 @@ object RegistrationForm: TRegistrationForm
     OnClick = ConfirmClick
   end
   object Exit: TButton
-    Left = 367
+    Left = 374
     Top = 368
     Width = 75
     Height = 25
