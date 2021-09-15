@@ -1199,8 +1199,8 @@ bool __fastcall TServerForm::ConnectToSMTP()
 {
   MailSender->Username = "<none>";
   MailSender->Password = "<none>";
-  MailSender->Host = "10.255.131.122";
-  MailSender->Port = 25;
+  MailSender->Host = MailServer;
+  MailSender->Port = MailPort;
 
   try
 	{
@@ -1235,7 +1235,6 @@ bool __fastcall TServerForm::SendMsg(String mail_addr, String subject, String fr
 		   msg->Priority = TIdMessagePriority(mpHighest);
 
 		   MailSender->Send(msg.get());
-		   MailSender->Disconnect();
            res = true;
 		 }
 	  catch (Exception &e)
@@ -1246,6 +1245,8 @@ bool __fastcall TServerForm::SendMsg(String mail_addr, String subject, String fr
 	}
   else
 	res = false;
+
+  MailSender->Disconnect();
 
   return res;
 }
