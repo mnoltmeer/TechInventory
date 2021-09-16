@@ -161,6 +161,9 @@ private:	// User declarations
 							int agent_id);
 	TStringStream* __fastcall GetUserList();
 	bool __fastcall ControlUser(int user_id, int lock);
+	bool __fastcall RemoveLocation(int location_id);
+    bool __fastcall AddLocation(const String &index, const String &name);
+	bool __fastcall EditLocation(int location_id, const String &index, const String &name);
 
 //---------------------------------------------------------------------------
 

@@ -664,7 +664,7 @@ TStringStream* __fastcall TServerForm::GetLocationList()
 
 		   String titles = "<Title size='0'>ID</Title>\
 <Title size='50'>Індекс</Title>\
-<Title size='300'>Адреса</Title>";
+<Title size='300'>Адреса/Назва</Title>";
 
 		   res = CreateAnswer("SUCCESS", titles, data.get());
 		 }
@@ -1197,6 +1197,120 @@ bool __fastcall TServerForm::ControlUser(int user_id, int lock)
 	 {
 	   res = false;
 	   WriteLog("ControlUser(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::RemoveLocation(int location_id)
+{
+  bool res;
+
+  try
+     {
+	   String sqltext = "DELETE FROM LOCATIONS WHERE ID = :locid";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("locid")->AsInteger = location_id;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("RemoveLocation(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::AddLocation(const String &index, const String &name)
+{
+  bool res;
+
+  try
+	 {
+	   String sqltext = "INSERT INTO LOCATIONS VALUES (GEN_ID(GEN_LOCS_ID, 1), :index, :name)";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("index")->AsString = index;
+       tmp_query->ParamByName("name")->AsString = name;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("AddLocation(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TServerForm::EditLocation(int location_id, const String &index, const String &name)
+{
+  bool res;
+
+  try
+	 {
+	   String sqltext = "UPDATE LOCATIONS SET IND = :index, ADDRESS = :name WHERE ID = :locid";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+       tmp_query->ParamByName("locid")->AsInteger = location_id;
+	   tmp_query->ParamByName("index")->AsString = index;
+       tmp_query->ParamByName("name")->AsString = name;
+
+	   tmp_query->Prepare();
+	   tmp_query->Execute();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RowsAffected > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("{(): " + e.ToString());
 	 }
 
   return res;
@@ -1751,6 +1865,27 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 	   else if (command == "CTRLUSER") //керування користувачем
 		 {
 		   if (ControlUser(params->Strings[0].ToInt(), params->Strings[1].ToInt()))
+			 res = CreateAnswer("SUCCESS");
+		   else
+			 res = CreateAnswer("ERROR");
+		 }
+	   else if (command == "REMOVELOCATION") //видалення локації
+		 {
+		   if (RemoveLocation(params->Strings[0].ToInt()))
+			 res = CreateAnswer("SUCCESS");
+		   else
+			 res = CreateAnswer("ERROR");
+		 }
+	   else if (command == "ADDLOCATION") //створення локації
+		 {
+		   if (AddLocation(params->Strings[0], params->Strings[1]))
+			 res = CreateAnswer("SUCCESS");
+		   else
+			 res = CreateAnswer("ERROR");
+		 }
+	   else if (command == "EDITLOCATION") //зміна даних локації
+		 {
+		   if (EditLocation(params->Strings[0].ToInt(), params->Strings[1], params->Strings[2]))
 			 res = CreateAnswer("SUCCESS");
 		   else
 			 res = CreateAnswer("ERROR");
