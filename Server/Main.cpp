@@ -224,7 +224,7 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
 	   if (login == "")
 		 throw Exception("Порожній логін");
 
-	   String sqltext = "SELECT ID, PASS, ROLE, MAIL FROM AGENTS WHERE LOGIN = :login AND LOCKED = 0";
+	   String sqltext = "SELECT ID, PASS, ROLE, MAIL, LOCKED FROM AGENTS WHERE LOGIN = :login";
 
 	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
 	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
@@ -247,6 +247,7 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
 			   res.ID = tmp_query->FieldByName("ID")->AsInteger;
 			   res.Role = tmp_query->FieldByName("ROLE")->AsString;
 			   res.Mail = tmp_query->FieldByName("MAIL")->AsString;
+			   res.Locked = tmp_query->FieldByName("LOCKED")->AsInteger;
 			 }
 		   else
 			 res.ID = -1;
@@ -328,11 +329,18 @@ bool __fastcall TServerForm::Registration(const String &login,
 		 throw Exception("Порожній email");
 
 	   String role;
+	   int locked;
 
 	   if (admin)
-		 role = "admin";
+		 {
+		   role = "admin";
+		   locked = 0;
+		 }
 	   else
-		 role = "agent";
+		 {
+		   role = "agent";
+		   locked = 1;
+		 }
 
 	   String sqltext = "INSERT INTO AGENTS VALUES (GEN_ID(GEN_AGENTS_ID, 1), \
 	   :login, :pass, :mail, :role, :lock)";
@@ -347,7 +355,7 @@ bool __fastcall TServerForm::Registration(const String &login,
 	   tmp_query->ParamByName("pass")->AsString = pass;
 	   tmp_query->ParamByName("mail")->AsString = mail;
 	   tmp_query->ParamByName("role")->AsString = role;
-	   tmp_query->ParamByName("lock")->AsInteger = (unsigned int)admin;
+	   tmp_query->ParamByName("lock")->AsInteger = locked;
 
 	   tmp_query->Prepare();
 	   tmp_query->Execute();
@@ -1611,7 +1619,10 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 			 {
 			   WriteLog("Увійшов користувач: " + params->Strings[0]);
 
-			   res = CreateAnswer("GRANTED", IntToStr(user.ID) + ";" + user.Role + ";" + user.Mail);
+			   res = CreateAnswer("GRANTED", IntToStr(user.ID) + ";" +
+											 user.Role + ";" +
+											 user.Mail+ ";" +
+											 user.Locked);
 			 }
 		 }
 	   else if (command == "GETVERSION") //запит версії серверу

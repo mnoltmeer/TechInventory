@@ -78,6 +78,7 @@ struct UserInfo
   int ID;
   String Role;
   String Mail;
+  bool Locked;
 };
 //---------------------------------------------------------------------------
 class TServerForm : public TForm
