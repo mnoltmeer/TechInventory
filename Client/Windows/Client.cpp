@@ -16,6 +16,7 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include "ChangeMail.h"
 #include "EditItem.h"
 #include "SelectLocation.h"
+#include "EditLocation.h"
 #include "AddUser.h"
 #include "Client.h"
 //---------------------------------------------------------------------------
@@ -543,7 +544,7 @@ void __fastcall TClientForm::SetUIImages()
 	   CheckItemsDelete->Glyph = PanelImages->GetBitmap(10, 18, 18);
 	   CheckItemsDelete->Glyph->Transparent = true;
 
-	   AdmLocationsAdd->Glyph = PanelImages->GetBitmap(10, 18, 18);
+	   AdmLocationsAdd->Glyph = PanelImages->GetBitmap(14, 18, 18);
 	   AdmLocationsAdd->Glyph->Transparent = true;
 
 	   AdmLocationsEdit->Glyph = PanelImages->GetBitmap(11, 18, 18);
@@ -557,7 +558,7 @@ void __fastcall TClientForm::SetUIImages()
 	   AdmLocationsRefresh->Glyph->Transparent = true;
 	   AdmLocationsRefresh->Glyph->TransparentColor = clBlack;
 
-	   PPAddLocation->Bitmap = PanelImages->GetBitmap(10, 16, 16);
+	   PPAddLocation->Bitmap = PanelImages->GetBitmap(14, 16, 16);
 	   PPAddLocation->Bitmap->Transparent = true;
 
 	   PPEditLocation->Bitmap = PanelImages->GetBitmap(11, 16, 16);
@@ -1308,7 +1309,7 @@ bool __fastcall TClientForm::ControlUser(int user_id, int lock)
 	 }
   catch (Exception &e)
 	 {
-	   AddActionLog("Помилка зміни активності користувача");
+	   AddActionLog("Помилка зміни статусу користувача");
 	   res = false;
 	 }
 
@@ -1344,6 +1345,105 @@ bool __fastcall TClientForm::AskLocationList(TStringGrid *grid)
   catch (Exception &e)
 	 {
 	   ClientForm->AddActionLog("Помилка отримання переліку локацій");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::RemoveLocation(int location_id)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(CreateRequest("REMOVELOCATION", IntToStr(location_id)));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 res = true;
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка видалення Локації");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::AddLocation(const String &index, const String &name)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(CreateRequest("ADDLOCATION", index + ";" +
+																		name));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 res = true;
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка видалення Локації");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::EditLocation(int location_id, const String &index, const String &name)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data(CreateRequest("EDITLOCATION", IntToStr(location_id) + ";" +
+																		 index + ";" +
+																		 name));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   if (Command->NodeValue == "SUCCESS")
+			 res = true;
+		   else
+			 res = false;
+         }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка видалення Локації");
 	   res = false;
 	 }
 
@@ -2032,19 +2132,42 @@ void __fastcall TClientForm::AdmUsersRefreshClick(TObject *Sender)
 
 void __fastcall TClientForm::AdmLocationsAddClick(TObject *Sender)
 {
-  //
+  EditLocationForm->Mode = true;
+  EditLocationForm->Show();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::AdmLocationsEditClick(TObject *Sender)
 {
-  //
+  if (CurrentRowInd > 0)
+	{
+	  EditLocationForm->Mode = false;
+	  EditLocationForm->LocationID = AdmLocationsResult->Cells[0][CurrentRowInd].ToInt();
+	  EditLocationForm->LocationIndex = AdmLocationsResult->Cells[1][CurrentRowInd];
+	  EditLocationForm->LocationName = AdmLocationsResult->Cells[2][CurrentRowInd];
+	  EditLocationForm->Show();
+	}
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::AdmLocationsRemoveClick(TObject *Sender)
 {
-  //
+  String id;
+
+  if (CurrentRowInd > 0)
+	id = AdmLocationsResult->Cells[0][CurrentRowInd];
+
+  if (id != "")
+	{
+	  if (MessageBox(this->Handle,
+					 L"Видалити Локацію?",
+					 L"Підтвердження",
+					 MB_YESNO|MB_ICONINFORMATION) == mrYes)
+		{
+		  RemoveLocation(id.ToInt());
+		  AskLocationList(AdmLocationsResult);
+		}
+	}
 }
 //---------------------------------------------------------------------------
 
@@ -2074,19 +2197,19 @@ void __fastcall TClientForm::PPLocationsRefreshClick(TObject *Sender)
 
 void __fastcall TClientForm::PPAddLocationClick(TObject *Sender)
 {
-  //
+  AdmLocationsAdd->Click();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::PPEditLocationClick(TObject *Sender)
 {
-  //
+  AdmLocationsEdit->Click();
 }
 //---------------------------------------------------------------------------
 
 void __fastcall TClientForm::PPRemoveLocationClick(TObject *Sender)
 {
-  //
+  AdmLocationsRemove->Click();
 }
 //---------------------------------------------------------------------------
 

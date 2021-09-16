@@ -1,6 +1,7 @@
 object SetPasswordForm: TSetPasswordForm
   Left = 0
   Top = 0
+  BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1042#1089#1090#1072#1085#1086#1074#1083#1077#1085#1085#1103' '#1087#1072#1088#1086#1083#1102
   ClientHeight = 157

@@ -6,15 +6,16 @@
 //---------------------------------------------------------------------------
 #include <Vcl.Styles.hpp>
 #include <Vcl.Themes.hpp>
+USEFORM("SetPassword.cpp", SetPasswordForm);
 USEFORM("Client.cpp", ClientForm);
 USEFORM("ChangePassword.cpp", ChangePasswordForm);
 USEFORM("ChangeMail.cpp", ChangeMailForm);
-USEFORM("EditItem.cpp", EditItemForm);
+USEFORM("AddUser.cpp", AddUserForm);
 USEFORM("SelectLocation.cpp", SelectLocationForm);
 USEFORM("Registration.cpp", RegistrationForm);
 USEFORM("Login.cpp", LoginForm);
-USEFORM("SetPassword.cpp", SetPasswordForm);
-USEFORM("AddUser.cpp", AddUserForm);
+USEFORM("EditItem.cpp", EditItemForm);
+USEFORM("EditLocation.cpp", EditLocationForm);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
@@ -31,6 +32,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->CreateForm(__classid(TSelectLocationForm), &SelectLocationForm);
 		Application->CreateForm(__classid(TSetPasswordForm), &SetPasswordForm);
 		Application->CreateForm(__classid(TAddUserForm), &AddUserForm);
+		Application->CreateForm(__classid(TEditLocationForm), &EditLocationForm);
 		Application->Run();
 	}
 	catch (Exception &exception)

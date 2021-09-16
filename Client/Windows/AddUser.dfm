@@ -1,6 +1,7 @@
 object AddUserForm: TAddUserForm
   Left = 0
   Top = 0
+  BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'AddUserForm'
   ClientHeight = 319
