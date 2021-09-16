@@ -1242,9 +1242,6 @@ object ClientForm: TClientForm
       PopupMenu = PPEditUser
       TabOrder = 1
       OnMouseUp = CheckItemResultMouseUp
-      ExplicitTop = 124
-      ExplicitWidth = 615
-      ExplicitHeight = 326
     end
   end
   object PnAdmLocations: TPanel
@@ -1286,7 +1283,7 @@ object ClientForm: TClientForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
-        OnClick = CheckItemRefreshClick
+        OnClick = AdmLocationsRefreshClick
       end
       object AdmLocationsAdd: TBitBtn
         Left = 26

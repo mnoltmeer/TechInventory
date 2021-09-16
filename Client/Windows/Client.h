@@ -290,6 +290,7 @@ __published:	// IDE-managed Components
 	void __fastcall PPUnlockUserClick(TObject *Sender);
 	void __fastcall AdmUsersUnlockClick(TObject *Sender);
 	void __fastcall AdmUsersRefreshClick(TObject *Sender);
+	void __fastcall AdmLocationsRefreshClick(TObject *Sender);
 
 
 private:	// User declarations
@@ -308,6 +309,7 @@ public:		// User declarations
 
 	void __fastcall LockUI();
 	void __fastcall UnlockUI();
+	void __fastcall UnlockUILimited();
 
 	void __fastcall AddActionLog(String status);
 
@@ -345,6 +347,7 @@ public:		// User declarations
 	bool __fastcall AskUserList();
 	bool __fastcall ControlUser(int user_id, int lock);
 	bool __fastcall AskLocationList(TStringGrid *grid);
+	bool __fastcall RemoveLocation(int location_id);
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 	bool __fastcall IsItemExistInCheckTable(const String &id);

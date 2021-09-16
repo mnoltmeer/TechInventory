@@ -21,6 +21,7 @@ extern const char *DataCryptKey;
 extern String AppPath;
 extern int UserID;
 extern bool IsAdmin;
+extern bool IsLocked;
 extern int MainFormWidth, MainFormHeight;
 extern bool MainFormFullScreen;
 extern String Server, User; //поточний сервер та логін користувача
@@ -56,8 +57,13 @@ void __fastcall TLoginForm::StartAuthClick(TObject *Sender)
 		{
 		  Server = ServerName->Text;
 		  User = UserName->Text;
-          ClientForm->UserInfo->Caption = "Користувач: " + User;
-		  ClientForm->UnlockUI();
+		  ClientForm->UserInfo->Caption = "Користувач: " + User;
+
+		  if (IsLocked)
+			ClientForm->UnlockUILimited();
+		  else
+			ClientForm->UnlockUI();
+
 		  ClientForm->GetServerVersion();
 		  Close();
 		  break;
@@ -149,15 +155,17 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
 				  {
 					_di_IXMLNode Data;
 					_di_IXMLNode Row;
-					_di_IXMLNode ID, Role, Mail;
+					_di_IXMLNode ID, Role, Mail, Locked;
 
 					Data = Document->ChildNodes->Nodes[2];
 					Row = Data->ChildNodes->Nodes[0];
 					ID = Row->ChildNodes->Nodes[0];
 					Role = Row->ChildNodes->Nodes[1];
 					Mail = Row->ChildNodes->Nodes[2];
+					Locked = Row->ChildNodes->Nodes[3];
 
 					UserID = ID->NodeValue.AsType(3);
+					IsLocked = StrToBool(Locked->NodeValue);
 
 					if (UpperCase(Role->NodeValue) == "ADMIN")
 					  IsAdmin = true;

@@ -27,6 +27,7 @@ String Server, User; //поточний сервер та логін користувача
 int UserID; //ID поточного користувача
 int ItemID; //ID поточного Пристрою
 bool IsAdmin; //флаг, що визначає, чи є поточний юзер адміном
+bool IsLocked; //флаг, що визначає, чи є обліковий запис користувача активним
 String AppPath;
 String LogPath;
 const char *DataCryptKey = "D@t@Ha$hK3y";
@@ -422,6 +423,7 @@ void __fastcall TClientForm::MnAdmLocationsClick(TObject *Sender)
   HideAllPanels();
   PnAdmLocations->Show();
   ActivePanel = PnAdmLocations;
+  AskLocationList(AdmLocationsResult);
 }
 //---------------------------------------------------------------------------
 
@@ -663,6 +665,24 @@ void __fastcall TClientForm::UnlockUI()
 		   ShowItemsRemove->Enabled = true;
 		 }
 
+       MnHome->Click();
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка розблокування UI");
+	 }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::UnlockUILimited()
+{
+  try
+	 {
+	   ClientVersion->Show();
+	   ServerInfo->Show();
+	   UserInfo->Show();
+
+	   MnHome->Visible = true;
        MnHome->Click();
 	 }
   catch (Exception &e)
@@ -2351,6 +2371,12 @@ void __fastcall TClientForm::CheckItemsResultDrawCell(TObject *Sender, int ACol,
   CheckItemsResult->Canvas->TextOut(Rect.Left + 2,
 									Rect.Top + 2,
 									CheckItemsResult->Cells[ACol][ARow]);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::AdmLocationsRefreshClick(TObject *Sender)
+{
+  AskLocationList(AdmLocationsResult);
 }
 //---------------------------------------------------------------------------
 
