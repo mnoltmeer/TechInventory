@@ -38,6 +38,8 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include <IdSMTP.hpp>
 #include <IdSMTPBase.hpp>
 
+#include <memory>
+
 #define DEFAULT_SERVER_PORT 9874
 #define DEFAULT_CLIENT_PORT 9875
 #define LOCK 1
@@ -167,7 +169,6 @@ __published:	// IDE-managed Components
 	TDateTimePicker *AdmLogsDate;
 	TButton *AdmLogsShow;
 	TPanel *PnAdmManage;
-	TMemo *AdmLogsResult;
 	TLabel *Label21;
 	TEdit *AdmManageServerPort;
 	TButton *AdmServerSetServerPort;
@@ -223,6 +224,7 @@ __published:	// IDE-managed Components
 	TMenuItem *PPCheckDelFromTable;
 	TBitBtn *AdmUsersUnlock;
 	TMenuItem *PPUnlockUser;
+	TStringGrid *AdmLogsResult;
 	void __fastcall LoadAnimTimerTimer(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -324,6 +326,9 @@ public:		// User declarations
 	void __fastcall ProcessAnswer(TXMLDocument *ixml, TStringGrid *grid);
     void __fastcall ProcessAnswer(TXMLDocument *ixml);
 	void __fastcall ProcessRequest(TXMLDocument *ixml);
+	String __fastcall SendRequest(const String &command,
+								  const String &params,
+								  std::unique_ptr<TXMLDocument> &ixml);
 
 	void __fastcall GetServerVersion();
 	bool __fastcall SetUserPassword(int user_id, const String &new_password);
@@ -348,8 +353,9 @@ public:		// User declarations
 	bool __fastcall ControlUser(int user_id, int lock);
 	bool __fastcall AskLocationList(TStringGrid *grid);
 	bool __fastcall RemoveLocation(int location_id);
-    bool __fastcall AddLocation(const String &index, const String &name);
+	bool __fastcall AddLocation(const String &index, const String &name);
 	bool __fastcall EditLocation(int location_id, const String &index, const String &name);
+	bool __fastcall AskServerLog(const String &date);
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 	bool __fastcall IsItemExistInCheckTable(const String &id);

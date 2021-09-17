@@ -433,6 +433,7 @@ void __fastcall TClientForm::MnAdmLogsClick(TObject *Sender)
   HideAllPanels();
   PnAdmLogs->Show();
   ActivePanel = PnAdmLogs;
+  AdmLogsDate->Date = Date().CurrentDate();
 }
 //---------------------------------------------------------------------------
 
@@ -1323,24 +1324,24 @@ bool __fastcall TClientForm::AskLocationList(TStringGrid *grid)
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("GETLOCATIONS"));
+	   std::unique_ptr<TStringStream> data(CreateRequest("GETLOCATIONS"));
 
-	   if (ClientForm->AskToServer(Server, data.get()))
+	   if (AskToServer(Server, data.get()))
 		 {
 		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
 
 		   _di_IXMLNode Document = ixml->DocumentElement;
 		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
 
 		   if (Command->NodeValue == "SUCCESS")
 			 {
-			   ClientForm->ProcessAnswer(ixml.get(), grid);
+			   ProcessAnswer(ixml.get(), grid);
 			   CurrentRowInd = 1;
 			 }
 		   else
 			 res = false;
-         }
+		 }
 	 }
   catch (Exception &e)
 	 {
@@ -1444,6 +1445,33 @@ bool __fastcall TClientForm::EditLocation(int location_id, const String &index, 
   catch (Exception &e)
 	 {
 	   AddActionLog("Помилка видалення Локації");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::AskServerLog(const String &date)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TXMLDocument> ixml;
+
+	   if (SendRequest("GETLOG", date, ixml) == "SUCCESS")
+		 {
+		   ProcessAnswer(ixml.get(), AdmLogsResult);
+		   CurrentRowInd = 1;
+		   res = true;
+		 }
+	   else
+		 res = false;
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка отримання логу сервера");
 	   res = false;
 	 }
 
@@ -1744,6 +1772,42 @@ void __fastcall TClientForm::ProcessRequest(TXMLDocument *ixml)
 	 {
 	   AddActionLog("ProcessRequest: " + e.ToString());
 	 }
+}
+//---------------------------------------------------------------------------
+
+String __fastcall TClientForm::SendRequest(const String &command,
+										   const String &params,
+										   std::unique_ptr<TXMLDocument> &ixml)
+{
+  String res;
+
+  try
+	 {
+	   std::unique_ptr<TStringStream> data;
+
+	   if (params != "")
+		 data.reset(CreateRequest(command, params));
+	   else
+		 data.reset(CreateRequest(command));
+
+	   if (AskToServer(Server, data.get()))
+		 {
+		   data->Position = 0;
+		   ixml.reset(CreatXMLStream(data.get()));
+
+		   _di_IXMLNode Document = ixml->DocumentElement;
+		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
+
+		   res = Command->NodeValue;
+		 }
+	 }
+  catch (Exception &e)
+	 {
+	   res = "";
+	   AddActionLog("SendRequest: " + e.ToString());
+	 }
+
+  return res;
 }
 //---------------------------------------------------------------------------
 
@@ -2227,7 +2291,7 @@ void __fastcall TClientForm::PPCheckDelFromTableClick(TObject *Sender)
 
 void __fastcall TClientForm::AdmLogsShowClick(TObject *Sender)
 {
-  //
+  AskServerLog(DateToStr(AdmLogsDate->Date));
 }
 //---------------------------------------------------------------------------
 

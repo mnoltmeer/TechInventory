@@ -589,64 +589,6 @@ object ClientForm: TClientForm
       end
     end
   end
-  object PnAdmLogs: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 10
-    object Label20: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1083#1086#1075#1110#1074
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 133
-    end
-    object Panel7: TPanel
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 41
-      Align = alTop
-      TabOrder = 0
-      object AdmLogsDate: TDateTimePicker
-        Left = 2
-        Top = 9
-        Width = 121
-        Height = 24
-        Date = 44154.000000000000000000
-        Time = 0.640191886574029900
-        TabOrder = 0
-      end
-      object AdmLogsShow: TButton
-        Left = 140
-        Top = 8
-        Width = 75
-        Height = 25
-        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
-        TabOrder = 1
-        OnClick = AdmLogsShowClick
-      end
-    end
-    object AdmLogsResult: TMemo
-      Left = 1
-      Top = 65
-      Width = 769
-      Height = 410
-      Align = alClient
-      TabOrder = 1
-    end
-  end
   object PnAdmManage: TPanel
     Left = 40
     Top = 33
@@ -1144,6 +1086,95 @@ object ClientForm: TClientForm
       OnMouseUp = CheckItemResultMouseUp
     end
   end
+  object PnAdmLocations: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 9
+    object Label19: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1050#1077#1088#1091#1074#1072#1085#1085#1103' '#1051#1086#1082#1072#1094#1110#1103#1084#1080
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 189
+    end
+    object Panel6: TPanel
+      Left = 1
+      Top = 450
+      Width = 769
+      Height = 25
+      Align = alBottom
+      TabOrder = 0
+      object AdmLocationsRefresh: TBitBtn
+        Left = 0
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = AdmLocationsRefreshClick
+      end
+      object AdmLocationsAdd: TBitBtn
+        Left = 26
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1044#1086#1076#1072#1090#1080' '#1085#1086#1074#1091' '#1051#1086#1082#1072#1094#1110#1102
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+        OnClick = AdmLocationsAddClick
+      end
+      object AdmLocationsEdit: TBitBtn
+        Left = 52
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1056#1077#1076#1072#1075#1091#1074#1072#1090#1080' '#1074#1083#1072#1089#1090#1080#1074#1086#1089#1090#1110' '#1051#1086#1082#1072#1094#1110#1111
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        OnClick = AdmLocationsEditClick
+      end
+      object AdmLocationsRemove: TBitBtn
+        Left = 78
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1051#1086#1082#1072#1094#1110#1102
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 3
+        OnClick = AdmLocationsRemoveClick
+      end
+    end
+    object AdmLocationsResult: TStringGrid
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 426
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      PopupMenu = PPEditLoc
+      TabOrder = 1
+      OnMouseUp = CheckItemResultMouseUp
+    end
+  end
   object PnAdmUsers: TPanel
     Left = 40
     Top = 33
@@ -1244,93 +1275,69 @@ object ClientForm: TClientForm
       OnMouseUp = CheckItemResultMouseUp
     end
   end
-  object PnAdmLocations: TPanel
+  object PnAdmLogs: TPanel
     Left = 40
     Top = 33
     Width = 771
     Height = 476
     Align = alClient
-    TabOrder = 9
-    object Label19: TLabel
+    TabOrder = 10
+    object Label20: TLabel
       Left = 1
       Top = 1
       Width = 769
       Height = 23
       Align = alTop
       Alignment = taCenter
-      Caption = #1050#1077#1088#1091#1074#1072#1085#1085#1103' '#1051#1086#1082#1072#1094#1110#1103#1084#1080
+      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1083#1086#1075#1110#1074
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      ExplicitWidth = 189
+      ExplicitWidth = 133
     end
-    object Panel6: TPanel
-      Left = 1
-      Top = 450
-      Width = 769
-      Height = 25
-      Align = alBottom
-      TabOrder = 0
-      object AdmLocationsRefresh: TBitBtn
-        Left = 0
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = AdmLocationsRefreshClick
-      end
-      object AdmLocationsAdd: TBitBtn
-        Left = 26
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1044#1086#1076#1072#1090#1080' '#1085#1086#1074#1091' '#1051#1086#1082#1072#1094#1110#1102
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-        OnClick = AdmLocationsAddClick
-      end
-      object AdmLocationsEdit: TBitBtn
-        Left = 52
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1056#1077#1076#1072#1075#1091#1074#1072#1090#1080' '#1074#1083#1072#1089#1090#1080#1074#1086#1089#1090#1110' '#1051#1086#1082#1072#1094#1110#1111
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
-        OnClick = AdmLocationsEditClick
-      end
-      object AdmLocationsRemove: TBitBtn
-        Left = 78
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1051#1086#1082#1072#1094#1110#1102
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 3
-        OnClick = AdmLocationsRemoveClick
-      end
-    end
-    object AdmLocationsResult: TStringGrid
+    object Panel7: TPanel
       Left = 1
       Top = 24
       Width = 769
-      Height = 426
+      Height = 41
+      Align = alTop
+      TabOrder = 0
+      object AdmLogsDate: TDateTimePicker
+        Left = 2
+        Top = 9
+        Width = 121
+        Height = 24
+        Date = 44154.000000000000000000
+        Time = 0.640191886574029900
+        TabOrder = 0
+      end
+      object AdmLogsShow: TButton
+        Left = 140
+        Top = 8
+        Width = 75
+        Height = 25
+        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
+        TabOrder = 1
+        OnClick = AdmLogsShowClick
+      end
+    end
+    object AdmLogsResult: TStringGrid
+      Left = 1
+      Top = 65
+      Width = 769
+      Height = 410
       Align = alClient
       FixedCols = 0
       RowCount = 2
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      PopupMenu = PPEditLoc
+      PopupMenu = PPEditUser
       TabOrder = 1
       OnMouseUp = CheckItemResultMouseUp
+      ExplicitTop = 24
+      ExplicitHeight = 426
     end
   end
   object SaveCfgDialog: TSaveDialog
