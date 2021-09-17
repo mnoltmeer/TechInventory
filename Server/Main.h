@@ -164,6 +164,7 @@ private:	// User declarations
 	bool __fastcall RemoveLocation(int location_id);
     bool __fastcall AddLocation(const String &index, const String &name);
 	bool __fastcall EditLocation(int location_id, const String &index, const String &name);
+    TStringStream* __fastcall GetLog(const String &date);
 
 //---------------------------------------------------------------------------
 

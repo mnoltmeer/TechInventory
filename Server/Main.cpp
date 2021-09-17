@@ -869,7 +869,7 @@ JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
                tmp_query->Next();
 			 }
 
-		   String titles = "<Title size='130'>Дата</Title>\
+		   String titles = "<Title size='150'>Дата</Title>\
 <Title size='350'>Пристрій</Title>\
 <Title size='300'>Операція</Title>\
 <Title size='100'>Агент</Title>";
@@ -1311,6 +1311,37 @@ bool __fastcall TServerForm::EditLocation(int location_id, const String &index, 
 	 {
 	   res = false;
 	   WriteLog("{(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+TStringStream* __fastcall TServerForm::GetLog(const String &date)
+{
+  TStringStream *res;
+
+  try
+	 {
+	   String titles = "<Title size='130'>Дата</Title><Title size='500'>Запис</Title>";
+
+	   std::unique_ptr<TStringList> data(new TStringList());
+
+	   data->LoadFromFile(LogDir + "\\" + date + ".log", TEncoding::UTF8);
+
+	   for (int i = 0; i < data->Count; i++)
+		  {
+			data->Strings[i] = ParseString(data->Strings[i], " : ", ";");
+			data->Strings[i] = ParseString(data->Strings[i], "[", "");
+			data->Strings[i] = ParseString(data->Strings[i], "]", "");
+		  }
+
+	   res = CreateAnswer("SUCCESS", titles, data.get());
+	 }
+  catch (Exception &e)
+	 {
+	   res = CreateAnswer("ERROR");
+	   WriteLog("GetLog(): " + e.ToString());
 	 }
 
   return res;
@@ -1890,6 +1921,8 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		   else
 			 res = CreateAnswer("ERROR");
 		 }
+	   else if (command == "GETLOG") //запит логу серверу за певну дату
+		 res = GetLog(params->Strings[0]);
 	   else
          throw Exception("Невідома команда");
 	 }
