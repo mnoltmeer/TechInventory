@@ -334,66 +334,27 @@ object ServerForm: TServerForm
     BevelEdges = []
     BevelOuter = bvNone
     TabOrder = 0
-    object ClientListPanel: TPanel
+    object ControlsPanel: TPanel
       Left = 0
       Top = 0
-      Width = 201
-      Height = 583
-      Align = alLeft
-      BevelEdges = []
-      BevelOuter = bvNone
-      TabOrder = 0
-      object AuthorisedClients: TListBox
-        Left = 0
-        Top = 30
-        Width = 201
-        Height = 553
-        ItemHeight = 13
-        TabOrder = 0
-      end
-      object Panel1: TPanel
-        Left = 0
-        Top = 0
-        Width = 201
-        Height = 30
-        Align = alTop
-        BevelOuter = bvNone
-        TabOrder = 1
-        object Label2: TLabel
-          Left = 0
-          Top = 0
-          Width = 159
-          Height = 19
-          Align = alClient
-          Alignment = taCenter
-          Caption = #1040#1074#1090#1086#1088#1080#1079#1086#1074#1072#1085#1110' '#1082#1083#1110#1108#1085#1090#1080
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -16
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-        end
-      end
-    end
-    object ControlsPanel: TPanel
-      Left = 201
-      Top = 0
-      Width = 626
+      Width = 827
       Height = 583
       Align = alClient
       BevelEdges = []
       BevelOuter = bvNone
-      TabOrder = 1
+      TabOrder = 0
+      ExplicitLeft = 201
+      ExplicitWidth = 626
       object ControlHeaderPanel: TPanel
         Left = 0
         Top = 0
-        Width = 626
+        Width = 827
         Height = 30
         Align = alTop
         BevelEdges = []
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitWidth = 626
         object Label1: TLabel
           Left = 8
           Top = 4
@@ -489,7 +450,7 @@ object ServerForm: TServerForm
           ParentFont = False
         end
         object Settings: TBitBtn
-          Left = 596
+          Left = 797
           Top = 0
           Width = 30
           Height = 30
@@ -575,16 +536,18 @@ object ServerForm: TServerForm
           ShowHint = True
           TabOrder = 0
           OnClick = SettingsClick
+          ExplicitLeft = 596
         end
       end
       object Log: TMemo
         Left = 0
         Top = 30
-        Width = 626
+        Width = 827
         Height = 553
         Align = alClient
         ScrollBars = ssBoth
         TabOrder = 1
+        ExplicitWidth = 626
       end
     end
   end

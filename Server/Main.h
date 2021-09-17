@@ -85,7 +85,6 @@ class TServerForm : public TForm
 {
 __published:	// IDE-managed Components
 	TPanel *MainPanel;
-	TPanel *ClientListPanel;
 	TPanel *ControlsPanel;
 	TPanel *ControlHeaderPanel;
 	TLabel *Label1;
@@ -100,13 +99,10 @@ __published:	// IDE-managed Components
 	TImageList *MenuImages;
 	TLabel *LbVersion;
 	TMemo *Log;
-	TListBox *AuthorisedClients;
 	TFDConnection *StatConnection;
 	TFDPhysFBDriverLink *StatFBDriverLink;
 	TIdSMTP *MailSender;
 	TBitBtn *Settings;
-	TPanel *Panel1;
-	TLabel *Label2;
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall ListenerExecute(TIdContext *AContext);
 	void __fastcall ListenerConnect(TIdContext *AContext);
