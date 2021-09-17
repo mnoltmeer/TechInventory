@@ -3,7 +3,7 @@ object ChangeMailForm: TChangeMailForm
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = 'Change mail address'
+  Caption = #1047#1084#1110#1085#1072' '#1072#1076#1088#1077#1089#1080' '#1077#1083'. '#1087#1086#1096#1090#1080
   ClientHeight = 160
   ClientWidth = 306
   Color = clBtnFace

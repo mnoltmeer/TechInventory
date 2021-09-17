@@ -330,6 +330,7 @@ public:		// User declarations
 								  const String &params,
 								  std::unique_ptr<TXMLDocument> &ixml);
 
+
 	void __fastcall GetServerVersion();
 	bool __fastcall SetUserPassword(int user_id, const String &new_password);
 	bool __fastcall ValidUserPassword(int user_id, const String &password);

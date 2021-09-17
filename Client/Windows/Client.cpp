@@ -698,21 +698,12 @@ void __fastcall TClientForm::GetServerVersion()
 {
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("GETVERSION"));
+	   std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   ServerInfo->Caption = "Сервер: " +
+	   ServerInfo->Caption = "Сервер: " +
 						Server +
 						", версія: " +
-						Command->NodeValue;
-         }
+						SendRequest("GETVERSION", "", ixml);
 	 }
   catch (Exception &e)
 	 {
@@ -727,22 +718,12 @@ bool __fastcall TClientForm::SetUserPassword(int user_id, const String &new_pass
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("SETPWD", IntToStr(user_id) + ";" +
-																   MD5(new_password)));
+	   std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 res = true;
-		   else
-			 res = false;
-         }
+	   if (SendRequest("SETPWD", IntToStr(user_id) + ";" + MD5(new_password), ixml) == "SUCCESS")
+		 res = true;
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -760,22 +741,12 @@ bool __fastcall TClientForm::ValidUserPassword(int user_id, const String &passwo
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("CHECKPWD", IntToStr(user_id) + ";" +
-																	 MD5(password)));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "VALID")
-			 res = true;
-		   else
-			 res = false;
-         }
+	   if (SendRequest("CHECKPWD", IntToStr(user_id) + ";" + MD5(password), ixml) == "VALID")
+		 res = true;
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -793,22 +764,12 @@ bool __fastcall TClientForm::SetUserMail(int user_id, const String &new_mail)
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("SETPWD", IntToStr(user_id) + ";" +
-																   MD5(new_mail)));
+	   std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 res = true;
-		   else
-			 res = false;
-         }
+	   if (SendRequest("SETPWD", IntToStr(user_id) + ";" + MD5(new_mail), ixml) == "SUCCESS")
+		 res = true;
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -877,27 +838,21 @@ bool __fastcall TClientForm::SetItem(int item_id, const String &inn, const Strin
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("SETITEM",
-														 IntToStr(item_id) + ";" +
-														 inn + ";" +
-														 sn + ";" +
-														 model + ";" +
-														 IntToStr(location_id) + ";" +
-														 IntToStr(agent_id)));
+	   std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
+	   if (SendRequest("SETITEM",
+					   IntToStr(item_id) + ";" +
+					   inn + ";" +
+					   sn + ";" +
+					   model + ";" +
+					   IntToStr(location_id) + ";" +
+					   IntToStr(agent_id),
+					   ixml) == "SUCCESS")
 		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 res = true;
-		   else
-			 res = false;
-         }
+		   res = true;
+		 }
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -915,21 +870,12 @@ bool __fastcall TClientForm::RemoveItem(const String &item_id)
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("REMOVEITEM", item_id));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 res = true;
-		   else
-			 res = false;
-         }
+	   if (SendRequest("REMOVEITEM", item_id, ixml) == "SUCCESS")
+		 res = true;
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -947,24 +893,18 @@ bool __fastcall TClientForm::AddEvent(int event_id, int item_id, int agent_id)
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("ADDEVENT",
-														 IntToStr(event_id) + ";" +
-														 IntToStr(item_id) + ";" +
-														 IntToStr(agent_id)));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
+	   if (SendRequest("ADDEVENT",
+					   IntToStr(event_id) + ";" +
+					   IntToStr(item_id) + ";" +
+					   IntToStr(agent_id),
+					   ixml) == "SUCCESS")
 		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 res = true;
-		   else
-			 res = false;
-         }
+		   res = true;
+		 }
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -985,32 +925,24 @@ bool __fastcall TClientForm::AskEventList(int search_type,
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("GETEVENTS",
-																	 IntToStr(search_type) + ";" +
-																	 item + ";" +
-																	 date_from + ";" +
-																	 date_to));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (ClientForm->AskToServer(Server, data.get()))
+	   if (SendRequest("GETEVENTS",
+					   IntToStr(search_type) + ";" +
+					   item + ";" +
+					   date_from + ";" +
+					   date_to,
+					   ixml) == "SUCCESS")
 		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 {
-			   ProcessAnswer(ixml.get(), ShowEventsResult);
-			   CurrentRowInd = 1;
-			   res = true;
-			 }
-		   else
-			 {
-			   ClearResultSet(ShowEventsResult);
-			   res = false;
-			 }
-         }
+		   ProcessAnswer(ixml.get(), ShowEventsResult);
+		   CurrentRowInd = 1;
+		   res = true;
+		 }
+	   else
+		 {
+		   ClearResultSet(ShowEventsResult);
+		   res = false;
+		 }
 	 }
   catch (Exception &e)
 	 {
@@ -1028,29 +960,19 @@ bool __fastcall TClientForm::AskItemList(int loc_id)
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("GETITEMS",
-																	 IntToStr(loc_id)));
+	   std::unique_ptr<TXMLDocument> ixml;
 
-	   if (ClientForm->AskToServer(Server, data.get()))
+	   if (SendRequest("GETITEMS", IntToStr(loc_id), ixml) == "SUCCESS")
 		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 {
-			   ProcessAnswer(ixml.get(), ShowItemsResult);
-			   CurrentRowInd = 1;
-			   res = true;
-			 }
-		   else
-			 {
-			   ClearResultSet(ShowItemsResult);
-			   res = false;
-			 }
-         }
+		   ProcessAnswer(ixml.get(), ShowItemsResult);
+		   CurrentRowInd = 1;
+		   res = true;
+		 }
+	   else
+		 {
+		   ClearResultSet(ShowItemsResult);
+		   res = false;
+		 }
 	 }
   catch (Exception &e)
 	 {
@@ -1068,34 +990,12 @@ bool __fastcall TClientForm::IsInnFree(const String &inn)
 
   try
 	 {
-	   //тут коннект до серверу, передача йому зашифрованих логіну та паролю
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("CHECKINN", inn));
+	   std::unique_ptr<TXMLDocument> ixml;
 
-	   if (!ClientForm->AskToServer(Server, data.get()))
-		 res = false;
+	   if (SendRequest("CHECKINN", inn, ixml) == "FREE")
+		 res = true;
 	   else
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
-
-		   try
-			  {
-				_di_IXMLNode Document = ixml->DocumentElement;
-				_di_IXMLNode Command;
-
-				Command = Document->ChildNodes->Nodes[0];
-
-				if (Command->NodeValue == "FREE")
-				  res = true;
-				else
-				  res = false;
-			  }
-		   catch (Exception &e)
-			  {
-				res = false;
-				ClientForm->AddActionLog("IsInnFree: Парсинг: " + e.ToString());
-			  }
-		 }
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -1113,34 +1013,12 @@ bool __fastcall TClientForm::CheckItemID(const String &id)
 
   try
 	 {
-	   //тут коннект до серверу, передача йому зашифрованих логіну та паролю
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("CHECKID", id));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (!ClientForm->AskToServer(Server, data.get()))
-		 res = false;
+	   if (SendRequest("CHECKID", id, ixml) == "FREE")
+		 res = true;
 	   else
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
-
-		   try
-			  {
-				_di_IXMLNode Document = ixml->DocumentElement;
-				_di_IXMLNode Command;
-
-				Command = Document->ChildNodes->Nodes[0];
-
-				if (Command->NodeValue == "FREE")
-				  res = true;
-				else
-				  res = false;
-			  }
-		   catch (Exception &e)
-			  {
-				res = false;
-				ClientForm->AddActionLog("CheckItemID: Парсинг: " + e.ToString());
-			  }
-		 }
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -1159,27 +1037,21 @@ bool __fastcall TClientForm::AddItem(int item_id, const String &inn, const Strin
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("ADDITEM",
-														 IntToStr(item_id) + ";" +
-														 inn + ";" +
-														 sn + ";" +
-														 model + ";" +
-														 IntToStr(location_id) + ";" +
-														 IntToStr(agent_id)));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
+	   if (SendRequest("ADDITEM",
+					   IntToStr(item_id) + ";" +
+					   inn + ";" +
+					   sn + ";" +
+					   model + ";" +
+					   IntToStr(location_id) + ";" +
+					   IntToStr(agent_id),
+					   ixml) == "SUCCESS")
 		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 res = true;
-		   else
-			 res = false;
-         }
+		   res = true;
+		 }
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -1256,24 +1128,16 @@ bool __fastcall TClientForm::AskUserList()
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("GETUSERLIST"));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (ClientForm->AskToServer(Server, data.get()))
+	   if (SendRequest("GETUSERLIST", "", ixml) == "SUCCESS")
 		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 {
-			   ProcessAnswer(ixml.get(), AdmUsersResult);
-               CurrentRowInd = 1;
-			 }
-		   else
-			 res = false;
-         }
+		   ProcessAnswer(ixml.get(), AdmUsersResult);
+		   CurrentRowInd = 1;
+		   res = true;
+		 }
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -1291,22 +1155,12 @@ bool __fastcall TClientForm::ControlUser(int user_id, int lock)
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("CTRLUSER", IntToStr(user_id) + ";" +
-																	 IntToStr(lock)));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 res = true;
-		   else
-			 res = false;
-         }
+	   if (SendRequest("CTRLUSER", IntToStr(user_id) + ";" + IntToStr(lock), ixml) == "SUCCESS")
+		 res = true;
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -1324,24 +1178,16 @@ bool __fastcall TClientForm::AskLocationList(TStringGrid *grid)
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("GETLOCATIONS"));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
+	   if (SendRequest("GETLOCATIONS", "", ixml) == "SUCCESS")
 		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 {
-			   ProcessAnswer(ixml.get(), grid);
-			   CurrentRowInd = 1;
-			 }
-		   else
-			 res = false;
+		   ProcessAnswer(ixml.get(), grid);
+		   CurrentRowInd = 1;
+		   res = true;
 		 }
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -1359,21 +1205,12 @@ bool __fastcall TClientForm::RemoveLocation(int location_id)
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("REMOVELOCATION", IntToStr(location_id)));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 res = true;
-		   else
-			 res = false;
-         }
+	   if (SendRequest("REMOVELOCATION", IntToStr(location_id), ixml) == "SUCCESS")
+		 res = true;
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -1391,22 +1228,12 @@ bool __fastcall TClientForm::AddLocation(const String &index, const String &name
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("ADDLOCATION", index + ";" +
-																		name));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 res = true;
-		   else
-			 res = false;
-         }
+	   if (SendRequest("ADDLOCATION", index + ";" + name, ixml) == "SUCCESS")
+		 res = true;
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -1424,23 +1251,16 @@ bool __fastcall TClientForm::EditLocation(int location_id, const String &index, 
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(CreateRequest("EDITLOCATION", IntToStr(location_id) + ";" +
-																		 index + ";" +
-																		 name));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (AskToServer(Server, data.get()))
+	   if (SendRequest("EDITLOCATION",
+					   IntToStr(location_id) + ";" + index + ";" + name,
+					   ixml) == "SUCCESS")
 		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
-
-		   _di_IXMLNode Document = ixml->DocumentElement;
-		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-		   if (Command->NodeValue == "SUCCESS")
-			 res = true;
-		   else
-			 res = false;
-         }
+		   res = true;
+		 }
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
