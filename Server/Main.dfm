@@ -353,7 +353,7 @@ object ServerForm: TServerForm
         Align = alTop
         BevelEdges = []
         BevelOuter = bvNone
-        TabOrder = 0
+        TabOrder = 1
         ExplicitWidth = 626
         object Label1: TLabel
           Left = 8
@@ -546,7 +546,7 @@ object ServerForm: TServerForm
         Height = 553
         Align = alClient
         ScrollBars = ssBoth
-        TabOrder = 1
+        TabOrder = 0
         ExplicitWidth = 626
       end
     end

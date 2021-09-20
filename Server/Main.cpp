@@ -643,7 +643,7 @@ TStringStream* __fastcall TServerForm::GetLocationList()
 
 		   while (!tmp_query->Eof)
 			 {
-               row->Clear();
+			   row->Clear();
 
 			   row->Add(tmp_query->FieldByName("ID")->AsString);
 			   row->Add(tmp_query->FieldByName("IND")->AsString);
@@ -659,7 +659,7 @@ TStringStream* __fastcall TServerForm::GetLocationList()
 
 			   data->Add(str);
 
-               tmp_query->Next();
+			   tmp_query->Next();
 			 }
 
 		   String titles = "<Title size='0'>ID</Title>\
@@ -1348,6 +1348,79 @@ TStringStream* __fastcall TServerForm::GetLog(const String &date)
 }
 //---------------------------------------------------------------------------
 
+TStringStream* __fastcall TServerForm::ExecuteQuery(const String &query)
+{
+  TStringStream *res;
+
+  try
+	 {
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   std::unique_ptr<TStringList> data(new TStringList());
+	   String titles;
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(query);
+
+	   tmp_query->Prepare();
+
+	   if (UpperCase(query.SubString(1, 6)) == "SELECT")
+		 {
+		   tmp_query->Open();
+
+		   std::unique_ptr<TStringList> row(new TStringList());
+
+		   tmp_query->First();
+
+		   String str;
+
+           for (int i = 0; i < tmp_query->FieldCount; i++)
+			  titles += "<Title size='100'>" + tmp_query->Fields->Fields[i]->FieldName + "</Title>";
+
+		   while (!tmp_query->Eof)
+			 {
+			   row->Clear();
+
+			   for (int i = 0; i < tmp_query->FieldCount; i++)
+				  row->Add(tmp_query->Fields->Fields[i]->AsString);
+
+			   for (int i = 0; i < row->Count; i++)
+				  {
+					if (row->Strings[i] == "")
+					  row->Strings[i] = "???";
+				  }
+
+			   str = ListToStr(row.get(), ";");
+
+			   data->Add(str);
+
+			   tmp_query->Next();
+			 }
+		 }
+	   else
+		 {
+		   tmp_query->Execute();
+
+		   tmp_tr->Commit();
+
+		   titles = "<Title size='150'>Оброблено записів</Title>";
+		   data->Add(IntToStr(tmp_query->RowsAffected));
+		 }
+
+	   tmp_query->Close();
+
+	   res = CreateAnswer("SUCCESS", titles, data.get());
+	 }
+  catch (Exception &e)
+	 {
+	   res = CreateAnswer("ERROR");
+	   WriteLog("ExecuteQuery(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
 bool __fastcall TServerForm::ConnectToSMTP()
 {
   MailSender->Username = "<none>";
@@ -1756,6 +1829,8 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 //за командою визначаємо потрібний запит до БД і виконуємо його
 	   if (command == "AUTH") //аутентифікація користувача
 		 {
+		   WriteLog("Авторизація користувача");
+
 		   UserInfo user = Authorisation(params->Strings[0], params->Strings[1]);
 
 		   if (user.ID < 0)
@@ -1772,6 +1847,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "GETVERSION") //запит версії серверу
 		 {
+		   WriteLog("Запит версії серверу");
 		   res = CreateAnswer(Version);
 		 }
 	   else if (command == "CHECKLOGIN") //перевірка логіну на зайнятість
@@ -1783,6 +1859,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "REGISTER") //створення нового користувача
 		 {
+		   WriteLog("Реєстрація нового користувача");
 		   if (Registration(params->Strings[0], params->Strings[1], params->Strings[2], StrToBool(params->Strings[3])))
 			 res = CreateAnswer("SUCCESS");
 		   else
@@ -1790,6 +1867,8 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "VERIFY") //надсилання коду верифікації на пошту
 		 {
+		   WriteLog("Відправка коду верифікації");
+
 		   String code = GenerateVerificationCode();
 
 		   if (SendVerificationCode(params->Strings[0], code))
@@ -1799,6 +1878,8 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "SETPWD") //зміна паролю користувачу
 		 {
+		   WriteLog("Встановленя пароля для користувача");
+
 		   if (SetUserPassword(params->Strings[0].ToInt(), params->Strings[1]))
 			 res = CreateAnswer("SUCCESS");
 		   else
@@ -1806,6 +1887,8 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "CHECKPWD") //перевірка на правильність паролю
 		 {
+		   WriteLog("Перевірка коректності паролю");
+
 		   if (ValidUserPassword(params->Strings[0].ToInt(), params->Strings[1]))
 			 res = CreateAnswer("VALID");
 		   else
@@ -1813,15 +1896,22 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "SETMAIL") //зміна поштової скриньки
 		 {
+		   WriteLog("Зміна адреси поштової скриньки");
+
 		   if (SetUserMail(params->Strings[0].ToInt(), params->Strings[1]))
 			 res = CreateAnswer("SUCCESS");
 		   else
 			 res = CreateAnswer("ERROR");
 		 }
 	   else if (command == "GETITEM") //запит даних про пристрій
-		 res = GetItem(params->Strings[0].ToInt());
-       else if (command == "SETITEM") //зміна поштової скриньки
 		 {
+		   WriteLog("Запит даних про Пристрій");
+		   res = GetItem(params->Strings[0].ToInt());
+		 }
+	   else if (command == "SETITEM") //зміна даних пристрою
+		 {
+		   WriteLog("Зміна даних пристрою");
+
 		   if (SetItem(params->Strings[0].ToInt(),
 					   params->Strings[1],
 					   params->Strings[2],
@@ -1834,10 +1924,15 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		   else
 			 res = CreateAnswer("ERROR");
 		 }
-	   else if (command == "GETLOCATIONS") //запит даних про пристрій
-		 res = GetLocationList();
+	   else if (command == "GETLOCATIONS") //запит переліку локацій
+		 {
+		   WriteLog("Запит переліку Локацій");
+		   res = GetLocationList();
+		 }
        else if (command == "REMOVEITEM") //видалення даних про пристрій
 		 {
+		   WriteLog("Видалення Пристрою з БД");
+
 		   if (RemoveItem(params->Strings[0].ToInt()))
 			 res = CreateAnswer("SUCCESS");
 		   else
@@ -1856,15 +1951,22 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "GETEVENTS") //запит передіку операцій
 		 {
+		   WriteLog("Запит переліку Подій");
+
 		   res = GetEventList(params->Strings[0].ToInt(),
 							  params->Strings[1],
 							  params->Strings[2],
 							  params->Strings[3]);
 		 }
-       else if (command == "GETITEMS") //запит передіку операцій
-		 res = GetItemList(params->Strings[0].ToInt());
+	   else if (command == "GETITEMS") //запит передіку пристроїв
+		 {
+		   WriteLog("Запит переліку Пристроїв у Локації");
+		   res = GetItemList(params->Strings[0].ToInt());
+		 }
 	   else if (command == "CHECKINN") //перевірка доступності інв. номеру
 		 {
+		   WriteLog("Перевірка доступності інв. номеру");
+
 		   if (IsInnFree(params->Strings[0]))
 			 res = CreateAnswer("FREE");
 		   else
@@ -1872,6 +1974,8 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "CHECKID") //перевірка доступності id пристрою
 		 {
+		   WriteLog("Перевірка доступності id пристрою");
+
 		   if (CheckItemID(params->Strings[0].ToInt()))
 			 res = CreateAnswer("FREE");
 		   else
@@ -1879,6 +1983,8 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "ADDITEM") //додання нового пристрою
 		 {
+		   WriteLog("Додання у БД нового пристрою");
+
 		   if (AddItem(params->Strings[0].ToInt(),
 					   params->Strings[1],
 					   params->Strings[2],
@@ -1892,9 +1998,14 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 			 res = CreateAnswer("ERROR");
 		 }
 	   else if (command == "GETUSERLIST") //запит переліку користувачів
-		 res = GetUserList();
+		 {
+		   WriteLog("Запит переліку користувачів");
+		   res = GetUserList();
+		 }
 	   else if (command == "CTRLUSER") //керування користувачем
 		 {
+		   WriteLog("Керування доступом користувача");
+
 		   if (ControlUser(params->Strings[0].ToInt(), params->Strings[1].ToInt()))
 			 res = CreateAnswer("SUCCESS");
 		   else
@@ -1902,6 +2013,8 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "REMOVELOCATION") //видалення локації
 		 {
+		   WriteLog("Видалення Локації");
+
 		   if (RemoveLocation(params->Strings[0].ToInt()))
 			 res = CreateAnswer("SUCCESS");
 		   else
@@ -1909,6 +2022,8 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "ADDLOCATION") //створення локації
 		 {
+		   WriteLog("Створення Локації");
+
 		   if (AddLocation(params->Strings[0], params->Strings[1]))
 			 res = CreateAnswer("SUCCESS");
 		   else
@@ -1922,7 +2037,15 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 			 res = CreateAnswer("ERROR");
 		 }
 	   else if (command == "GETLOG") //запит логу серверу за певну дату
-		 res = GetLog(params->Strings[0]);
+		 {
+		   WriteLog("Запит логу сервера");
+		   res = GetLog(params->Strings[0]);
+		 }
+       else if (command == "EXECQUERY") //надсилання SQL-запиту
+		 {
+		   WriteLog("Надсилання SQL-запиту до БД");
+		   res = ExecuteQuery(params->Strings[0]);
+		 }
 	   else
          throw Exception("Невідома команда");
 	 }
@@ -2094,8 +2217,8 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
   try //читаємо дані, що надійшли
 	 {
 	   ms->LoadFromStream(TSAESCypher::Encrypt(ms.get(), DataCryptKey));
-	   ms->Position = 0;
-	   WriteLog(ms->ReadString(ms->Size));
+	   //ms->Position = 0;
+	   //WriteLog(ms->ReadString(ms->Size));
 	 }
   catch (Exception &e)
 	 {
@@ -2122,11 +2245,10 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 	{
 	  try
 		 {
-           answer->Position = 0;
-		   WriteLog(answer->ReadString(answer->Size));
+		   //answer->Position = 0;
+		   //WriteLog(answer->ReadString(answer->Size));
 		   answer->Position = 0;
 		   answer->LoadFromStream(TSAESCypher::Crypt(answer.get(), DataCryptKey));
-		   answer->Position = 0;
 		 }
 	  catch (Exception &e)
 		 {
