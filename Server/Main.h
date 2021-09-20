@@ -192,7 +192,7 @@ private:	// User declarations
 //створює запит до клієнта
 	TStringStream* __fastcall CreateRequest(const String &command, const String &params);
 //створює об'єкт документу XML у пам'яті
-	TXMLDocument *__fastcall CreatXMLStream(TStringStream *ms);
+	TXMLDocument *__fastcall CreateXMLStream(TStringStream *ms);
     bool __fastcall ConnectToSMTP();
 	bool __fastcall SendMsg(String mail_addr, String subject, String from, String text);
 	String __fastcall GenerateVerificationCode();

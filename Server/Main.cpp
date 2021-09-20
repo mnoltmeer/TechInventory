@@ -1670,7 +1670,7 @@ String __fastcall TServerForm::EncryptData(TMemoryStream *crypted_data, const ch
 }
 //---------------------------------------------------------------------------
 
-TXMLDocument *__fastcall TServerForm::CreatXMLStream(TStringStream *ms)
+TXMLDocument *__fastcall TServerForm::CreateXMLStream(TStringStream *ms)
 {
   TXMLDocument *ixml;
 
@@ -2231,7 +2231,7 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 	 {
 	   ms->Position = 0;
 
-	   ixml.reset(CreatXMLStream(ms.get()));
+	   ixml.reset(CreateXMLStream(ms.get()));
 	   answer.reset(ParseXML(ixml.get()));
 	 }
   catch (Exception &e)
