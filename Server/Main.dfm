@@ -343,8 +343,6 @@ object ServerForm: TServerForm
       BevelEdges = []
       BevelOuter = bvNone
       TabOrder = 0
-      ExplicitLeft = 201
-      ExplicitWidth = 626
       object ControlHeaderPanel: TPanel
         Left = 0
         Top = 0
@@ -354,7 +352,6 @@ object ServerForm: TServerForm
         BevelEdges = []
         BevelOuter = bvNone
         TabOrder = 1
-        ExplicitWidth = 626
         object Label1: TLabel
           Left = 8
           Top = 4
@@ -536,7 +533,6 @@ object ServerForm: TServerForm
           ShowHint = True
           TabOrder = 0
           OnClick = SettingsClick
-          ExplicitLeft = 596
         end
       end
       object Log: TMemo
@@ -547,7 +543,6 @@ object ServerForm: TServerForm
         Align = alClient
         ScrollBars = ssBoth
         TabOrder = 0
-        ExplicitWidth = 626
       end
     end
   end

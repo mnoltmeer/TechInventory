@@ -849,11 +849,11 @@ JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
 
 		   while (!tmp_query->Eof)
 			 {
-               row->Clear();
+			   row->Clear();
 
 			   row->Add(tmp_query->FieldByName("DATE_ADD")->AsString);
 			   row->Add(tmp_query->FieldByName("ITEM")->AsString);
-               row->Add(tmp_query->FieldByName("OPERATION")->AsString);
+			   row->Add(tmp_query->FieldByName("OPERATION")->AsString);
 			   row->Add(tmp_query->FieldByName("AGENT")->AsString);
 
 			   for (int i = 0; i < row->Count; i++)
@@ -866,7 +866,7 @@ JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
 
 			   data->Add(str);
 
-               tmp_query->Next();
+			   tmp_query->Next();
 			 }
 
 		   String titles = "<Title size='150'>Дата</Title>\
@@ -1421,6 +1421,86 @@ TStringStream* __fastcall TServerForm::ExecuteQuery(const String &query)
 }
 //---------------------------------------------------------------------------
 
+bool __fastcall TServerForm::CheckUserMail(const String &mail)
+{
+  bool res;
+
+  try
+	 {
+	   if (mail == "")
+		 throw Exception("Порожня адреса ел. пошти");
+
+	   String sqltext = "SELECT ID FROM AGENTS WHERE MAIL = :mail";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("mail")->AsString = mail;
+
+	   tmp_query->Prepare();
+	   tmp_query->Open();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RecordCount > 0)
+		 res = true;
+	   else
+		 res = false;
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("CheckUserMail(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+int __fastcall TServerForm::GetUserID(const String &login)
+{
+  int res;
+
+  try
+	 {
+	   String sqltext = "SELECT ID FROM AGENTS WHERE LOGIN = :login";
+
+	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
+	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+
+	   tmp_tr->StartTransaction();
+	   tmp_query->SQL->Add(sqltext);
+
+	   tmp_query->ParamByName("login")->AsString = login;
+
+	   tmp_query->Prepare();
+	   tmp_query->Open();
+	   tmp_tr->Commit();
+
+	   if (tmp_query->RecordCount == 0)
+		 res = -1;
+	   else
+		 {
+		   tmp_query->First();
+		   res = tmp_query->FieldByName("ID")->AsInteger;
+         }
+
+	   tmp_query->Close();
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   WriteLog("GetUserID(): " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
 bool __fastcall TServerForm::ConnectToSMTP()
 {
   MailSender->Username = "<none>";
@@ -1499,6 +1579,31 @@ bool __fastcall TServerForm::SendVerificationCode(const String &mail, const Stri
 	}
   else
 	return SendMsg(mail, "Verification code", "TechInvent@ukrposhta.ua", code);
+}
+//---------------------------------------------------------------------------
+
+String __fastcall TServerForm::GeneratePassword()
+{
+  String res;
+
+  try
+	 {
+	   wchar_t gen_pwd[8];
+
+	   for (int i = 0; i < 8; i++)
+		  gen_pwd[i] = pwd_char_base[Random(cb_sz)];
+
+	   gen_pwd[8] = '\0';
+
+	   res = gen_pwd;
+	 }
+  catch (Exception &e)
+	 {
+	   res = "";
+	   WriteLog("GeneratePassword: " + e.ToString());
+	 }
+
+  return res;
 }
 //---------------------------------------------------------------------------
 
@@ -2045,6 +2150,33 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 {
 		   WriteLog("Надсилання SQL-запиту до БД");
 		   res = ExecuteQuery(params->Strings[0]);
+		 }
+	   else if (command == "CHECKMAIL") //перевірка присутності у таблиці агентів поштової скриньки
+		 {
+		   WriteLog("Перевірка поштової скриньки на присутність у таблиці Агентів");
+
+		   if (CheckUserMail(params->Strings[0]))
+			 res = CreateAnswer("SUCCESS");
+		   else
+			 res = CreateAnswer("ERROR");
+		 }
+	   else if (command == "RESTOREPWD") //скидання паролю
+		 {
+		   WriteLog("Скидання паролю");
+
+		   String pwd = GeneratePassword();
+
+		   int id = GetUserID(params->Strings[0]);
+
+		   if (SetUserPassword(id, MD5(pwd)))
+			 {
+			   if (SendMsg(params->Strings[1], "Restored password", "TechInvent@ukrposhta.ua", pwd))
+				 res = CreateAnswer("SUCCESS");
+			   else
+                 res = CreateAnswer("ERROR");
+			 }
+		   else
+			 res = CreateAnswer("ERROR");
 		 }
 	   else
          throw Exception("Невідома команда");

@@ -73,6 +73,16 @@ enum SearchType {ST_ID = 0,
 				 ST_INN = 1,
 				 ST_SN = 2};
 
+const int cb_sz = 72;
+const wchar_t pwd_char_base[cb_sz] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+									  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+									  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+									  'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',
+									  'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+									  'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
+									  'y', 'z', '!', '@', '#', '$', '%', '^', '&', '*',
+									  '-', '_'};
+
 struct UserInfo
 {
   int ID;
@@ -162,7 +172,8 @@ private:	// User declarations
 	bool __fastcall EditLocation(int location_id, const String &index, const String &name);
 	TStringStream* __fastcall GetLog(const String &date);
 	TStringStream* __fastcall ExecuteQuery(const String &query);
-
+	bool __fastcall CheckUserMail(const String &mail);
+    int __fastcall GetUserID(const String &login);
 //---------------------------------------------------------------------------
 
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);
@@ -197,6 +208,7 @@ private:	// User declarations
 	bool __fastcall SendMsg(String mail_addr, String subject, String from, String text);
 	String __fastcall GenerateVerificationCode();
 	bool __fastcall SendVerificationCode(const String &mail, const String &code);
+    String __fastcall GeneratePassword();
 
 public:		// User declarations
 	__fastcall TServerForm(TComponent* Owner);
