@@ -1,49 +1,34 @@
-/*!
-Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
-*/
 //---------------------------------------------------------------------------
 
-#ifndef AddUserH
-#define AddUserH
+#ifndef RestorePasswordH
+#define RestorePasswordH
 //---------------------------------------------------------------------------
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 //---------------------------------------------------------------------------
-class TAddUserForm : public TForm
+class TRestorePasswordForm : public TForm
 {
 __published:	// IDE-managed Components
-	TLabel *Label2;
-	TLabel *Label3;
-	TLabel *Label4;
-	TLabel *Label5;
-	TLabel *LoginError;
-	TLabel *PasswordError;
-	TLabel *EMailError;
-	TLabel *ConfirmPasswordError;
-	TEdit *Login;
-	TEdit *Password;
-	TEdit *ConfirmPassword;
 	TEdit *EMail;
-	TComboBox *UserRole;
-	TLabel *Label1;
-	TButton *Create;
+	TLabel *EMailError;
+	TLabel *Label5;
+	TEdit *Login;
+	TLabel *LoginError;
+	TLabel *Label2;
+	TButton *Apply;
 	TButton *Cancel;
-	TLabel *RegistrationResult;
+	void __fastcall ApplyClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
-	void __fastcall CreateClick(TObject *Sender);
 	void __fastcall CancelClick(TObject *Sender);
 	void __fastcall LoginKeyPress(TObject *Sender, System::WideChar &Key);
-	void __fastcall PasswordKeyPress(TObject *Sender, System::WideChar &Key);
-	void __fastcall ConfirmPasswordKeyPress(TObject *Sender, System::WideChar &Key);
 	void __fastcall EMailKeyPress(TObject *Sender, System::WideChar &Key);
-
 private:	// User declarations
 public:		// User declarations
-	__fastcall TAddUserForm(TComponent* Owner);
+	__fastcall TRestorePasswordForm(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TAddUserForm *AddUserForm;
+extern PACKAGE TRestorePasswordForm *RestorePasswordForm;
 //---------------------------------------------------------------------------
 #endif

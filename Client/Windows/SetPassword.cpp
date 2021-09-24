@@ -27,6 +27,8 @@ void __fastcall TSetPasswordForm::ApplyClick(TObject *Sender)
 	MessageBox(this->Handle, L"Не вказане підтвердження паролю", L"Помилка", MB_OK|MB_ICONERROR);
   else if (Password->Text != ConfirmPassword->Text)
 	MessageBox(this->Handle, L"Пароль та його підтвердження не збігаються", L"Помилка", MB_OK|MB_ICONERROR);
+  else if (!ClientForm->IsValidPassword(Password->Text))
+	MessageBox(this->Handle, L"Пароль не відповідає правилам. Довжина паролю має бути не менше ніж 8 символів. Допускаються латинські літери верхнього та нижнього регістру, цифри та символи '!', '@', '#', '$', '%', '^', '&', '*', '-', '_'", L"Помилка", MB_OK|MB_ICONERROR);
   else
 	{
 	  if (ClientForm->SetUserPassword(UserID, Password->Text))
@@ -54,3 +56,18 @@ void __fastcall TSetPasswordForm::FormShow(TObject *Sender)
   ConfirmPassword->Text = "";
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TSetPasswordForm::PasswordKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	Apply->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TSetPasswordForm::ConfirmPasswordKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	Apply->Click();
+}
+//---------------------------------------------------------------------------
+

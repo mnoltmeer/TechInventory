@@ -60,3 +60,24 @@ void __fastcall TChangePasswordForm::FormShow(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TChangePasswordForm::OldPasswordKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	Apply->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TChangePasswordForm::PasswordKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	Apply->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TChangePasswordForm::ConfirmPasswordKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	Apply->Click();
+}
+//---------------------------------------------------------------------------
+

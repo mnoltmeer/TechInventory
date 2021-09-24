@@ -45,6 +45,16 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #define LOCK 1
 #define UNLOCK 0
 
+const int cb_sz = 72;
+const wchar_t pwd_char_base[cb_sz] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+									  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+									  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+									  'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',
+									  'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+									  'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
+									  'y', 'z', '!', '@', '#', '$', '%', '^', '&', '*',
+									  '-', '_'};
+
 enum {OP_ADD_ITM = 1,
 	  OP_CANCEL_ITM = 2,
 	  OP_SET_INN = 3,
@@ -169,10 +179,6 @@ __published:	// IDE-managed Components
 	TDateTimePicker *AdmLogsDate;
 	TButton *AdmLogsShow;
 	TPanel *PnAdmManage;
-	TLabel *Label21;
-	TEdit *AdmManageServerPort;
-	TButton *AdmServerSetServerPort;
-	TLabel *Label22;
 	TPanel *PnCheckItems;
 	TLabel *Label23;
 	TPanel *Panel9;
@@ -182,10 +188,6 @@ __published:	// IDE-managed Components
 	TBitBtn *CheckItemsSendToUnknown;
 	TBitBtn *CheckItemsEdit;
 	TStringGrid *CheckItemsResult;
-	TLabel *Label25;
-	TEdit *AdmManageConnectionPort;
-	TButton *AdmManageSetConnectionPort;
-	TLabel *Label26;
 	TPopupMenu *PPItemOptions;
 	TMenuItem *PPCheckEdit;
 	TMenuItem *PPCheckSetUnknown;
@@ -225,6 +227,11 @@ __published:	// IDE-managed Components
 	TBitBtn *AdmUsersUnlock;
 	TMenuItem *PPUnlockUser;
 	TStringGrid *AdmLogsResult;
+	TLabel *Label7;
+	TStringGrid *AdmRequestResult;
+	TMemo *QueryText;
+	TPanel *Panel8;
+	TButton *Execute;
 	void __fastcall LoadAnimTimerTimer(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -293,6 +300,8 @@ __published:	// IDE-managed Components
 	void __fastcall AdmUsersUnlockClick(TObject *Sender);
 	void __fastcall AdmUsersRefreshClick(TObject *Sender);
 	void __fastcall AdmLocationsRefreshClick(TObject *Sender);
+	void __fastcall ExecuteClick(TObject *Sender);
+	void __fastcall QueryTextKeyUp(TObject *Sender, WORD &Key, TShiftState Shift);
 
 
 private:	// User declarations
@@ -316,7 +325,7 @@ public:		// User declarations
 	void __fastcall AddActionLog(String status);
 
 //створює об'єкт документу XML у пам'яті
-	TXMLDocument *__fastcall CreatXMLStream(TStringStream *ms);
+	TXMLDocument *__fastcall CreateXMLStream(TStringStream *ms);
 	TStringStream* __fastcall CreateRequest(const String &command, const String &params);
 	TStringStream* __fastcall CreateRequest(const String &command);
 //відправка запиту на сервер
@@ -357,10 +366,13 @@ public:		// User declarations
 	bool __fastcall AddLocation(const String &index, const String &name);
 	bool __fastcall EditLocation(int location_id, const String &index, const String &name);
 	bool __fastcall AskServerLog(const String &date);
+	bool __fastcall SendQuery(const String &query);
+	bool __fastcall RestorePassword(const String &login, const String &mail);
 
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 	bool __fastcall IsItemExistInCheckTable(const String &id);
-    void __fastcall PrepareCheckTable();
+	void __fastcall PrepareCheckTable();
+    bool __fastcall IsValidPassword(const String &password);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TClientForm *ClientForm;

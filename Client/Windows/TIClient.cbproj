@@ -170,6 +170,12 @@
             <DependentOn>Registration.h</DependentOn>
             <BuildOrder>8</BuildOrder>
         </CppCompile>
+        <CppCompile Include="RestorePassword.cpp">
+            <Form>RestorePasswordForm</Form>
+            <FormType>dfm</FormType>
+            <DependentOn>RestorePassword.h</DependentOn>
+            <BuildOrder>17</BuildOrder>
+        </CppCompile>
         <CppCompile Include="SelectLocation.cpp">
             <Form>SelectLocationForm</Form>
             <FormType>dfm</FormType>
@@ -216,6 +222,7 @@
         <FormResources Include="Login.dfm"/>
         <FormResources Include="EditItem.dfm"/>
         <FormResources Include="EditLocation.dfm"/>
+        <FormResources Include="RestorePassword.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

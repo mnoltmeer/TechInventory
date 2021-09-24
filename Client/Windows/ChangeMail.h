@@ -25,6 +25,8 @@ __published:	// IDE-managed Components
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall ApplyClick(TObject *Sender);
 	void __fastcall CancelClick(TObject *Sender);
+	void __fastcall PasswordKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall EMailKeyPress(TObject *Sender, System::WideChar &Key);
 private:	// User declarations
 public:		// User declarations
 	__fastcall TChangeMailForm(TComponent* Owner);

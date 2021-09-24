@@ -37,6 +37,11 @@ __published:	// IDE-managed Components
 	void __fastcall ExitClick(TObject *Sender);
 	void __fastcall ConfirmClick(TObject *Sender);
 	void __fastcall VerificationCodeKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall LoginKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall PasswordKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall ConfirmPasswordKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall EMailKeyPress(TObject *Sender, System::WideChar &Key);
+
 
 private:	// User declarations
 	bool __fastcall SendVerificationCode(const String &mail);

@@ -37,6 +37,7 @@ object SetPasswordForm: TSetPasswordForm
     Height = 21
     PasswordChar = '*'
     TabOrder = 0
+    OnKeyPress = PasswordKeyPress
   end
   object ConfirmPassword: TEdit
     Left = 8
@@ -45,6 +46,7 @@ object SetPasswordForm: TSetPasswordForm
     Height = 21
     PasswordChar = '*'
     TabOrder = 1
+    OnKeyPress = ConfirmPasswordKeyPress
   end
   object Apply: TButton
     Left = 8

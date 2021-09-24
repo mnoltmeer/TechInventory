@@ -63,6 +63,7 @@ object ChangeMailForm: TChangeMailForm
     Height = 21
     PasswordChar = '*'
     TabOrder = 1
+    OnKeyPress = PasswordKeyPress
   end
   object EMail: TEdit
     Left = 8
@@ -70,6 +71,7 @@ object ChangeMailForm: TChangeMailForm
     Width = 289
     Height = 21
     TabOrder = 0
+    OnKeyPress = EMailKeyPress
   end
   object Apply: TButton
     Left = 8

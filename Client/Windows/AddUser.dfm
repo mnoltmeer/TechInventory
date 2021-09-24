@@ -117,6 +117,7 @@ object AddUserForm: TAddUserForm
     Width = 201
     Height = 21
     TabOrder = 0
+    OnKeyPress = LoginKeyPress
   end
   object Password: TEdit
     Left = 8
@@ -125,6 +126,7 @@ object AddUserForm: TAddUserForm
     Height = 21
     PasswordChar = '*'
     TabOrder = 1
+    OnKeyPress = PasswordKeyPress
   end
   object ConfirmPassword: TEdit
     Left = 8
@@ -133,6 +135,7 @@ object AddUserForm: TAddUserForm
     Height = 21
     PasswordChar = '*'
     TabOrder = 2
+    OnKeyPress = ConfirmPasswordKeyPress
   end
   object EMail: TEdit
     Left = 8
@@ -140,6 +143,7 @@ object AddUserForm: TAddUserForm
     Width = 289
     Height = 21
     TabOrder = 3
+    OnKeyPress = EMailKeyPress
   end
   object UserRole: TComboBox
     Left = 8

@@ -121,8 +121,8 @@ object LoginForm: TLoginForm
     OnKeyPress = UserNameKeyPress
   end
   object Cancel: TButton
-    Left = 168
-    Top = 121
+    Left = 200
+    Top = 119
     Width = 75
     Height = 25
     Caption = #1057#1082#1072#1089#1091#1074#1072#1090#1080

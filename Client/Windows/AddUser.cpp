@@ -102,3 +102,32 @@ void __fastcall TAddUserForm::CancelClick(TObject *Sender)
   Close();
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TAddUserForm::LoginKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	Create->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAddUserForm::PasswordKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	Create->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAddUserForm::ConfirmPasswordKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	Create->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAddUserForm::EMailKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	Create->Click();
+}
+//---------------------------------------------------------------------------
+

@@ -1,42 +1,49 @@
-/*!
-Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
-*/
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
 #pragma hdrstop
 
 #include "Client.h"
-#include "ChangeMail.h"
+#include "RestorePassword.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
-TChangeMailForm *ChangeMailForm;
-
-extern int UserID;
+TRestorePasswordForm *RestorePasswordForm;
 //---------------------------------------------------------------------------
-__fastcall TChangeMailForm::TChangeMailForm(TComponent* Owner)
+__fastcall TRestorePasswordForm::TRestorePasswordForm(TComponent* Owner)
 	: TForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TChangeMailForm::FormShow(TObject *Sender)
+void __fastcall TRestorePasswordForm::FormShow(TObject *Sender)
 {
   Left = ClientForm->Left + ClientForm->ClientWidth / 2 - ClientWidth / 2;
   Top = ClientForm->Top + ClientForm->ClientHeight / 2 - ClientHeight / 2;
-
-  PasswordError->Hide();
-  EMailError->Hide();
-
-  Password->Text = "";
+  Login->Text = "";
   EMail->Text = "";
+  LoginError->Hide();
+  EMailError->Hide();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TChangeMailForm::ApplyClick(TObject *Sender)
+void __fastcall TRestorePasswordForm::ApplyClick(TObject *Sender)
 {
-  if (EMail->Text == "")
+  LoginError->Hide();
+  EMailError->Hide();
+  std::unique_ptr<TXMLDocument> ixml;
+
+  if (Login->Text == "")
+	{
+	  LoginError->Caption = "Не вказано логін";
+	  LoginError->Show();
+	}
+  else if (ClientForm->SendRequest("CHECKLOGIN", Login->Text, ixml) == "FREE")
+	{
+	  LoginError->Caption = "Логін відсутній у системі";
+	  LoginError->Show();
+	}
+  else if (EMail->Text == "")
 	{
 	  EMailError->Caption = "Не вказано адресу ел. пошти";
 	  EMailError->Show();
@@ -46,48 +53,32 @@ void __fastcall TChangeMailForm::ApplyClick(TObject *Sender)
 	  EMailError->Caption = "Невірний формат адреси ел. пошти";
 	  EMailError->Show();
 	}
-  else if (Password->Text == "")
-	{
-	  PasswordError->Caption = "Не вказано пароль";
-	  PasswordError->Show();
-	}
-  else if (!ClientForm->ValidUserPassword(UserID, Password->Text))
-    {
-	  PasswordError->Caption = "Невірний пароль";
-	  PasswordError->Show();
-	}
+  else if (!ClientForm->RestorePassword(Login->Text, EMail->Text))
+	MessageBox(this->Handle, L"Не вдалось скинути пароль", L"Помилка", MB_OK|MB_ICONERROR);
   else
 	{
-	  if (ClientForm->SetUserMail(UserID, EMail->Text))
-		{
-		  ClientForm->CurrentMail->Caption = EMail->Text;
-		  MessageBox(this->Handle, L"Адресу ел. пошти успішно змінено", L"Успіх", MB_OK|MB_ICONINFORMATION);
-		}
-	  else
-		MessageBox(this->Handle, L"Не вдалося змінити адресу ел. пошти", L"Помилка", MB_OK|MB_ICONERROR);
-
-      Close();
+      MessageBox(this->Handle, L"Пароль успішно скинуто і відправлено на адресу ел. пошти. Перевірте поштову скриньку", L"Успіх", MB_OK|MB_ICONINFORMATION);
+	  Close();
     }
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TChangeMailForm::CancelClick(TObject *Sender)
+void __fastcall TRestorePasswordForm::CancelClick(TObject *Sender)
 {
   Close();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TChangeMailForm::PasswordKeyPress(TObject *Sender, System::WideChar &Key)
+void __fastcall TRestorePasswordForm::LoginKeyPress(TObject *Sender, System::WideChar &Key)
 {
   if (Key == 13)
 	Apply->Click();
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TChangeMailForm::EMailKeyPress(TObject *Sender, System::WideChar &Key)
+void __fastcall TRestorePasswordForm::EMailKeyPress(TObject *Sender, System::WideChar &Key)
 {
   if (Key == 13)
 	Apply->Click();
 }
 //---------------------------------------------------------------------------
-

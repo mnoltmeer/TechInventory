@@ -53,33 +53,12 @@ bool __fastcall TRegistrationForm::IsLoginFree(const String &login)
   try
 	 {
 	   //тут коннект до серверу, передача йому зашифрованих логіну та паролю
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("CHECKLOGIN", login));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (!ClientForm->AskToServer(Server, data.get()))
-		 res = false;
+	   if (ClientForm->SendRequest("CHECKLOGIN", login, ixml) == "FREE")
+		 res = true;
 	   else
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
-
-		   try
-			  {
-				_di_IXMLNode Document = ixml->DocumentElement;
-				_di_IXMLNode Command;
-
-				Command = Document->ChildNodes->Nodes[0];
-
-				if (Command->NodeValue == "FREE")
-				  res = true;
-				else
-				  res = false;
-			  }
-		   catch (Exception &e)
-			  {
-				res = false;
-				ClientForm->AddActionLog("IsLoginFree: Парсинг: " + e.ToString());
-			  }
-		 }
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -104,35 +83,17 @@ bool __fastcall TRegistrationForm::Registration(const String &login,
 	   String hash_pwd;
 
 	   hash_pwd = MD5(pass);
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("REGISTER",
-																	 login + ";" +
-																	 hash_pwd + ";" +
-																	 mail + ";" +
-																	 (unsigned int)admin));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (!ClientForm->AskToServer(Server, data.get()))
-		 res = false;
-	   else
+	   if (ClientForm->SendRequest("REGISTER", login + ";" +
+											   hash_pwd + ";" +
+											   mail + ";" +
+											   (unsigned int)admin, ixml) == "SUCCESS")
 		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
-
-		   try
-			  {
-				_di_IXMLNode Document = ixml->DocumentElement;
-				_di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-				if (Command->NodeValue == "SUCCESS")
-				  res = true;
-				else
-				  res = false;
-			  }
-		   catch (Exception &e)
-			  {
-				res = false;
-				ClientForm->AddActionLog("Registration: Парсинг: " + e.ToString());
-			  }
+		   res = true;
 		 }
+	   else
+		 res = false;
 	 }
   catch (Exception &e)
 	 {
@@ -152,31 +113,14 @@ bool __fastcall TRegistrationForm::SendVerificationCode(const String &mail)
 
   try
 	 {
-	   std::unique_ptr<TStringStream> data(ClientForm->CreateRequest("VERIFY", mail));
+       std::unique_ptr<TXMLDocument> ixml;
 
-	   if (!ClientForm->AskToServer(Server, data.get()))
+	   VerifCode = ClientForm->SendRequest("VERIFY", mail, ixml);
+
+	   if (VerifCode == "ERROR")
 		 res = false;
 	   else
-		 {
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
-
-		   try
-			  {
-				_di_IXMLNode Document = ixml->DocumentElement;
-				_di_IXMLNode Command = Document->ChildNodes->Nodes[0];
-
-				if (Command->NodeValue == "ERROR")
-				  res = false;
-				else
-				  VerifCode = Command->NodeValue;
-			  }
-		   catch (Exception &e)
-			  {
-				res = false;
-				ClientForm->AddActionLog("SendVerificationCode: Парсинг: " + e.ToString());
-			  }
-		 }
+		 res = true;
 	 }
   catch (Exception &e)
 	 {
@@ -200,44 +144,59 @@ void __fastcall TRegistrationForm::SendCodeClick(TObject *Sender)
 
   if (Login->Text == "")
 	{
-	  LoginError->Caption = "Не вказано логін";
-	  LoginError->Show();
+	  RegistrationResult->Caption = "Не вказано логін";
+      RegistrationResult->Font->Color = clRed;
+	  RegistrationResult->Show();
 	}
   else if (Password->Text == "")
 	{
-	  PasswordError->Caption = "Не вказано пароль";
-	  PasswordError->Show();
+	  RegistrationResult->Caption = "Не вказано пароль";
+	  RegistrationResult->Font->Color = clRed;
+	  RegistrationResult->Show();
 	}
   else if (ConfirmPassword->Text == "")
 	{
-	  ConfirmPasswordError->Caption = "Не вказане підтвердження паролю";
-	  ConfirmPasswordError->Show();
+	  RegistrationResult->Caption = "Не вказане підтвердження паролю";
+	  RegistrationResult->Font->Color = clRed;
+	  RegistrationResult->Show();
 	}
   else if (Password->Text != ConfirmPassword->Text)
 	{
-	  PasswordError->Caption = "Пароль та його підтвердження не збігаються";
-	  PasswordError->Show();
+	  RegistrationResult->Caption = "Пароль та його підтвердження не збігаються";
+	  RegistrationResult->Show();
+	}
+  else if (!ClientForm->IsValidPassword(Password->Text))
+	{
+	  RegistrationResult->Caption = "Пароль не відповідає правилам.\r\n\
+Довжина паролю має бути не менше ніж 8 символів.\r\n\
+Допускаються латинські літери верхнього та нижнього\r\nрегістру, \
+цифри та символи '!', '@', '#', '$', '%', '^', '&', '*', '-', '_'";
+	  RegistrationResult->Font->Color = clRed;
+	  RegistrationResult->Show();
 	}
   else if (EMail->Text == "")
 	{
-	  EMailError->Caption = "Не вказано адресу ел. пошти";
-	  EMailError->Show();
+	  RegistrationResult->Caption = "Не вказано адресу ел. пошти";
+	  RegistrationResult->Font->Color = clRed;
+	  RegistrationResult->Show();
 	}
   else if (!EMail->Text.Pos("@"))
 	{
-	  EMailError->Caption = "Невірний формат адреси ел. пошти";
-	  EMailError->Show();
+	  RegistrationResult->Caption = "Невірний формат адреси ел. пошти";
+	  RegistrationResult->Font->Color = clRed;
+	  RegistrationResult->Show();
 	}
   else if (!IsLoginFree(Login->Text))
 	{
-	  LoginError->Caption = "Логін вже зареєстровано";
-	  LoginError->Show();
+	  RegistrationResult->Caption = "Логін вже зареєстровано";
+	  RegistrationResult->Font->Color = clRed;
+	  RegistrationResult->Show();
 	}
   else if (!SendVerificationCode(EMail->Text))
 	{
 	  RegistrationResult->Caption = "Код верифікації не надіслано. Зверніться до адміністратора серверу";
 	  RegistrationResult->Font->Color = clRed;
-      RegistrationResult->Show();
+	  RegistrationResult->Show();
 	}
   else
 	{
@@ -288,6 +247,34 @@ void __fastcall TRegistrationForm::VerificationCodeKeyPress(TObject *Sender, Sys
 {
   if (Key == 13)
     Confirm->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TRegistrationForm::LoginKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	SendCode->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TRegistrationForm::PasswordKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	SendCode->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TRegistrationForm::ConfirmPasswordKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	SendCode->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TRegistrationForm::EMailKeyPress(TObject *Sender, System::WideChar &Key)
+{
+  if (Key == 13)
+	SendCode->Click();
 }
 //---------------------------------------------------------------------------
 

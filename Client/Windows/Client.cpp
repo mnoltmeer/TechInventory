@@ -260,7 +260,7 @@ bool __fastcall TClientForm::AskToServer(const String &host, TStringStream *buff
 }
 //---------------------------------------------------------------------------
 
-TXMLDocument *__fastcall TClientForm::CreatXMLStream(TStringStream *ms)
+TXMLDocument *__fastcall TClientForm::CreateXMLStream(TStringStream *ms)
 {
   TXMLDocument *ixml;
 
@@ -792,7 +792,7 @@ String __fastcall TClientForm::AskItemInfo(const String &item_id)
 	   if (AskToServer(Server, data.get()))
 		 {
 		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(CreatXMLStream(data.get()));
+		   std::unique_ptr<TXMLDocument> ixml(CreateXMLStream(data.get()));
 
 		   _di_IXMLNode Document = ixml->DocumentElement;
 		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
@@ -1299,6 +1299,61 @@ bool __fastcall TClientForm::AskServerLog(const String &date)
 }
 //---------------------------------------------------------------------------
 
+bool __fastcall TClientForm::SendQuery(const String &query)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TXMLDocument> ixml;
+
+	   if (SendRequest("EXECQUERY", query, ixml) == "SUCCESS")
+		 {
+		   ProcessAnswer(ixml.get(), AdmRequestResult);
+		   CurrentRowInd = 1;
+		   res = true;
+		 }
+	   else
+		 res = false;
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка надсилання SQL-запиту");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+bool __fastcall TClientForm::RestorePassword(const String &login, const String &mail)
+{
+  bool res;
+
+  try
+	 {
+	   std::unique_ptr<TXMLDocument> ixml;
+
+	   if (SendRequest("CHECKMAIL", mail, ixml) == "SUCCESS")
+		 {
+		   if (SendRequest("RESTOREPWD", login + ";" + mail, ixml) == "SUCCESS")
+			 res = true;
+		   else
+			 res = false;
+         }
+	   else
+		 res = false;
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка надсилання SQL-запиту");
+	   res = false;
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
 TMemoryStream* __fastcall TClientForm::CryptData(String data, const char *pass)
 {
   TMemoryStream *res = new TMemoryStream();
@@ -1613,7 +1668,7 @@ String __fastcall TClientForm::SendRequest(const String &command,
 	   if (AskToServer(Server, data.get()))
 		 {
 		   data->Position = 0;
-		   ixml.reset(CreatXMLStream(data.get()));
+		   ixml.reset(CreateXMLStream(data.get()));
 
 		   _di_IXMLNode Document = ixml->DocumentElement;
 		   _di_IXMLNode Command = Document->ChildNodes->Nodes[0];
@@ -1699,6 +1754,42 @@ void __fastcall TClientForm::PrepareCheckTable()
 }
 //---------------------------------------------------------------------------
 
+bool __fastcall TClientForm::IsValidPassword(const String &password)
+{
+  bool res;
+
+  try
+	 {
+	   if (password.Length() < 8)
+		 throw Exception("Довжина паролю є замалою");
+
+	   for (int i = 1; i <= password.Length(); i++)
+		  {
+			res = false;
+
+			for (int j = 0; j < cb_sz; j++)
+			   {
+				 if (password[i] == pwd_char_base[j])
+				   {
+					 res = true;
+					 break;
+				   }
+			   }
+
+			if (!res)
+			  throw Exception("Використано недопустимий символ");
+          }
+	 }
+  catch (Exception &e)
+	 {
+	   res = false;
+	   AddActionLog("IsValidPassword: " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TClientForm::ListenerExecute(TIdContext *AContext)
 {
   std::unique_ptr<TStringStream> ms(new TStringStream("", TEncoding::UTF8, true));
@@ -1720,7 +1811,7 @@ void __fastcall TClientForm::ListenerExecute(TIdContext *AContext)
 
   try
 	 {
-	   ixml.reset(CreatXMLStream(ms.get()));
+	   ixml.reset(CreateXMLStream(ms.get()));
 
 	   ParseXML(ixml.get());
 	 }
@@ -2384,6 +2475,20 @@ void __fastcall TClientForm::CheckItemsResultDrawCell(TObject *Sender, int ACol,
 void __fastcall TClientForm::AdmLocationsRefreshClick(TObject *Sender)
 {
   AskLocationList(AdmLocationsResult);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ExecuteClick(TObject *Sender)
+{
+  if (QueryText->Text != "")
+	SendQuery(QueryText->Text);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::QueryTextKeyUp(TObject *Sender, WORD &Key, TShiftState Shift)
+{
+  if (Key == 120)
+    Execute->Click();
 }
 //---------------------------------------------------------------------------
 

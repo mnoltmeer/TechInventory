@@ -16,6 +16,7 @@ USEFORM("Registration.cpp", RegistrationForm);
 USEFORM("Login.cpp", LoginForm);
 USEFORM("EditItem.cpp", EditItemForm);
 USEFORM("EditLocation.cpp", EditLocationForm);
+USEFORM("RestorePassword.cpp", RestorePasswordForm);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
@@ -33,6 +34,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->CreateForm(__classid(TSetPasswordForm), &SetPasswordForm);
 		Application->CreateForm(__classid(TAddUserForm), &AddUserForm);
 		Application->CreateForm(__classid(TEditLocationForm), &EditLocationForm);
+		Application->CreateForm(__classid(TRestorePasswordForm), &RestorePasswordForm);
 		Application->Run();
 	}
 	catch (Exception &exception)

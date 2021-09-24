@@ -9,6 +9,7 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include "..\..\..\work-functions\MyFunc.h"
 #include "Client.h"
 #include "Registration.h"
+#include "RestorePassword.h"
 #include "Login.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -106,7 +107,7 @@ void __fastcall TLoginForm::RegNewUserClick(TObject *Sender)
 
 void __fastcall TLoginForm::ForgotPasswordClick(TObject *Sender)
 {
-  //відкриття форми відновлення паролю
+  RestorePasswordForm->Show();
 }
 //---------------------------------------------------------------------------
 
@@ -141,9 +142,7 @@ AuthResult __fastcall TLoginForm::Authorisation(const String &server,
 	   else
 		 {
 		   data->Position = 0;
-		   ClientForm->AddActionLog(data->ReadString(data->Size));
-		   data->Position = 0;
-		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreatXMLStream(data.get()));
+		   std::unique_ptr<TXMLDocument> ixml(ClientForm->CreateXMLStream(data.get()));
 
 		   try
 			  {

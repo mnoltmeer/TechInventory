@@ -5,7 +5,7 @@ object RegistrationForm: TRegistrationForm
   BorderStyle = bsSingle
   Caption = 'RegistrationForm'
   ClientHeight = 401
-  ClientWidth = 457
+  ClientWidth = 388
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,7 +19,7 @@ object RegistrationForm: TRegistrationForm
   object Label1: TLabel
     Left = 0
     Top = 0
-    Width = 457
+    Width = 388
     Height = 23
     Align = alTop
     Alignment = taCenter
@@ -65,7 +65,6 @@ object RegistrationForm: TRegistrationForm
     Top = 293
     Width = 103
     Height = 16
-    Alignment = taCenter
     Caption = 'RegistrationResult'
   end
   object LoginError: TLabel
@@ -126,6 +125,7 @@ object RegistrationForm: TRegistrationForm
     Width = 201
     Height = 24
     TabOrder = 0
+    OnKeyPress = LoginKeyPress
   end
   object Password: TEdit
     Left = 8
@@ -134,6 +134,7 @@ object RegistrationForm: TRegistrationForm
     Height = 24
     PasswordChar = '*'
     TabOrder = 1
+    OnKeyPress = PasswordKeyPress
   end
   object ConfirmPassword: TEdit
     Left = 8
@@ -142,6 +143,7 @@ object RegistrationForm: TRegistrationForm
     Height = 24
     PasswordChar = '*'
     TabOrder = 2
+    OnKeyPress = ConfirmPasswordKeyPress
   end
   object EMail: TEdit
     Left = 8
@@ -149,6 +151,7 @@ object RegistrationForm: TRegistrationForm
     Width = 289
     Height = 24
     TabOrder = 3
+    OnKeyPress = EMailKeyPress
   end
   object VerificationCode: TEdit
     Left = 8
@@ -183,7 +186,7 @@ object RegistrationForm: TRegistrationForm
     OnClick = ConfirmClick
   end
   object Exit: TButton
-    Left = 374
+    Left = 305
     Top = 368
     Width = 75
     Height = 25
