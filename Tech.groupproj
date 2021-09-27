@@ -9,16 +9,10 @@
         <Projects Include="AESCryptTest\AESTest.cbproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="TIService.cbproj">
-            <Dependencies/>
-        </Projects>
         <Projects Include="Client\Windows\TIClient.cbproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Server\TIServer.cbproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="TechConsole\TechConsole.cbproj">
             <Dependencies/>
         </Projects>
         <Projects Include="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj">
@@ -50,15 +44,6 @@
     <Target Name="AESTest:Make">
         <MSBuild Projects="AESCryptTest\AESTest.cbproj" Targets="Make"/>
     </Target>
-    <Target Name="TIService">
-        <MSBuild Projects="TIService.cbproj"/>
-    </Target>
-    <Target Name="TIService:Clean">
-        <MSBuild Projects="TIService.cbproj" Targets="Clean"/>
-    </Target>
-    <Target Name="TIService:Make">
-        <MSBuild Projects="TIService.cbproj" Targets="Make"/>
-    </Target>
     <Target Name="TIClient">
         <MSBuild Projects="Client\Windows\TIClient.cbproj"/>
     </Target>
@@ -77,15 +62,6 @@
     <Target Name="TIServer:Make">
         <MSBuild Projects="Server\TIServer.cbproj" Targets="Make"/>
     </Target>
-    <Target Name="TechConsole">
-        <MSBuild Projects="TechConsole\TechConsole.cbproj"/>
-    </Target>
-    <Target Name="TechConsole:Clean">
-        <MSBuild Projects="TechConsole\TechConsole.cbproj" Targets="Clean"/>
-    </Target>
-    <Target Name="TechConsole:Make">
-        <MSBuild Projects="TechConsole\TechConsole.cbproj" Targets="Make"/>
-    </Target>
     <Target Name="Project1">
         <MSBuild Projects="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj"/>
     </Target>
@@ -96,13 +72,13 @@
         <MSBuild Projects="C:\Users\noltmeer-mo\Documents\Embarcadero\Studio\Projects\Project1.cbproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="AESCrypt;AESTest;TIService;TIClient;TIServer;TechConsole;Project1"/>
+        <CallTarget Targets="AESCrypt;AESTest;TIClient;TIServer;Project1"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="AESCrypt:Clean;AESTest:Clean;TIService:Clean;TIClient:Clean;TIServer:Clean;TechConsole:Clean;Project1:Clean"/>
+        <CallTarget Targets="AESCrypt:Clean;AESTest:Clean;TIClient:Clean;TIServer:Clean;Project1:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="AESCrypt:Make;AESTest:Make;TIService:Make;TIClient:Make;TIServer:Make;TechConsole:Make;Project1:Make"/>
+        <CallTarget Targets="AESCrypt:Make;AESTest:Make;TIClient:Make;TIServer:Make;Project1:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
