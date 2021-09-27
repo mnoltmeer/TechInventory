@@ -173,23 +173,23 @@ private:	// User declarations
 	TStringStream* __fastcall GetLog(const String &date);
 	TStringStream* __fastcall ExecuteQuery(const String &query);
 	bool __fastcall CheckUserMail(const String &mail);
-    int __fastcall GetUserID(const String &login);
+	int __fastcall GetUserID(const String &login);
 //---------------------------------------------------------------------------
 
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);
 	String __fastcall EncryptData(TMemoryStream *crypted_data, const char *pass);
-	bool __fastcall SendToClient(const String &host, TStringStream *buffer);
+	bool __fastcall SendToClient(const String &host, TMemoryStream *buffer);
 //парсить документ, що надійшов, перевіряє вміст і запускає ProcessAnswer() або ProcessRequest()
 //при потребі одразу повертає відповідь у вигляді xml-файлу
-	TStringStream* __fastcall ParseXML(TXMLDocument *ixml);
+	TStringStream* __fastcall ParseXML(TXMLDocument *ixml, TIdContext *AContext);
 //оброблює відповідь клієнта та виконує відповідні дії
 	void __fastcall ProcessAnswer(TXMLDocument *ixml);
 //оброблює запит клієнта та виконує ExecuteCommand()
 //при потребі одразу повертає відповідь у вигляді xml-файлу
-	TStringStream* __fastcall ProcessRequest(TXMLDocument *ixml);
+	TStringStream* __fastcall ProcessRequest(TXMLDocument *ixml, TIdContext *AContext);
 //обробляє команду клієнта і виконує відповідний запит до БД
 //при потребі одразу повертає відповідь у вигляді xml-файлу
-	TStringStream* __fastcall ExecuteCommand(const String &command, TStringList *params);
+	TStringStream* __fastcall ExecuteCommand(const String &command, TStringList *params, TIdContext *AContext);
 //оброблює результат виборки з БД та формує xml-файл
 	TStringStream* __fastcall CreateAnswer();
 //формує результат на основі набору даних
@@ -208,7 +208,8 @@ private:	// User declarations
 	bool __fastcall SendMsg(String mail_addr, String subject, String from, String text);
 	String __fastcall GenerateVerificationCode();
 	bool __fastcall SendVerificationCode(const String &mail, const String &code);
-    String __fastcall GeneratePassword();
+	String __fastcall GeneratePassword();
+	void __fastcall UploadClient(const String &host);
 
 public:		// User declarations
 	__fastcall TServerForm(TComponent* Owner);

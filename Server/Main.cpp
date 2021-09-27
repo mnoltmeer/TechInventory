@@ -1588,7 +1588,7 @@ String __fastcall TServerForm::GeneratePassword()
 
   try
 	 {
-	   wchar_t gen_pwd[8];
+	   wchar_t gen_pwd[9];
 
 	   for (int i = 0; i < 8; i++)
 		  gen_pwd[i] = pwd_char_base[Random(cb_sz)];
@@ -1604,6 +1604,27 @@ String __fastcall TServerForm::GeneratePassword()
 	 }
 
   return res;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TServerForm::UploadClient(const String &host)
+{
+  try
+	 {
+	   std::unique_ptr<TFileStream> fs(new TFileStream(AppPath + "\\TIClient.exe",
+													   fmOpenRead|fmShareDenyNone));
+	   std::unique_ptr<TMemoryStream> ms(new TMemoryStream());
+
+	   ms->LoadFromStream(fs.get());
+       ms->Position = 0;
+
+	   WriteLog("Відправка клієнтського модулю до " + host);
+	   SendToClient(host, ms.get());
+	 }
+  catch (Exception &e)
+	 {
+	   WriteLog("UploadClient: " + e.ToString());
+	 }
 }
 //---------------------------------------------------------------------------
 
@@ -1803,7 +1824,7 @@ TXMLDocument *__fastcall TServerForm::CreateXMLStream(TStringStream *ms)
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TServerForm::SendToClient(const String &host, TStringStream *buffer)
+bool __fastcall TServerForm::SendToClient(const String &host, TMemoryStream *buffer)
 {
   std::unique_ptr<TTCPRequester> sender(new TTCPRequester(host, DEFAULT_CLIENT_PORT));
 
@@ -1847,7 +1868,7 @@ TStringStream* __fastcall TServerForm::CreateRequest(const String &command,
 }
 //---------------------------------------------------------------------------
 
-TStringStream* __fastcall TServerForm::ParseXML(TXMLDocument *ixml)
+TStringStream* __fastcall TServerForm::ParseXML(TXMLDocument *ixml, TIdContext *AContext)
 {
   TStringStream *res;
 
@@ -1863,7 +1884,7 @@ TStringStream* __fastcall TServerForm::ParseXML(TXMLDocument *ixml)
 	   else if (Document->GetNodeName() == "Request")
 		 {
 		   //оброблюємо запит
-		   res = ProcessRequest(ixml);
+		   res = ProcessRequest(ixml, AContext);
 		 }
 	   else
 		 {
@@ -1874,14 +1895,14 @@ TStringStream* __fastcall TServerForm::ParseXML(TXMLDocument *ixml)
   catch (Exception &e)
 	 {
 	   res = nullptr;
-	   WriteLog("ParseXML: " + e.ToString());
+	   WriteLog("[" + AContext->Binding->PeerIP + "] ParseXML: " + e.ToString());
 	 }
 
   return res;
 }
 //---------------------------------------------------------------------------
 
-TStringStream* __fastcall TServerForm::ProcessRequest(TXMLDocument *ixml)
+TStringStream* __fastcall TServerForm::ProcessRequest(TXMLDocument *ixml, TIdContext *AContext)
 {
   TStringStream *res;
 
@@ -1912,12 +1933,12 @@ TStringStream* __fastcall TServerForm::ProcessRequest(TXMLDocument *ixml)
 			  params->Add("");
 		  }
 
-	   res = ExecuteCommand(command, params.get());
+	   res = ExecuteCommand(command, params.get(), AContext);
 	 }
   catch (Exception &e)
 	 {
        res = nullptr;
-	   WriteLog("ProcessRequest: " + e.ToString());
+	   WriteLog("[" + AContext->Binding->PeerIP + "] ProcessRequest: " + e.ToString());
 	 }
 
   return res;
@@ -1925,7 +1946,8 @@ TStringStream* __fastcall TServerForm::ProcessRequest(TXMLDocument *ixml)
 //---------------------------------------------------------------------------
 
 TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
-													  TStringList *params)
+													  TStringList *params,
+													  TIdContext *AContext)
 {
   TStringStream *res;
 
@@ -1934,7 +1956,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 //за командою визначаємо потрібний запит до БД і виконуємо його
 	   if (command == "AUTH") //аутентифікація користувача
 		 {
-		   WriteLog("Авторизація користувача");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Авторизація користувача");
 
 		   UserInfo user = Authorisation(params->Strings[0], params->Strings[1]);
 
@@ -1942,7 +1964,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 			 res = CreateAnswer("DENIED");
 		   else
 			 {
-			   WriteLog("Увійшов користувач: " + params->Strings[0]);
+			   WriteLog("[" + AContext->Binding->PeerIP + "] Увійшов користувач: " + params->Strings[0]);
 
 			   res = CreateAnswer("GRANTED", IntToStr(user.ID) + ";" +
 											 user.Role + ";" +
@@ -1952,7 +1974,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "GETVERSION") //запит версії серверу
 		 {
-		   WriteLog("Запит версії серверу");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Запит версії серверу");
 		   res = CreateAnswer(Version);
 		 }
 	   else if (command == "CHECKLOGIN") //перевірка логіну на зайнятість
@@ -1964,7 +1986,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "REGISTER") //створення нового користувача
 		 {
-		   WriteLog("Реєстрація нового користувача");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Реєстрація нового користувача");
 		   if (Registration(params->Strings[0], params->Strings[1], params->Strings[2], StrToBool(params->Strings[3])))
 			 res = CreateAnswer("SUCCESS");
 		   else
@@ -1972,7 +1994,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "VERIFY") //надсилання коду верифікації на пошту
 		 {
-		   WriteLog("Відправка коду верифікації");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Відправка коду верифікації");
 
 		   String code = GenerateVerificationCode();
 
@@ -1983,7 +2005,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "SETPWD") //зміна паролю користувачу
 		 {
-		   WriteLog("Встановленя пароля для користувача");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Встановленя пароля для користувача");
 
 		   if (SetUserPassword(params->Strings[0].ToInt(), params->Strings[1]))
 			 res = CreateAnswer("SUCCESS");
@@ -1992,7 +2014,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "CHECKPWD") //перевірка на правильність паролю
 		 {
-		   WriteLog("Перевірка коректності паролю");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Перевірка коректності паролю");
 
 		   if (ValidUserPassword(params->Strings[0].ToInt(), params->Strings[1]))
 			 res = CreateAnswer("VALID");
@@ -2001,7 +2023,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "SETMAIL") //зміна поштової скриньки
 		 {
-		   WriteLog("Зміна адреси поштової скриньки");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Зміна адреси поштової скриньки");
 
 		   if (SetUserMail(params->Strings[0].ToInt(), params->Strings[1]))
 			 res = CreateAnswer("SUCCESS");
@@ -2010,12 +2032,12 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "GETITEM") //запит даних про пристрій
 		 {
-		   WriteLog("Запит даних про Пристрій");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Запит даних про Пристрій");
 		   res = GetItem(params->Strings[0].ToInt());
 		 }
 	   else if (command == "SETITEM") //зміна даних пристрою
 		 {
-		   WriteLog("Зміна даних пристрою");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Зміна даних пристрою");
 
 		   if (SetItem(params->Strings[0].ToInt(),
 					   params->Strings[1],
@@ -2031,12 +2053,12 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "GETLOCATIONS") //запит переліку локацій
 		 {
-		   WriteLog("Запит переліку Локацій");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Запит переліку Локацій");
 		   res = GetLocationList();
 		 }
        else if (command == "REMOVEITEM") //видалення даних про пристрій
 		 {
-		   WriteLog("Видалення Пристрою з БД");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Видалення Пристрою з БД");
 
 		   if (RemoveItem(params->Strings[0].ToInt()))
 			 res = CreateAnswer("SUCCESS");
@@ -2056,7 +2078,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "GETEVENTS") //запит передіку операцій
 		 {
-		   WriteLog("Запит переліку Подій");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Запит переліку Подій");
 
 		   res = GetEventList(params->Strings[0].ToInt(),
 							  params->Strings[1],
@@ -2065,12 +2087,12 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "GETITEMS") //запит передіку пристроїв
 		 {
-		   WriteLog("Запит переліку Пристроїв у Локації");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Запит переліку Пристроїв у Локації");
 		   res = GetItemList(params->Strings[0].ToInt());
 		 }
 	   else if (command == "CHECKINN") //перевірка доступності інв. номеру
 		 {
-		   WriteLog("Перевірка доступності інв. номеру");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Перевірка доступності інв. номеру");
 
 		   if (IsInnFree(params->Strings[0]))
 			 res = CreateAnswer("FREE");
@@ -2079,7 +2101,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "CHECKID") //перевірка доступності id пристрою
 		 {
-		   WriteLog("Перевірка доступності id пристрою");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Перевірка доступності id пристрою");
 
 		   if (CheckItemID(params->Strings[0].ToInt()))
 			 res = CreateAnswer("FREE");
@@ -2088,7 +2110,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "ADDITEM") //додання нового пристрою
 		 {
-		   WriteLog("Додання у БД нового пристрою");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Додання у БД нового пристрою");
 
 		   if (AddItem(params->Strings[0].ToInt(),
 					   params->Strings[1],
@@ -2104,12 +2126,12 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "GETUSERLIST") //запит переліку користувачів
 		 {
-		   WriteLog("Запит переліку користувачів");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Запит переліку користувачів");
 		   res = GetUserList();
 		 }
 	   else if (command == "CTRLUSER") //керування користувачем
 		 {
-		   WriteLog("Керування доступом користувача");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Керування доступом користувача");
 
 		   if (ControlUser(params->Strings[0].ToInt(), params->Strings[1].ToInt()))
 			 res = CreateAnswer("SUCCESS");
@@ -2118,7 +2140,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "REMOVELOCATION") //видалення локації
 		 {
-		   WriteLog("Видалення Локації");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Видалення Локації");
 
 		   if (RemoveLocation(params->Strings[0].ToInt()))
 			 res = CreateAnswer("SUCCESS");
@@ -2127,7 +2149,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "ADDLOCATION") //створення локації
 		 {
-		   WriteLog("Створення Локації");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Створення Локації");
 
 		   if (AddLocation(params->Strings[0], params->Strings[1]))
 			 res = CreateAnswer("SUCCESS");
@@ -2136,6 +2158,8 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "EDITLOCATION") //зміна даних локації
 		 {
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Редагування локації");
+
 		   if (EditLocation(params->Strings[0].ToInt(), params->Strings[1], params->Strings[2]))
 			 res = CreateAnswer("SUCCESS");
 		   else
@@ -2143,17 +2167,17 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "GETLOG") //запит логу серверу за певну дату
 		 {
-		   WriteLog("Запит логу сервера");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Запит логу сервера");
 		   res = GetLog(params->Strings[0]);
 		 }
        else if (command == "EXECQUERY") //надсилання SQL-запиту
 		 {
-		   WriteLog("Надсилання SQL-запиту до БД");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Надсилання SQL-запиту до БД");
 		   res = ExecuteQuery(params->Strings[0]);
 		 }
 	   else if (command == "CHECKMAIL") //перевірка присутності у таблиці агентів поштової скриньки
 		 {
-		   WriteLog("Перевірка поштової скриньки на присутність у таблиці Агентів");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Перевірка поштової скриньки на присутність у таблиці Агентів");
 
 		   if (CheckUserMail(params->Strings[0]))
 			 res = CreateAnswer("SUCCESS");
@@ -2162,7 +2186,7 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		 }
 	   else if (command == "RESTOREPWD") //скидання паролю
 		 {
-		   WriteLog("Скидання паролю");
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Скидання паролю");
 
 		   String pwd = GeneratePassword();
 
@@ -2178,13 +2202,24 @@ TStringStream* __fastcall TServerForm::ExecuteCommand(const String &command,
 		   else
 			 res = CreateAnswer("ERROR");
 		 }
+	   else if (command == "GETCLIENTVERSION") //запит актуальної версії клієнта
+		 {
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Запит актуальної версії клієнта");
+		   res = CreateAnswer(GetVersionInString(String(AppPath + "\\TIClient.exe").c_str()));
+		 }
+	   else if (command == "DOWNLOADMODULE") //запит на завантаження клієнтського модулю
+		 {
+		   WriteLog("[" + AContext->Binding->PeerIP + "] Запит на завантаження клієнтського модулю");
+		   UploadClient(AContext->Binding->PeerIP);
+		   res = nullptr;
+		 }
 	   else
-         throw Exception("Невідома команда");
+		 throw Exception("Невідома команда");
 	 }
   catch (Exception &e)
 	 {
 	   res = nullptr;
-	   WriteLog("ExecuteCommand: " + e.ToString());
+	   WriteLog("[" + AContext->Binding->PeerIP + "] ExecuteCommand: " + e.ToString());
 	 }
 
   return res;
@@ -2364,7 +2399,7 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 	   ms->Position = 0;
 
 	   ixml.reset(CreateXMLStream(ms.get()));
-	   answer.reset(ParseXML(ixml.get()));
+	   answer.reset(ParseXML(ixml.get(), AContext));
 	 }
   catch (Exception &e)
 	 {
