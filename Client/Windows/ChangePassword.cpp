@@ -31,6 +31,8 @@ void __fastcall TChangePasswordForm::ApplyClick(TObject *Sender)
 	MessageBox(this->Handle, L"Пароль та його підтвердження не збігаються", L"Помилка", MB_OK|MB_ICONERROR);
   else if (!ClientForm->ValidUserPassword(UserID, OldPassword->Text))
     MessageBox(this->Handle, L"Невірно вказано старий пароль", L"Помилка", MB_OK|MB_ICONERROR);
+  else if (!ClientForm->IsValidPassword(Password->Text))
+	MessageBox(this->Handle, L"Пароль не відповідає правилам. Довжина паролю має бути не менше ніж 8 символів. Допускаються латинські літери верхнього та нижнього регістру, цифри та символи '!', '@', '#', '$', '%', '^', '&', '*', '-', '_'", L"Помилка", MB_OK|MB_ICONERROR);
   else
 	{
 	  if (ClientForm->SetUserPassword(UserID, Password->Text))
