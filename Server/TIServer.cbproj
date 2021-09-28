@@ -6,7 +6,7 @@
         <AppType>Application</AppType>
         <MainSource>TIServer.cpp</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
     </PropertyGroup>
@@ -116,12 +116,11 @@
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <LinkPackageStatics>rtl.lib;vcl.lib;IndySystem.lib;IndyCore.lib;vclimg.lib;IndyProtocols.lib;dbrtl.lib;vclFireDAC.lib;FireDAC.lib;FireDACSqliteDriver.lib;FireDACCommonDriver.lib;FireDACCommon.lib;xmlrtl.lib;vcldb.lib;vclx.lib;FireDACIBDriver.lib</LinkPackageStatics>
+        <LinkPackageStatics>rtl.lib;vcl.lib;IndySystem.lib;IndyCore.lib;vclimg.lib;IndyProtocols.lib;dbrtl.lib;vclFireDAC.lib;FireDAC.lib;FireDACSqliteDriver.lib;FireDACCommonDriver.lib;FireDACCommon.lib;xmlrtl.lib;vcldb.lib;vclx.lib;FireDACIBDriver.lib;vclwinx.lib;bindengine.lib</LinkPackageStatics>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_Keys>CompanyName=;FileDescription=Сервер для АС &quot;ТехІнвент&quot;;FileVersion=1.0.0.1;InternalName=;LegalCopyright=2020-2021 Максим Нольтмєєр (m.noltmeer@gmail.com);LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=АС ТехІнвент;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
         <VerInfo_Build>1</VerInfo_Build>
-        <VerInfo_Locale>1033</VerInfo_Locale>
         <Icon_MainIcon>TIServer_Icon.ico</Icon_MainIcon>
         <UWP_CppLogo44>..\icos\server_115155.png</UWP_CppLogo44>
         <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
