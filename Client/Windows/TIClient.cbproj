@@ -6,7 +6,7 @@
         <AppType>Application</AppType>
         <MainSource>TIClient.cpp</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
     </PropertyGroup>
@@ -114,12 +114,14 @@
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <LinkPackageStatics>rtl.lib;vcl.lib;IndySystem.lib;IndyCore.lib</LinkPackageStatics>
+        <LinkPackageStatics>rtl.lib;vcl.lib;IndySystem.lib;IndyCore.lib;vclimg.lib;IndyProtocols.lib;vclwinx.lib;xmlrtl.lib;bindengine.lib</LinkPackageStatics>
         <VerInfo_AutoIncVersion>true</VerInfo_AutoIncVersion>
         <VerInfo_Keys>CompanyName=;FileDescription=Клієнт Windows для АС &quot;ТехІнвент&quot;;FileVersion=1.0.0.0;InternalName=;LegalCopyright=2020-2021 Максим Нольтмєєр (m.noltmeer@gmail.com);LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=АС &quot;ТехІнвент&quot;;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <Icon_MainIcon>amra_Icon.ico</Icon_MainIcon>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
+        <Icon_MainIcon>TIClient_Icon.ico</Icon_MainIcon>
+        <UWP_CppLogo44>icos\barcode-folded-icon_30407.png</UWP_CppLogo44>
+        <UWP_CppLogo150>icos\barcode-folded-icon_30407.png</UWP_CppLogo150>
     </PropertyGroup>
     <ItemGroup>
         <CppCompile Include="AddUser.cpp">
@@ -306,6 +308,13 @@
                 </DeployFile>
                 <DeployFile Condition="'$(DynamicRTL)'=='true' And '$(Multithreaded)'!='true'" LocalName="$(BDS)\bin64\cc64270.dll" Class="DependencyModule">
                     <Platform Name="Win64">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="icos\barcode-folded-icon_30407.png" Configuration="Debug" Class="UWP_CppLogo44">
+                    <Platform Name="Win32">
+                        <RemoteDir>Assets\</RemoteDir>
+                        <RemoteName>Logo44x44.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
