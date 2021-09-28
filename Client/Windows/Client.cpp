@@ -34,20 +34,18 @@ String LogPath;
 const char *DataCryptKey = "D@t@Ha$hK3y";
 int MainFormWidth, MainFormHeight;
 bool MainFormFullScreen;
-int AnimFrameInd;    //індекс поточного кадру анімації завантаження
 TPanel *ActivePanel; //поточна активна панель
 int CurrentRowInd, CurrentColInd; //індекси поточних рядка поля у таблиці відображення
 TLabel *Location; //лейбл для відображення обраної локації
 TBitBtn *RefreshButton; //активна кнопка для оновлення даних
 TBitBtn *EditButton;  //редагування пристрою
+bool NeedUpdate; //флаг що позначає необхідність оновлення після закриття програми
 //---------------------------------------------------------------------------
 __fastcall TClientForm::TClientForm(TComponent* Owner)
 	: TForm(Owner)
 {
-  AppPath = Application->ExeName;
-  int pos = AppPath.LastDelimiter("\\");
-  AppPath.Delete(pos, AppPath.Length() - (pos - 1));
-
+  NeedUpdate = false;
+  AppPath = GetDirPathFromFilePath(Application->ExeName);
   LogPath = GetEnvironmentVariable("USERPROFILE") + "\\Documents";
 
   ReadSettings();
@@ -62,8 +60,11 @@ void __fastcall TClientForm::FormShow(TObject *Sender)
   if (MainFormFullScreen)
     WindowState = wsMaximized;
 
+  Listener->DefaultPort = DEFAULT_CLIENT_PORT;
+  Listener->Active = true;
+
   ClientVersion->Caption = "Версія клієнта: " +
-  						   GetVersionInString(Application->ExeName.c_str());
+						   GetVersionInString(Application->ExeName.c_str());
 
   ServerInfo->Caption = "Сервер: " +
 						Server +
@@ -80,7 +81,11 @@ void __fastcall TClientForm::FormShow(TObject *Sender)
 
 void __fastcall TClientForm::FormClose(TObject *Sender, TCloseAction &Action)
 {
+  Listener->Active = false;
   WriteSettings();
+
+  if (NeedUpdate)
+    StartProcessByExeName(AppPath + "\\DownloadedClient.exe");
 }
 //---------------------------------------------------------------------------
 
@@ -281,35 +286,6 @@ TXMLDocument *__fastcall TClientForm::CreateXMLStream(TStringStream *ms)
 	 }
 
   return ixml;
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TClientForm::ShowLoadingImage()
-{
-  AnimFrameInd = 0;
-  PnLoading->Show();
-  PnLoading->BringToFront();
-  ActivePanel->Hide();
-  LoadAnimTimer->Enabled = true;
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TClientForm::HideLoadingImage()
-{
-  PnLoading->Hide();
-  LoadAnimTimer->Enabled = false;
-  ActivePanel->Show();
-}
-//---------------------------------------------------------------------------
-
-void __fastcall TClientForm::LoadAnimTimerTimer(TObject *Sender)
-{
-  if (AnimFrameInd >= LoadingAnimImageList->Count)
-	AnimFrameInd = 0;
-
-  PnLoading->Picture->Bitmap = LoadingAnimImageList->GetBitmap(AnimFrameInd, 64, 64);
-
-  AnimFrameInd++;
 }
 //---------------------------------------------------------------------------
 
@@ -694,7 +670,7 @@ void __fastcall TClientForm::UnlockUILimited()
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TClientForm::GetServerVersion()
+void __fastcall TClientForm::AskServerVersion()
 {
   try
 	 {
@@ -873,7 +849,10 @@ bool __fastcall TClientForm::RemoveItem(const String &item_id)
        std::unique_ptr<TXMLDocument> ixml;
 
 	   if (SendRequest("REMOVEITEM", item_id, ixml) == "SUCCESS")
-		 res = true;
+		 {
+		   AddEvent(OP_REMOVE_ITM, ItemID, UserID);
+		   res = true;
+		 }
 	   else
 		 res = false;
 	 }
@@ -1048,6 +1027,7 @@ bool __fastcall TClientForm::AddItem(int item_id, const String &inn, const Strin
 					   IntToStr(agent_id),
 					   ixml) == "SUCCESS")
 		 {
+		   AddEvent(OP_CREATE_ITM, ItemID, UserID);
 		   res = true;
 		 }
 	   else
@@ -1346,11 +1326,48 @@ bool __fastcall TClientForm::RestorePassword(const String &login, const String &
 	 }
   catch (Exception &e)
 	 {
-	   AddActionLog("Помилка надсилання SQL-запиту");
+	   AddActionLog("Помилка скидання паролю");
 	   res = false;
 	 }
 
   return res;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::AskActualClientVersion()
+{
+  try
+	 {
+	   std::unique_ptr<TXMLDocument> ixml;
+	   String ver = GetVersionInString(Application->ExeName.c_str()),
+			  actver = SendRequest("GETCLIENTVERSION", "", ixml);
+
+       ActualClientVersion->Caption = actver;
+
+	   if ((ver != actver) && (actver != "no_data"))
+		 UpdateClient->Enabled = true;
+	   else
+		 UpdateClient->Enabled = false;
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка отримання актуальної версії клієнта");
+	 }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::DownloadClient()
+{
+  try
+	 {
+	   std::unique_ptr<TXMLDocument> ixml;
+
+	   ActualClientVersion->Caption = SendRequest("DOWNLOADMODULE", "", ixml);
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка завантаження клієнтського модулю");
+	 }
 }
 //---------------------------------------------------------------------------
 
@@ -1793,31 +1810,27 @@ bool __fastcall TClientForm::IsValidPassword(const String &password)
 void __fastcall TClientForm::ListenerExecute(TIdContext *AContext)
 {
   std::unique_ptr<TStringStream> ms(new TStringStream("", TEncoding::UTF8, true));
-  std::unique_ptr<TXMLDocument> ixml(nullptr);
+  std::unique_ptr<TFileStream> fs(new TFileStream(AppPath + "\\DownloadedClient.exe",
+													   fmOpenWrite|fmCreate|fmShareDenyWrite));
 
   AContext->Connection->IOHandler->ReadStream(ms.get());
 
   try
 	 {
-	   ms->LoadFromStream(TSAESCypher::Encrypt(ms.get(), DataCryptKey));
 	   ms->Position = 0;
+	   ms->SaveToStream(fs.get());
+
+	   MessageBox(this->Handle,
+				  L"Завантажено оновлення клієнтського модулю. Перезапустіть програму для завершення оновлення",
+				  L"Інформація",
+				  MB_OK|MB_ICONINFORMATION);
+
+       NeedUpdate = true;
 	 }
   catch (Exception &e)
 	 {
-	   AddActionLog("Listener: Розшифровка пакету: " + e.ToString());
-
-	   return;
-	 }
-
-  try
-	 {
-	   ixml.reset(CreateXMLStream(ms.get()));
-
-	   ParseXML(ixml.get());
-	 }
-  catch (Exception &e)
-	 {
-	   AddActionLog("Listener: Парсинг: " + e.ToString());
+	   AddActionLog("Listener: Обробка даних: " + e.ToString());
+	   NeedUpdate = false;
 
 	   return;
 	 }
@@ -2325,7 +2338,7 @@ void __fastcall TClientForm::ShowItemsRemoveClick(TObject *Sender)
 					 MB_YESNO|MB_ICONINFORMATION) == mrYes)
 		{
 		  RemoveItem(id);
-          ShowItemsRefresh->Click();
+		  ShowItemsRefresh->Click();
 		}
 	}
 }
@@ -2489,6 +2502,21 @@ void __fastcall TClientForm::QueryTextKeyUp(TObject *Sender, WORD &Key, TShiftSt
 {
   if (Key == 120)
     Execute->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::SaveSessionLogClick(TObject *Sender)
+{
+  SaveCfgDialog->InitialDir = AppPath;
+
+  if (SaveCfgDialog->Execute())
+	ActionLog->Lines->SaveToFile(SaveCfgDialog->FileName);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::UpdateClientClick(TObject *Sender)
+{
+  SendToServer(Server, CreateRequest("DOWNLOADMODULE"));
 }
 //---------------------------------------------------------------------------
 

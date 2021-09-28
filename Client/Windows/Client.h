@@ -62,13 +62,8 @@ enum {OP_ADD_ITM = 1,
 	  OP_SET_MOD = 5,
 	  OP_SET_LOC = 6,
 	  OP_REMOVE_ITM = 7,
-	  OP_ADD_USR = 8,
-	  OP_LOCK_USR = 9,
-	  OP_CHANGE_PWD = 10,
-	  OP_SET_PWD = 11,
-	  OP_SEND_UNK = 12,
-	  OP_CREATE_ITM = 13,
-	  OP_UNLOCK_USR = 14};
+	  OP_SEND_UNK = 8,
+	  OP_CREATE_ITM = 9};
 
 //---------------------------------------------------------------------------
 class TClientForm : public TForm
@@ -83,7 +78,6 @@ __published:	// IDE-managed Components
 	TLabel *Label6;
 	TBitBtn *MnCheckItems;
 	TSaveDialog *SaveCfgDialog;
-	TOpenDialog *OpenCfgDialog;
 	TBitBtn *MnShowItems;
 	TBitBtn *MnAddItem;
 	TLabel *ClientVersion;
@@ -103,9 +97,6 @@ __published:	// IDE-managed Components
 	TPanel *PnCheckItem;
 	TEdit *CheckItemScannedCode;
 	TLabel *Label3;
-	TTimer *LoadAnimTimer;
-	TImage *PnLoading;
-	TImageCollection *LoadingAnimImageList;
 	TImageCollection *PanelImages;
 	TIdTCPServer *Listener;
 	TLabel *Label4;
@@ -232,7 +223,6 @@ __published:	// IDE-managed Components
 	TMemo *QueryText;
 	TPanel *Panel8;
 	TButton *Execute;
-	void __fastcall LoadAnimTimerTimer(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall MnHomeClick(TObject *Sender);
@@ -302,11 +292,11 @@ __published:	// IDE-managed Components
 	void __fastcall AdmLocationsRefreshClick(TObject *Sender);
 	void __fastcall ExecuteClick(TObject *Sender);
 	void __fastcall QueryTextKeyUp(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall SaveSessionLogClick(TObject *Sender);
+	void __fastcall UpdateClientClick(TObject *Sender);
 
 
 private:	// User declarations
-	void __fastcall ShowLoadingImage();
-	void __fastcall HideLoadingImage();
 	void __fastcall HideAllPanels();
 	void __fastcall ParseXML(TXMLDocument *ixml);
 	void __fastcall WriteSettings();
@@ -340,7 +330,7 @@ public:		// User declarations
 								  std::unique_ptr<TXMLDocument> &ixml);
 
 
-	void __fastcall GetServerVersion();
+	void __fastcall AskServerVersion();
 	bool __fastcall SetUserPassword(int user_id, const String &new_password);
 	bool __fastcall ValidUserPassword(int user_id, const String &password);
 	bool __fastcall SetUserMail(int user_id, const String &new_mail);
@@ -372,7 +362,9 @@ public:		// User declarations
 	void __fastcall ClearResultSet(TStringGrid *result_set);
 	bool __fastcall IsItemExistInCheckTable(const String &id);
 	void __fastcall PrepareCheckTable();
-    bool __fastcall IsValidPassword(const String &password);
+	bool __fastcall IsValidPassword(const String &password);
+	void __fastcall AskActualClientVersion();
+	void __fastcall DownloadClient();
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TClientForm *ClientForm;

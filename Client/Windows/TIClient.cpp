@@ -6,6 +6,8 @@
 //---------------------------------------------------------------------------
 #include <Vcl.Styles.hpp>
 #include <Vcl.Themes.hpp>
+#include "..\..\..\work-functions\MyFunc.h"
+
 USEFORM("SetPassword.cpp", SetPasswordForm);
 USEFORM("Client.cpp", ClientForm);
 USEFORM("ChangePassword.cpp", ChangePasswordForm);
@@ -22,6 +24,30 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
 	try
 	{
+		String Path = GetDirPathFromFilePath(Application->ExeName);
+
+		if (LowerCase(Application->Title) == "downloadedclient")
+		  {
+			DeleteFile(Path + "\\TIClient.exe");
+
+			if (!CopyFile(String(Path + "\\DownloadedClient.exe").c_str(),
+						  String(Path + "\\TIClient.exe").c_str(), false))
+			  {
+				return -1;
+			  }
+			else
+			  {
+				RenameFile(Path + "\\DownloadedClient.exe", Path + "\\LoadedClient.exe");
+				StartProcessByExeName(Path + "\\TIClient.exe");
+				return 0;
+              }
+		  }
+		else
+		  {
+			if (FileExists(Path + "\\LoadedClient.exe"))
+              DeleteFile(Path + "\\LoadedClient.exe");
+          }
+
 		Application->Initialize();
 		Application->MainFormOnTaskBar = true;
         Application->CreateForm(__classid(TClientForm), &ClientForm);

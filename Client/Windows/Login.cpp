@@ -65,7 +65,8 @@ void __fastcall TLoginForm::StartAuthClick(TObject *Sender)
 		  else
 			ClientForm->UnlockUI();
 
-		  ClientForm->GetServerVersion();
+		  ClientForm->AskServerVersion();
+          ClientForm->AskActualClientVersion();
 		  Close();
 		  break;
 		}

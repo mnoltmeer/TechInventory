@@ -213,16 +213,16 @@
             <BuildOrder>11</BuildOrder>
         </CppCompile>
         <FormResources Include="SetPassword.dfm"/>
+        <FormResources Include="SelectLocation.dfm"/>
         <FormResources Include="Client.dfm"/>
         <FormResources Include="ChangePassword.dfm"/>
         <FormResources Include="ChangeMail.dfm"/>
         <FormResources Include="AddUser.dfm"/>
-        <FormResources Include="SelectLocation.dfm"/>
+        <FormResources Include="EditItem.dfm"/>
+        <FormResources Include="RestorePassword.dfm"/>
         <FormResources Include="Registration.dfm"/>
         <FormResources Include="Login.dfm"/>
-        <FormResources Include="EditItem.dfm"/>
         <FormResources Include="EditLocation.dfm"/>
-        <FormResources Include="RestorePassword.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
