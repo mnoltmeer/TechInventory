@@ -16,8 +16,6 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #pragma resource "*.dfm"
 TServerForm *ServerForm;
 
-const char *DataCryptKey = "D@t@Ha$hK3y";
-
 extern String UsedAppLogDir; //вказуємо директорію для логування для функцій з MyFunc.h
 
 String AppPath, LogFile, LogDir, DBHost, DBPath, DBPort, ServerName, Version, MailServer, SenderName;
@@ -1628,6 +1626,24 @@ void __fastcall TServerForm::UploadClient(const String &host)
 }
 //---------------------------------------------------------------------------
 
+const char* __fastcall TServerForm::GenHashKey()
+{
+  AnsiString res;
+
+  try
+	 {
+	   res = IntToStr(static_cast<int>(Date()) << 3);
+	 }
+  catch (Exception &e)
+	 {
+	   res = "";
+	   WriteLog("GenHashKey: " + e.ToString());
+	 }
+
+  return res.c_str();
+}
+//---------------------------------------------------------------------------
+
 bool __fastcall TServerForm::ReadSettings()
 {
   bool res = true;
@@ -2383,7 +2399,7 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 
   try //читаємо дані, що надійшли
 	 {
-	   ms->LoadFromStream(TSAESCypher::Encrypt(ms.get(), DataCryptKey));
+	   ms->LoadFromStream(TSAESCypher::Encrypt(ms.get(), GenHashKey()));
 	   //ms->Position = 0;
 	   //WriteLog(ms->ReadString(ms->Size));
 	 }
@@ -2415,7 +2431,7 @@ void __fastcall TServerForm::ListenerExecute(TIdContext *AContext)
 		   //answer->Position = 0;
 		   //WriteLog(answer->ReadString(answer->Size));
 		   answer->Position = 0;
-		   answer->LoadFromStream(TSAESCypher::Crypt(answer.get(), DataCryptKey));
+		   answer->LoadFromStream(TSAESCypher::Crypt(answer.get(), GenHashKey()));
 		 }
 	  catch (Exception &e)
 		 {

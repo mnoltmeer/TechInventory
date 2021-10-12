@@ -19,7 +19,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 
 		Application->Initialize();
 		Application->MainFormOnTaskBar = true;
-		TStyleManager::TrySetStyle("Windows10 SlateGray");
+		TStyleManager::TrySetStyle("Sapphire Kamri");
 		Application->CreateForm(__classid(TServerForm), &ServerForm);
 		Application->CreateForm(__classid(TSettingsForm), &SettingsForm);
 		Application->Run();
