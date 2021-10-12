@@ -31,7 +31,6 @@ bool IsAdmin; //флаг, що визначає, чи є поточний юзер адміном
 bool IsLocked; //флаг, що визначає, чи є обліковий запис користувача активним
 String AppPath;
 String LogPath;
-const char *DataCryptKey = "D@t@Ha$hK3y";
 int MainFormWidth, MainFormHeight;
 bool MainFormFullScreen;
 TPanel *ActivePanel; //поточна активна панель
@@ -41,6 +40,7 @@ TBitBtn *RefreshButton; //активна кнопка для оновлення даних
 TBitBtn *EditButton;  //редагування пристрою
 bool NeedUpdate; //флаг що позначає необхідність оновлення після закриття програми
 //---------------------------------------------------------------------------
+
 __fastcall TClientForm::TClientForm(TComponent* Owner)
 	: TForm(Owner)
 {
@@ -198,7 +198,7 @@ bool __fastcall TClientForm::SendToServer(const String &host, TStringStream *buf
 	   try
 		  {
 			AddActionLog("Шифрування буферу даних");
-			buffer->LoadFromStream(TSAESCypher::Crypt(buffer, DataCryptKey));
+			buffer->LoadFromStream(TSAESCypher::Crypt(buffer, GenHashKey()));
 		  }
 	   catch (Exception &e)
 		  {
@@ -232,7 +232,7 @@ bool __fastcall TClientForm::AskToServer(const String &host, TStringStream *buff
 	   try
 		  {
 			AddActionLog("Шифрування буферу даних");
-			buffer->LoadFromStream(TSAESCypher::Crypt(buffer, DataCryptKey));
+			buffer->LoadFromStream(TSAESCypher::Crypt(buffer, GenHashKey()));
 		  }
 	   catch (Exception &e)
 		  {
@@ -248,7 +248,7 @@ bool __fastcall TClientForm::AskToServer(const String &host, TStringStream *buff
 		  {
 			AddActionLog("Розшифрування буферу даних");
 			buffer->Position = 0;
-			buffer->LoadFromStream(TSAESCypher::Encrypt(buffer, DataCryptKey));
+			buffer->LoadFromStream(TSAESCypher::Encrypt(buffer, GenHashKey()));
 		  }
 	   catch (Exception &e)
 		 {
@@ -1368,6 +1368,24 @@ void __fastcall TClientForm::DownloadClient()
 	 {
 	   AddActionLog("Помилка завантаження клієнтського модулю");
 	 }
+}
+//---------------------------------------------------------------------------
+
+const char* __fastcall TClientForm::GenHashKey()
+{
+  AnsiString res;
+
+  try
+	 {
+	   res = IntToStr(static_cast<int>(Date()) << 3);
+	 }
+  catch (Exception &e)
+	 {
+	   res = "";
+	   AddActionLog("Помилка генерації хеш-ключу");
+	 }
+
+  return res.c_str();
 }
 //---------------------------------------------------------------------------
 

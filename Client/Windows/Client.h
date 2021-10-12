@@ -304,6 +304,7 @@ private:	// User declarations
 	void __fastcall SetUIImages();
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);
 	String __fastcall EncryptData(TMemoryStream *crypted_data, const char *pass);
+	const char* __fastcall GenHashKey();
 
 public:		// User declarations
 	__fastcall TClientForm(TComponent* Owner);
@@ -315,7 +316,7 @@ public:		// User declarations
 	void __fastcall AddActionLog(String status);
 
 //створює об'єкт документу XML у пам'яті
-	TXMLDocument *__fastcall CreateXMLStream(TStringStream *ms);
+	TXMLDocument* __fastcall CreateXMLStream(TStringStream *ms);
 	TStringStream* __fastcall CreateRequest(const String &command, const String &params);
 	TStringStream* __fastcall CreateRequest(const String &command);
 //відправка запиту на сервер
