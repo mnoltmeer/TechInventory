@@ -194,11 +194,30 @@ void __fastcall TClientForm::WriteSettings()
 
 bool __fastcall TClientForm::SendToServer(const String &host, TStringStream *buffer)
 {
-  std::unique_ptr<TTCPRequester> sender(new TTCPRequester(host, DEFAULT_SERVER_PORT));
   bool res = true;
 
   try
 	 {
+       String server = host;
+	   int port = DEFAULT_SERVER_PORT;
+
+	   try
+		  {
+			int pos = host.LastDelimiter(":");
+
+			if (pos)
+			  {
+				port = server.SubString(pos + 1, server.Length() - pos).ToInt();
+				server = server.Delete(pos, server.Length() - pos);
+			  }
+		  }
+	   catch (Exception &e)
+		  {
+			throw Exception("Помилка визначення параметрів підключення: " + e.ToString());
+		  }
+
+	   std::unique_ptr<TTCPRequester> sender(new TTCPRequester(server, port));
+
 	   try
 		  {
 			AddActionLog("Шифрування буферу даних");
@@ -228,11 +247,30 @@ bool __fastcall TClientForm::SendToServer(const String &host, TStringStream *buf
 
 bool __fastcall TClientForm::AskToServer(const String &host, TStringStream *buffer)
 {
-  std::unique_ptr<TTCPRequester> sender(new TTCPRequester(host, DEFAULT_SERVER_PORT));
   bool res = true;
 
   try
 	 {
+	   String server = host;
+	   int port = DEFAULT_SERVER_PORT;
+
+	   try
+		  {
+			int pos = host.LastDelimiter(":");
+
+			if (pos)
+			  {
+				port = server.SubString(pos + 1, server.Length() - pos).ToInt();
+				server = server.Delete(pos, server.Length() - pos);
+			  }
+		  }
+	   catch (Exception &e)
+		  {
+			throw Exception("Помилка визначення параметрів підключення: " + e.ToString());
+		  }
+
+       std::unique_ptr<TTCPRequester> sender(new TTCPRequester(server, port));
+
 	   try
 		  {
 			AddActionLog("Шифрування буферу даних");

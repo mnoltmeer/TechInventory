@@ -40,9 +40,8 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include <Vcl.ExtDlgs.hpp>
 
 #include <memory>
-
-#define DEFAULT_SERVER_PORT 9874
 #define DEFAULT_CLIENT_PORT 9875
+#define DEFAULT_SERVER_PORT 9874
 #define LOCK 1
 #define UNLOCK 0
 
