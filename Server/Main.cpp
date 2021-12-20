@@ -617,7 +617,7 @@ TStringStream* __fastcall TServerForm::GetLocationList()
 
   try
 	 {
-	   String sqltext = "SELECT * FROM LOCATIONS ORDER BY IND";
+	   String sqltext = "SELECT * FROM LOCATIONS ORDER BY ID";
 
 	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
 	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
