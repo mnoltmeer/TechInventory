@@ -4,8 +4,8 @@ object SelectLocationForm: TSelectLocationForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1042#1080#1073#1110#1088' '#1083#1086#1082#1072#1094#1110#1111
-  ClientHeight = 252
-  ClientWidth = 381
+  ClientHeight = 280
+  ClientWidth = 528
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,8 +19,8 @@ object SelectLocationForm: TSelectLocationForm
   object LocationGrid: TStringGrid
     Left = 0
     Top = 0
-    Width = 381
-    Height = 224
+    Width = 528
+    Height = 252
     Align = alClient
     ColCount = 3
     FixedCols = 0
@@ -29,6 +29,8 @@ object SelectLocationForm: TSelectLocationForm
     TabOrder = 0
     OnDblClick = LocationGridDblClick
     OnMouseUp = LocationGridMouseUp
+    ExplicitWidth = 381
+    ExplicitHeight = 224
     ColWidths = (
       3
       113
@@ -36,12 +38,14 @@ object SelectLocationForm: TSelectLocationForm
   end
   object Panel1: TPanel
     Left = 0
-    Top = 224
-    Width = 381
+    Top = 252
+    Width = 528
     Height = 28
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitTop = 224
+    ExplicitWidth = 381
     object Select: TButton
       Left = 0
       Top = 0

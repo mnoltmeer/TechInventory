@@ -9,16 +9,17 @@
 #include "..\..\..\work-functions\MyFunc.h"
 
 USEFORM("SetPassword.cpp", SetPasswordForm);
+USEFORM("SelectLocation.cpp", SelectLocationForm);
 USEFORM("Client.cpp", ClientForm);
 USEFORM("ChangePassword.cpp", ChangePasswordForm);
 USEFORM("ChangeMail.cpp", ChangeMailForm);
 USEFORM("AddUser.cpp", AddUserForm);
-USEFORM("SelectLocation.cpp", SelectLocationForm);
+USEFORM("EditItem.cpp", EditItemForm);
+USEFORM("RestorePassword.cpp", RestorePasswordForm);
 USEFORM("Registration.cpp", RegistrationForm);
 USEFORM("Login.cpp", LoginForm);
-USEFORM("EditItem.cpp", EditItemForm);
 USEFORM("EditLocation.cpp", EditLocationForm);
-USEFORM("RestorePassword.cpp", RestorePasswordForm);
+USEFORM("ImportLocationPreview.cpp", ImportLocationPreviewForm);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
@@ -61,6 +62,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->CreateForm(__classid(TAddUserForm), &AddUserForm);
 		Application->CreateForm(__classid(TEditLocationForm), &EditLocationForm);
 		Application->CreateForm(__classid(TRestorePasswordForm), &RestorePasswordForm);
+		Application->CreateForm(__classid(TImportLocationPreviewForm), &ImportLocationPreviewForm);
 		Application->Run();
 	}
 	catch (Exception &exception)

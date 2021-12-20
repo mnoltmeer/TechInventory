@@ -37,6 +37,7 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include <IdMessageClient.hpp>
 #include <IdSMTP.hpp>
 #include <IdSMTPBase.hpp>
+#include <Vcl.ExtDlgs.hpp>
 
 #include <memory>
 
@@ -223,6 +224,8 @@ __published:	// IDE-managed Components
 	TMemo *QueryText;
 	TPanel *Panel8;
 	TButton *Execute;
+	TBitBtn *AdmLocationsImportCSV;
+	TOpenDialog *OpenCSVDialog;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall MnHomeClick(TObject *Sender);
@@ -294,7 +297,7 @@ __published:	// IDE-managed Components
 	void __fastcall QueryTextKeyUp(TObject *Sender, WORD &Key, TShiftState Shift);
 	void __fastcall SaveSessionLogClick(TObject *Sender);
 	void __fastcall UpdateClientClick(TObject *Sender);
-
+	void __fastcall AdmLocationsImportCSVClick(TObject *Sender);
 
 private:	// User declarations
 	void __fastcall HideAllPanels();
@@ -305,6 +308,7 @@ private:	// User declarations
 	TMemoryStream* __fastcall CryptData(String data, const char *pass);
 	String __fastcall EncryptData(TMemoryStream *crypted_data, const char *pass);
 	const char* __fastcall GenHashKey();
+	void __fastcall ImportLocations(const String &file, TStringGrid *grid);
 
 public:		// User declarations
 	__fastcall TClientForm(TComponent* Owner);

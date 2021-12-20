@@ -4,7 +4,7 @@ object EditLocationForm: TEditLocationForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1057#1090#1074#1086#1088#1077#1085#1085#1103'/'#1056#1077#1076#1072#1075#1091#1074#1072#1085#1085#1103' '#1051#1086#1082#1072#1094#1110#1111
-  ClientHeight = 104
+  ClientHeight = 152
   ClientWidth = 441
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,28 +19,28 @@ object EditLocationForm: TEditLocationForm
   object Index: TLabeledEdit
     Left = 8
     Top = 24
-    Width = 73
+    Width = 417
     Height = 21
-    EditLabel.Width = 34
+    EditLabel.Width = 39
     EditLabel.Height = 13
-    EditLabel.Caption = #1030#1085#1076#1077#1082#1089
+    EditLabel.Caption = #1051#1086#1082#1072#1094#1110#1103
     TabOrder = 0
     OnKeyPress = IndexKeyPress
   end
   object Name: TLabeledEdit
-    Left = 104
-    Top = 24
-    Width = 329
+    Left = 8
+    Top = 72
+    Width = 417
     Height = 21
-    EditLabel.Width = 68
+    EditLabel.Width = 75
     EditLabel.Height = 13
-    EditLabel.Caption = #1053#1072#1079#1074#1072' '#1051#1086#1082#1072#1094#1110#1111
+    EditLabel.Caption = #1040#1076#1088#1077#1089#1072' '#1051#1086#1082#1072#1094#1110#1111
     TabOrder = 1
     OnKeyPress = NameKeyPress
   end
   object Apply: TButton
     Left = 8
-    Top = 64
+    Top = 112
     Width = 75
     Height = 25
     Caption = #1057#1090#1074#1086#1088#1080#1090#1080
@@ -49,7 +49,7 @@ object EditLocationForm: TEditLocationForm
   end
   object Cancel: TButton
     Left = 104
-    Top = 64
+    Top = 112
     Width = 75
     Height = 25
     Caption = #1042#1110#1076#1084#1110#1085#1072

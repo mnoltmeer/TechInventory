@@ -9,6 +9,7 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include "..\..\..\work-functions\MyFunc.h"
 #include "..\..\..\work-functions\Cypher.h"
 #include "..\..\..\work-functions\TCPRequester.h"
+#include "..\..\..\work-functions\ImportExport.h"
 #include "TICServiceThread.h"
 #include "Login.h"
 #include "ChangePassword.h"
@@ -18,6 +19,7 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include "SelectLocation.h"
 #include "EditLocation.h"
 #include "AddUser.h"
+#include "ImportLocationPreview.h"
 #include "Client.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -104,31 +106,33 @@ void __fastcall TClientForm::ReadSettings()
 
 	   reg->RootKey = HKEY_CURRENT_USER;
 
-	   if (reg->OpenKey("Software\\TIClient\\Form", false))
+	   if (reg->OpenKey("Software\\TIClient\\Form", true))
 		 {
 		   if (reg->ValueExists("FullScreen"))
 			 MainFormFullScreen = reg->ReadBool("FullScreen");
+		   else
+			 MainFormFullScreen = false;
 
-			 if (reg->ValueExists("Height"))
-			   MainFormHeight = reg->ReadInteger("Height");
-			 else
-			   {
-				 MainFormHeight = 600;
-				 reg->WriteInteger("Height", 600);
-			   }
+		   if (reg->ValueExists("Height"))
+			 MainFormHeight = reg->ReadInteger("Height");
+		   else
+			 {
+			   MainFormHeight = 600;
+			   reg->WriteInteger("Height", 600);
+			 }
 
-			 if (reg->ValueExists("Width"))
-			   MainFormWidth = reg->ReadInteger("Width");
-			 else
-			   {
-				 MainFormWidth = 800;
-				 reg->WriteInteger("Width", 800);
-			   }
+		   if (reg->ValueExists("Width"))
+			 MainFormWidth = reg->ReadInteger("Width");
+		   else
+			 {
+			   MainFormWidth = 800;
+			   reg->WriteInteger("Width", 800);
+			 }
 
-			 reg->CloseKey();
+		   reg->CloseKey();
 		 }
 
-	   if (reg->OpenKey("Software\\TIClient\\Params", false))
+	   if (reg->OpenKey("Software\\TIClient\\Params", true))
 		 {
 		   if (reg->ValueExists("Server"))
 			 Server = reg->ReadString("Server");
@@ -521,7 +525,7 @@ void __fastcall TClientForm::SetUIImages()
 	   CheckItemsDelete->Glyph = PanelImages->GetBitmap(10, 18, 18);
 	   CheckItemsDelete->Glyph->Transparent = true;
 
-	   AdmLocationsAdd->Glyph = PanelImages->GetBitmap(14, 18, 18);
+	   AdmLocationsAdd->Glyph = PanelImages->GetBitmap(21, 18, 18);
 	   AdmLocationsAdd->Glyph->Transparent = true;
 
 	   AdmLocationsEdit->Glyph = PanelImages->GetBitmap(11, 18, 18);
@@ -535,8 +539,11 @@ void __fastcall TClientForm::SetUIImages()
 	   AdmLocationsRefresh->Glyph->Transparent = true;
 	   AdmLocationsRefresh->Glyph->TransparentColor = clBlack;
 
-	   PPAddLocation->Bitmap = PanelImages->GetBitmap(14, 16, 16);
+	   PPAddLocation->Bitmap = PanelImages->GetBitmap(21, 16, 16);
 	   PPAddLocation->Bitmap->Transparent = true;
+
+	   AdmLocationsImportCSV->Glyph = PanelImages->GetBitmap(19, 16, 16);
+	   AdmLocationsImportCSV->Glyph->Transparent = true;
 
 	   PPEditLocation->Bitmap = PanelImages->GetBitmap(11, 16, 16);
 	   PPEditLocation->Bitmap->Transparent = true;
@@ -1217,7 +1224,7 @@ bool __fastcall TClientForm::AddLocation(const String &index, const String &name
 	 }
   catch (Exception &e)
 	 {
-	   AddActionLog("Помилка видалення Локації");
+	   AddActionLog("Помилка створення Локації");
 	   res = false;
 	 }
 
@@ -1244,7 +1251,7 @@ bool __fastcall TClientForm::EditLocation(int location_id, const String &index, 
 	 }
   catch (Exception &e)
 	 {
-	   AddActionLog("Помилка видалення Локації");
+	   AddActionLog("Помилка редагування Локації");
 	   res = false;
 	 }
 
@@ -1386,6 +1393,62 @@ const char* __fastcall TClientForm::GenHashKey()
 	 }
 
   return res.c_str();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ImportLocations(const String &file, TStringGrid *grid)
+{
+  try
+	 {
+	   std::unique_ptr<TDataHolder> csv(new TDataHolder());
+
+	   try
+		  {
+            csv->Import(file, ",");
+		  }
+	   catch (Exception &e)
+		  {
+			e.Message = "Помилка читання файлу: " + e.Message;
+			throw e;
+		  }
+
+	   try
+		  {
+			ClearResultSet(grid);
+
+			grid->ColCount = 2;
+			grid->RowCount = csv->RecordCount + 1;
+			grid->FixedRows = 1;
+
+			grid->ColWidths[0] = 300;
+			grid->Cells[0][0] = "Локація";
+			grid->ColWidths[1] = 200;
+			grid->Cells[1][0] = "Адреса";
+		  }
+	   catch (Exception &e)
+		  {
+			e.Message = "Помилка форматування таблиці відображення даних: " + e.Message;
+			throw e;
+		  }
+
+	   try
+		  {
+			for (int i = 0; i < csv->RecordCount; i++)
+			   {
+				 grid->Cells[0][i + 1] = csv->Cells[0][i];
+				 grid->Cells[1][i + 1] = csv->Cells[7][i] + ", " + csv->Cells[6][i];
+			   }
+		  }
+	   catch (Exception &e)
+		  {
+			e.Message = "Помилка виводу даних у таблицю: " + e.Message;
+			throw e;
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка імпорту переліку локацій з файлу: " + e.ToString());
+	 }
 }
 //---------------------------------------------------------------------------
 
@@ -1558,9 +1621,8 @@ void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml, TStringGrid *grid
 	   try
 		  {
 			ClearResultSet(grid);
-
+			grid->RowCount = 2;
 			grid->ColCount = Titles->ChildNodes->Count;
-			grid->RowCount = Data->ChildNodes->Count + 1;
 			grid->FixedRows = 1;
 
 			for (int i = 0; i < Titles->ChildNodes->Count; i++)
@@ -1579,7 +1641,7 @@ void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml, TStringGrid *grid
 			throw e;
 		  }
 
-       try
+	   try
 		  {
 			grid->RowCount = Data->ChildNodes->Count + 1;
 		  }
@@ -1591,8 +1653,6 @@ void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml, TStringGrid *grid
 
 	   try
 		  {
-			grid->RowCount = Data->ChildNodes->Count + 1;
-
 			for (int i = 0; i < Data->ChildNodes->Count; i++)
 			   {
 				 Row = Data->ChildNodes->Nodes[i];
@@ -1602,7 +1662,7 @@ void __fastcall TClientForm::ProcessAnswer(TXMLDocument *ixml, TStringGrid *grid
 					  Field = Row->ChildNodes->Nodes[j];
 
 					  value = Field->NodeValue;
-                      //заповнюємо таблицю, починаючи з 1-го рядка, 0-й це заголовки
+					  //заповнюємо таблицю, починаючи з 1-го рядка, 0-й це заголовки
 					  grid->Cells[j][i + 1] = value;
 					}
 			   }
@@ -2173,6 +2233,16 @@ void __fastcall TClientForm::AdmLocationsRemoveClick(TObject *Sender)
 		  RemoveLocation(id.ToInt());
 		  AskLocationList(AdmLocationsResult);
 		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::AdmLocationsImportCSVClick(TObject *Sender)
+{
+  if (OpenCSVDialog->Execute())
+	{
+	  ImportLocations(OpenCSVDialog->FileName, ImportLocationPreviewForm->LocationGrid);
+      ImportLocationPreviewForm->Show();
 	}
 }
 //---------------------------------------------------------------------------

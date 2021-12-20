@@ -7,6 +7,7 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #pragma hdrstop
 
 #include "..\..\..\work-functions\MyFunc.h"
+#include "..\..\..\work-functions\ImportExport.h"
 #include "Client.h"
 #include "Registration.h"
 #include "RestorePassword.h"
