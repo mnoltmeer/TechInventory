@@ -5,7 +5,7 @@ object SettingsForm: TSettingsForm
   BorderStyle = bsSingle
   Caption = #1053#1072#1083#1072#1096#1090#1091#1074#1072#1085#1085#1103' '#1089#1077#1088#1074#1077#1088#1091
   ClientHeight = 375
-  ClientWidth = 353
+  ClientWidth = 360
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET

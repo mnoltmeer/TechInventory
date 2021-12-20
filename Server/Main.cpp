@@ -661,8 +661,8 @@ TStringStream* __fastcall TServerForm::GetLocationList()
 			 }
 
 		   String titles = "<Title size='0'>ID</Title>\
-<Title size='50'>Індекс</Title>\
-<Title size='300'>Адреса/Назва</Title>";
+<Title size='300'>Локація</Title>\
+<Title size='200'>Адреса</Title>";
 
 		   res = CreateAnswer("SUCCESS", titles, data.get());
 		 }
