@@ -34,6 +34,8 @@ void __fastcall TSelectLocationForm::FormShow(TObject *Sender)
   CurrentColInd = 0;
 
   ClientForm->AskLocationList(LocationGrid);
+  ClientForm->CopyRecords(LocationGrid, FilteredGrid);
+  Filter->Text = "";
 }
 //---------------------------------------------------------------------------
 
@@ -47,24 +49,37 @@ void __fastcall TSelectLocationForm::SelectClick(TObject *Sender)
 {
   if (CurrentRowInd > 0)
 	{
-	  Location->Tag = LocationGrid->Cells[0][CurrentRowInd].ToInt();
-	  Location->Caption = LocationGrid->Cells[1][CurrentRowInd] + " " +
-						  LocationGrid->Cells[2][CurrentRowInd];
+	  Location->Tag = FilteredGrid->Cells[0][CurrentRowInd].ToInt();
+	  Location->Caption = FilteredGrid->Cells[1][CurrentRowInd];
 	  Close();
 	}
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TSelectLocationForm::LocationGridMouseUp(TObject *Sender, TMouseButton Button,
-          TShiftState Shift, int X, int Y)
+void __fastcall TSelectLocationForm::FilteredGridMouseUp(TObject *Sender, TMouseButton Button,
+		  TShiftState Shift, int X, int Y)
 {
-  LocationGrid->MouseToCell(X, Y, CurrentColInd, CurrentRowInd);
+  FilteredGrid->MouseToCell(X, Y, CurrentColInd, CurrentRowInd);
+
+  if (CurrentColInd >= 0)
+	LbFilterField->Caption = LocationGrid->Cells[CurrentColInd][0];
+
+  Filter->Left = LbFilterField->Left + LbFilterField->ClientWidth + 10;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TSelectLocationForm::LocationGridDblClick(TObject *Sender)
+void __fastcall TSelectLocationForm::FilteredGridDblClick(TObject *Sender)
 {
   Select->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TSelectLocationForm::FilterChange(TObject *Sender)
+{
+  if (Filter->Text == "")
+	ClientForm->CopyRecords(LocationGrid, FilteredGrid);
+  else
+	ClientForm->FilterTable(LocationGrid, FilteredGrid, CurrentColInd, Filter->Text);
 }
 //---------------------------------------------------------------------------
 

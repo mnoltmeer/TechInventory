@@ -18,19 +18,18 @@ object SelectLocationForm: TSelectLocationForm
   TextHeight = 13
   object LocationGrid: TStringGrid
     Left = 0
-    Top = 0
+    Top = 22
     Width = 528
-    Height = 252
+    Height = 230
     Align = alClient
     ColCount = 3
     FixedCols = 0
     Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect]
     ScrollBars = ssVertical
     TabOrder = 0
-    OnDblClick = LocationGridDblClick
-    OnMouseUp = LocationGridMouseUp
-    ExplicitWidth = 381
-    ExplicitHeight = 224
+    Visible = False
+    ExplicitTop = 56
+    ExplicitHeight = 196
     ColWidths = (
       3
       113
@@ -44,8 +43,6 @@ object SelectLocationForm: TSelectLocationForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 224
-    ExplicitWidth = 381
     object Select: TButton
       Left = 0
       Top = 0
@@ -64,5 +61,71 @@ object SelectLocationForm: TSelectLocationForm
       TabOrder = 1
       OnClick = CancelClick
     end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 0
+    Width = 528
+    Height = 22
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 2
+    ExplicitLeft = -33
+    ExplicitWidth = 561
+    object Label1: TLabel
+      Left = 4
+      Top = 2
+      Width = 98
+      Height = 16
+      Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object LbFilterField: TLabel
+      Left = 116
+      Top = 2
+      Width = 46
+      Height = 16
+      Caption = '<none>'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Tahoma'
+      Font.Style = [fsUnderline]
+      ParentFont = False
+    end
+    object Filter: TEdit
+      Left = 312
+      Top = 1
+      Width = 209
+      Height = 21
+      TabOrder = 0
+      OnChange = FilterChange
+    end
+  end
+  object FilteredGrid: TStringGrid
+    Left = 0
+    Top = 22
+    Width = 528
+    Height = 230
+    Align = alClient
+    ColCount = 3
+    FixedCols = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing]
+    TabOrder = 3
+    OnDblClick = FilteredGridDblClick
+    OnMouseUp = FilteredGridMouseUp
+    ExplicitLeft = -33
+    ExplicitTop = -55
+    ExplicitWidth = 561
+    ExplicitHeight = 335
+    ColWidths = (
+      3
+      171
+      377)
   end
 end

@@ -17,9 +17,17 @@ __published:	// IDE-managed Components
 	TPanel *Panel1;
 	TButton *Import;
 	TButton *Cancel;
+	TPanel *Panel2;
+	TLabel *Label1;
+	TLabel *LbFilterField;
+	TEdit *Filter;
+	TStringGrid *FilteredGrid;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall CancelClick(TObject *Sender);
 	void __fastcall ImportClick(TObject *Sender);
+	void __fastcall FilterChange(TObject *Sender);
+	void __fastcall FilteredGridMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
 private:	// User declarations
 public:		// User declarations
 	__fastcall TImportLocationPreviewForm(TComponent* Owner);

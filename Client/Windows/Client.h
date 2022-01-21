@@ -225,6 +225,26 @@ __published:	// IDE-managed Components
 	TButton *Execute;
 	TBitBtn *AdmLocationsImportCSV;
 	TOpenDialog *OpenCSVDialog;
+	TPanel *Panel11;
+	TLabel *Label9;
+	TLabel *LbFilterField;
+	TEdit *Filter;
+	TStringGrid *AdmLocationsFiltered;
+	TPanel *Panel12;
+	TLabel *Label10;
+	TLabel *Label12;
+	TEdit *Edit1;
+	TStringGrid *AdmLogsFiltered;
+	TPanel *Panel13;
+	TLabel *Label21;
+	TLabel *Label22;
+	TEdit *Edit2;
+	TStringGrid *AdmRequestFiltered;
+	TPanel *Panel14;
+	TLabel *Label24;
+	TLabel *Label25;
+	TEdit *Edit3;
+	TStringGrid *AdmUsersFiltered;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall MnHomeClick(TObject *Sender);
@@ -297,6 +317,9 @@ __published:	// IDE-managed Components
 	void __fastcall SaveSessionLogClick(TObject *Sender);
 	void __fastcall UpdateClientClick(TObject *Sender);
 	void __fastcall AdmLocationsImportCSVClick(TObject *Sender);
+	void __fastcall FilterChange(TObject *Sender);
+	void __fastcall FilteredGridMouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y);
 
 private:	// User declarations
 	void __fastcall HideAllPanels();
@@ -369,6 +392,10 @@ public:		// User declarations
 	bool __fastcall IsValidPassword(const String &password);
 	void __fastcall AskActualClientVersion();
 	void __fastcall DownloadClient();
+    void __fastcall CopyTitles(TStringGrid *from, TStringGrid *to);
+	void __fastcall CopyRecords(TStringGrid *from, TStringGrid *to);
+	void __fastcall FilterTable(TStringGrid *from, TStringGrid *to,
+								int col, const String &text);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TClientForm *ClientForm;

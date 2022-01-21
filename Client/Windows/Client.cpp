@@ -41,6 +41,9 @@ TLabel *Location; //лейбл для відображення обраної локації
 TBitBtn *RefreshButton; //активна кнопка для оновлення даних
 TBitBtn *EditButton;  //редагування пристрою
 bool NeedUpdate; //флаг що позначає необхідність оновлення після закриття програми
+TStringGrid *ResultGrid, *FilteredGrid;
+TEdit *CurrentFilter;
+TLabel *CurrentFilterLabel;
 //---------------------------------------------------------------------------
 
 __fastcall TClientForm::TClientForm(TComponent* Owner)
@@ -381,6 +384,13 @@ void __fastcall TClientForm::MnCheckItemsClick(TObject *Sender)
   ClearResultSet(CheckItemsResult);
   PrepareCheckTable();
   CheckError->Hide();
+
+  ResultGrid = AdmLocationsResult;
+  FilteredGrid = AdmLocationsFiltered;
+  CurrentFilter = Filter;
+  CurrentFilterLabel = LbFilterField;
+  CopyRecords(ResultGrid, FilteredGrid);
+  CurrentFilter->Text = "";
 }
 //---------------------------------------------------------------------------
 
@@ -409,6 +419,13 @@ void __fastcall TClientForm::MnShowItemsClick(TObject *Sender)
   ClearResultSet(ShowItemsResult);
   RefreshButton = ShowItemsRefresh;
   EditButton = ShowItemsEdit;
+
+  ResultGrid = AdmLocationsResult;
+  FilteredGrid = AdmLocationsFiltered;
+  CurrentFilter = Filter;
+  CurrentFilterLabel = LbFilterField;
+  CopyRecords(ResultGrid, FilteredGrid);
+  CurrentFilter->Text = "";
 }
 //---------------------------------------------------------------------------
 
@@ -425,6 +442,13 @@ void __fastcall TClientForm::MnShowEventsClick(TObject *Sender)
   ShowEventsSearchType->ItemIndex = 0;
   ClearResultSet(ShowEventsResult);
   ShowEventsApply->Enabled = false;
+
+  ResultGrid = AdmLocationsResult;
+  FilteredGrid = AdmLocationsFiltered;
+  CurrentFilter = Filter;
+  CurrentFilterLabel = LbFilterField;
+  CopyRecords(ResultGrid, FilteredGrid);
+  CurrentFilter->Text = "";
 }
 //---------------------------------------------------------------------------
 
@@ -434,6 +458,13 @@ void __fastcall TClientForm::MnAdmUsersClick(TObject *Sender)
   PnAdmUsers->Show();
   ActivePanel = PnAdmUsers;
   AskUserList();
+
+  ResultGrid = AdmUsersResult;
+  FilteredGrid = AdmUsersFiltered;
+  CurrentFilter = Edit3;
+  CurrentFilterLabel = Label25;
+  CopyRecords(ResultGrid, FilteredGrid);
+  CurrentFilter->Text = "";
 }
 //---------------------------------------------------------------------------
 
@@ -443,6 +474,13 @@ void __fastcall TClientForm::MnAdmLocationsClick(TObject *Sender)
   PnAdmLocations->Show();
   ActivePanel = PnAdmLocations;
   AskLocationList(AdmLocationsResult);
+
+  ResultGrid = AdmLocationsResult;
+  FilteredGrid = AdmLocationsFiltered;
+  CurrentFilter = Filter;
+  CurrentFilterLabel = LbFilterField;
+  CopyRecords(ResultGrid, FilteredGrid);
+  CurrentFilter->Text = "";
 }
 //---------------------------------------------------------------------------
 
@@ -452,6 +490,12 @@ void __fastcall TClientForm::MnAdmLogsClick(TObject *Sender)
   PnAdmLogs->Show();
   ActivePanel = PnAdmLogs;
   AdmLogsDate->Date = Date().CurrentDate();
+
+  ResultGrid = AdmLogsResult;
+  FilteredGrid = AdmLogsFiltered;
+  CurrentFilter = Edit1;
+  CurrentFilterLabel = Label12;
+  CurrentFilter->Text = "";
 }
 //---------------------------------------------------------------------------
 
@@ -460,6 +504,12 @@ void __fastcall TClientForm::MnAdmManageClick(TObject *Sender)
   HideAllPanels();
   PnAdmManage->Show();
   ActivePanel = PnAdmManage;
+
+  ResultGrid = AdmRequestResult;
+  FilteredGrid = AdmRequestFiltered;
+  CurrentFilter = Edit2;
+  CurrentFilterLabel = Label22;
+  CurrentFilter->Text = "";
 }
 //---------------------------------------------------------------------------
 
@@ -1416,6 +1466,76 @@ void __fastcall TClientForm::DownloadClient()
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TClientForm::CopyTitles(TStringGrid *from, TStringGrid *to)
+{
+  try
+	 {
+	   to->ColCount = from->ColCount;
+       to->RowCount = 2;
+	   to->FixedRows = from->FixedRows;
+
+	   for (int i = 0; i < from->ColCount; i++)
+		  {
+			to->ColWidths[i] = from->ColWidths[i];
+			to->Cells[i][0] = from->Cells[i][0];
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка переносу заголовків між таблицями");
+	 }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::CopyRecords(TStringGrid *from, TStringGrid *to)
+{
+  try
+	 {
+	   ClearResultSet(to);
+	   CopyTitles(from, to);
+
+	   to->RowCount = from->RowCount;
+
+	   for (int i = 1; i < from->RowCount; i++)
+		  {
+			for (int j = 0; j < from->ColCount; j++)
+			   to->Cells[j][i] = from->Cells[j][i];
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка переносу даних між таблицями");
+	 }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::FilterTable(TStringGrid *from, TStringGrid *to,
+										 int col, const String &text)
+{
+  try
+	 {
+	   ClearResultSet(to);
+	   CopyTitles(from, to);
+	   //to->RowCount = 2;
+
+	   for (int i = 1; i < from->RowCount; i++)
+		  {
+			if (from->Cells[col][i].UpperCase().Pos(text.UpperCase()))
+			  {
+				for (int j = 0; j < from->ColCount; j++)
+				   to->Cells[j][to->RowCount - 1] = from->Cells[j][i];
+
+				to->RowCount++;
+			  }
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка фільтрації таблиці");
+	 }
+}
+//---------------------------------------------------------------------------
+
 const char* __fastcall TClientForm::GenHashKey()
 {
   AnsiString res;
@@ -1442,7 +1562,7 @@ void __fastcall TClientForm::ImportLocations(const String &file, TStringGrid *gr
 
 	   try
 		  {
-            csv->Import(file, ",");
+            csv->ImportCSV(file, ",");
 		  }
 	   catch (Exception &e)
 		  {
@@ -2342,6 +2462,8 @@ void __fastcall TClientForm::PPCheckDelFromTableClick(TObject *Sender)
 void __fastcall TClientForm::AdmLogsShowClick(TObject *Sender)
 {
   AskServerLog(DateToStr(AdmLogsDate->Date));
+  CopyRecords(ResultGrid, FilteredGrid);
+  CurrentFilter->Text = "";
 }
 //---------------------------------------------------------------------------
 
@@ -2620,7 +2742,11 @@ void __fastcall TClientForm::AdmLocationsRefreshClick(TObject *Sender)
 void __fastcall TClientForm::ExecuteClick(TObject *Sender)
 {
   if (QueryText->Text != "")
-	SendQuery(QueryText->Text);
+	{
+	  SendQuery(QueryText->Text);
+      CopyRecords(ResultGrid, FilteredGrid);
+	  CurrentFilter->Text = "";
+	}
 }
 //---------------------------------------------------------------------------
 
@@ -2645,4 +2771,26 @@ void __fastcall TClientForm::UpdateClientClick(TObject *Sender)
   SendToServer(Server, CreateRequest("DOWNLOADMODULE"));
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TClientForm::FilterChange(TObject *Sender)
+{
+  if (CurrentFilter->Text == "")
+	CopyRecords(ResultGrid, FilteredGrid);
+  else
+	FilterTable(ResultGrid, FilteredGrid, CurrentColInd, CurrentFilter->Text);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::FilteredGridMouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+  FilteredGrid->MouseToCell(X, Y, CurrentColInd, CurrentRowInd);
+
+  if (CurrentColInd >= 0)
+	CurrentFilterLabel->Caption = FilteredGrid->Cells[CurrentColInd][0];
+
+  CurrentFilter->Left = CurrentFilterLabel->Left + CurrentFilterLabel->ClientWidth + 10;
+}
+//---------------------------------------------------------------------------
+
 

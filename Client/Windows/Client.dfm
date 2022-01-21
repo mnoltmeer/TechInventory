@@ -50,7 +50,6 @@ object ClientForm: TClientForm
       RowCount = 2
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       TabOrder = 0
-      OnMouseUp = CheckItemResultMouseUp
     end
     object Panel4: TPanel
       Left = 1
@@ -111,7 +110,7 @@ object ClientForm: TClientForm
         Width = 103
         Height = 24
         Date = 44154.000000000000000000
-        Time = 0.640191886574030000
+        Time = 0.640191886574029900
         TabOrder = 2
       end
       object ShowEventsApply: TButton
@@ -526,54 +525,6 @@ object ClientForm: TClientForm
       ShowHint = True
       TabOrder = 0
       OnClick = ReconnectClick
-    end
-  end
-  object LogPanel: TPanel
-    Left = 0
-    Top = 509
-    Width = 811
-    Height = 108
-    Align = alBottom
-    BevelOuter = bvLowered
-    TabOrder = 2
-    object ActionLog: TMemo
-      Left = 1
-      Top = 22
-      Width = 809
-      Height = 85
-      TabStop = False
-      Align = alClient
-      BevelOuter = bvRaised
-      ScrollBars = ssVertical
-      TabOrder = 0
-    end
-    object Panel1: TPanel
-      Left = 1
-      Top = 1
-      Width = 809
-      Height = 21
-      Align = alTop
-      BevelOuter = bvNone
-      TabOrder = 1
-      object Label6: TLabel
-        Left = 2
-        Top = 2
-        Width = 64
-        Height = 16
-        Caption = #1051#1086#1075' '#1089#1077#1072#1085#1089#1091
-      end
-      object SaveSessionLog: TButton
-        Left = 72
-        Top = 2
-        Width = 18
-        Height = 17
-        Hint = #1047#1073#1077#1088#1077#1075#1090#1080' '#1083#1086#1075' '#1091' '#1092#1072#1081#1083
-        Caption = '#'
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = SaveSessionLogClick
-      end
     end
   end
   object PnShowItems: TPanel
@@ -991,231 +942,6 @@ object ClientForm: TClientForm
       OnMouseUp = CheckItemResultMouseUp
     end
   end
-  object PnAdmUsers: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 8
-    object Label18: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1050#1077#1088#1091#1074#1072#1085#1085#1103' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072#1084#1080
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 230
-    end
-    object Panel5: TPanel
-      Left = 1
-      Top = 450
-      Width = 769
-      Height = 25
-      Align = alBottom
-      TabOrder = 0
-      object AdmUsersRefresh: TBitBtn
-        Left = 0
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = AdmUsersRefreshClick
-      end
-      object AdmUsersAdd: TBitBtn
-        Left = 27
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1057#1090#1074#1086#1088#1080#1090#1080' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-        OnClick = AdmUsersAddClick
-      end
-      object AdmUsersSetPwd: TBitBtn
-        Left = 54
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1042#1089#1090#1072#1085#1086#1074#1080#1090#1080' '#1087#1072#1088#1086#1083#1100
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
-        OnClick = AdmUsersSetPwdClick
-      end
-      object AdmUsersLock: TBitBtn
-        Left = 81
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1047#1072#1073#1083#1086#1082#1091#1074#1072#1090#1080' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 3
-        OnClick = AdmUsersLockClick
-      end
-      object AdmUsersUnlock: TBitBtn
-        Left = 108
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1056#1086#1079#1073#1083#1086#1082#1091#1074#1072#1090#1080' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 4
-        OnClick = AdmUsersUnlockClick
-      end
-    end
-    object AdmUsersResult: TStringGrid
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 426
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      PopupMenu = PPEditUser
-      TabOrder = 1
-      OnMouseUp = CheckItemResultMouseUp
-    end
-  end
-  object PnAdmLogs: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 10
-    object Label20: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1083#1086#1075#1110#1074
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 133
-    end
-    object Panel7: TPanel
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 41
-      Align = alTop
-      TabOrder = 0
-      object AdmLogsDate: TDateTimePicker
-        Left = 2
-        Top = 9
-        Width = 121
-        Height = 24
-        Date = 44154.000000000000000000
-        Time = 0.640191886574030000
-        TabOrder = 0
-      end
-      object AdmLogsShow: TButton
-        Left = 140
-        Top = 8
-        Width = 75
-        Height = 25
-        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
-        TabOrder = 1
-        OnClick = AdmLogsShowClick
-      end
-    end
-    object AdmLogsResult: TStringGrid
-      Left = 1
-      Top = 65
-      Width = 769
-      Height = 410
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      TabOrder = 1
-      OnMouseUp = CheckItemResultMouseUp
-    end
-  end
-  object PnAdmManage: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 11
-    object Label7: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1042#1080#1082#1086#1085#1072#1085#1085#1103' '#1079#1072#1087#1080#1090#1110#1074' '#1076#1086' '#1041#1044
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 221
-    end
-    object AdmRequestResult: TStringGrid
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 267
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      PopupMenu = PPEditLoc
-      TabOrder = 0
-      OnMouseUp = CheckItemResultMouseUp
-    end
-    object QueryText: TMemo
-      Left = 1
-      Top = 291
-      Width = 769
-      Height = 143
-      Align = alBottom
-      TabOrder = 1
-      OnKeyUp = QueryTextKeyUp
-    end
-    object Panel8: TPanel
-      Left = 1
-      Top = 434
-      Width = 769
-      Height = 41
-      Align = alBottom
-      TabOrder = 2
-      object Execute: TButton
-        Left = 0
-        Top = 6
-        Width = 140
-        Height = 25
-        Caption = #1042#1080#1082#1086#1085#1072#1090#1080' '#1079#1072#1087#1080#1090' (F9)'
-        TabOrder = 0
-        OnClick = ExecuteClick
-      end
-    end
-  end
   object PnAdmLocations: TPanel
     Left = 40
     Top = 33
@@ -1304,16 +1030,511 @@ object ClientForm: TClientForm
     end
     object AdmLocationsResult: TStringGrid
       Left = 1
-      Top = 24
+      Top = 50
       Width = 769
-      Height = 426
+      Height = 400
       Align = alClient
       FixedCols = 0
       RowCount = 2
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       PopupMenu = PPEditLoc
       TabOrder = 1
-      OnMouseUp = CheckItemResultMouseUp
+      Visible = False
+    end
+    object Panel11: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 26
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 2
+      object Label9: TLabel
+        Left = 4
+        Top = 2
+        Width = 98
+        Height = 16
+        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object LbFilterField: TLabel
+        Left = 116
+        Top = 2
+        Width = 46
+        Height = 16
+        Caption = '<none>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+      end
+      object Filter: TEdit
+        Left = 312
+        Top = 1
+        Width = 209
+        Height = 24
+        TabOrder = 0
+        OnChange = FilterChange
+      end
+    end
+    object AdmLocationsFiltered: TStringGrid
+      Left = 1
+      Top = 50
+      Width = 769
+      Height = 400
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      PopupMenu = PPEditLoc
+      TabOrder = 3
+      OnMouseUp = FilteredGridMouseUp
+    end
+  end
+  object LogPanel: TPanel
+    Left = 0
+    Top = 509
+    Width = 811
+    Height = 108
+    Align = alBottom
+    BevelOuter = bvLowered
+    TabOrder = 2
+    object ActionLog: TMemo
+      Left = 1
+      Top = 22
+      Width = 809
+      Height = 85
+      TabStop = False
+      Align = alClient
+      BevelOuter = bvRaised
+      ScrollBars = ssVertical
+      TabOrder = 0
+    end
+    object Panel1: TPanel
+      Left = 1
+      Top = 1
+      Width = 809
+      Height = 21
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 1
+      object Label6: TLabel
+        Left = 2
+        Top = 2
+        Width = 64
+        Height = 16
+        Caption = #1051#1086#1075' '#1089#1077#1072#1085#1089#1091
+      end
+      object SaveSessionLog: TButton
+        Left = 72
+        Top = 2
+        Width = 18
+        Height = 17
+        Hint = #1047#1073#1077#1088#1077#1075#1090#1080' '#1083#1086#1075' '#1091' '#1092#1072#1081#1083
+        Caption = '#'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = SaveSessionLogClick
+      end
+    end
+  end
+  object PnAdmLogs: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 10
+    object Label20: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1083#1086#1075#1110#1074
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 133
+    end
+    object Panel7: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 41
+      Align = alTop
+      TabOrder = 0
+      object AdmLogsDate: TDateTimePicker
+        Left = 2
+        Top = 9
+        Width = 121
+        Height = 24
+        Date = 44154.000000000000000000
+        Time = 0.640191886574029900
+        TabOrder = 0
+      end
+      object AdmLogsShow: TButton
+        Left = 140
+        Top = 8
+        Width = 75
+        Height = 25
+        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
+        TabOrder = 1
+        OnClick = AdmLogsShowClick
+      end
+    end
+    object AdmLogsResult: TStringGrid
+      Left = 1
+      Top = 91
+      Width = 769
+      Height = 384
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 1
+      Visible = False
+    end
+    object Panel12: TPanel
+      Left = 1
+      Top = 65
+      Width = 769
+      Height = 26
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 2
+      object Label10: TLabel
+        Left = 4
+        Top = 2
+        Width = 98
+        Height = 16
+        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object Label12: TLabel
+        Left = 116
+        Top = 2
+        Width = 46
+        Height = 16
+        Caption = '<none>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+      end
+      object Edit1: TEdit
+        Left = 312
+        Top = 1
+        Width = 209
+        Height = 24
+        TabOrder = 0
+        OnChange = FilterChange
+      end
+    end
+    object AdmLogsFiltered: TStringGrid
+      Left = 1
+      Top = 91
+      Width = 769
+      Height = 384
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 3
+      OnMouseUp = FilteredGridMouseUp
+    end
+  end
+  object PnAdmManage: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 11
+    object Label7: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1042#1080#1082#1086#1085#1072#1085#1085#1103' '#1079#1072#1087#1080#1090#1110#1074' '#1076#1086' '#1041#1044
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 221
+    end
+    object AdmRequestResult: TStringGrid
+      Left = 1
+      Top = 50
+      Width = 769
+      Height = 241
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 0
+      Visible = False
+      OnMouseUp = FilteredGridMouseUp
+    end
+    object QueryText: TMemo
+      Left = 1
+      Top = 291
+      Width = 769
+      Height = 143
+      Align = alBottom
+      TabOrder = 1
+      OnKeyUp = QueryTextKeyUp
+    end
+    object Panel8: TPanel
+      Left = 1
+      Top = 434
+      Width = 769
+      Height = 41
+      Align = alBottom
+      TabOrder = 2
+      object Execute: TButton
+        Left = 0
+        Top = 6
+        Width = 140
+        Height = 25
+        Caption = #1042#1080#1082#1086#1085#1072#1090#1080' '#1079#1072#1087#1080#1090' (F9)'
+        TabOrder = 0
+        OnClick = ExecuteClick
+      end
+    end
+    object Panel13: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 26
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 3
+      object Label21: TLabel
+        Left = 4
+        Top = 2
+        Width = 98
+        Height = 16
+        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object Label22: TLabel
+        Left = 116
+        Top = 2
+        Width = 46
+        Height = 16
+        Caption = '<none>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+      end
+      object Edit2: TEdit
+        Left = 312
+        Top = 1
+        Width = 209
+        Height = 24
+        TabOrder = 0
+        OnChange = FilterChange
+      end
+    end
+    object AdmRequestFiltered: TStringGrid
+      Left = 1
+      Top = 50
+      Width = 769
+      Height = 241
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 4
+      OnMouseUp = FilteredGridMouseUp
+    end
+  end
+  object PnAdmUsers: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 8
+    object Label18: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1050#1077#1088#1091#1074#1072#1085#1085#1103' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072#1084#1080
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 230
+    end
+    object Panel5: TPanel
+      Left = 1
+      Top = 450
+      Width = 769
+      Height = 25
+      Align = alBottom
+      TabOrder = 0
+      object AdmUsersRefresh: TBitBtn
+        Left = 0
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = AdmUsersRefreshClick
+      end
+      object AdmUsersAdd: TBitBtn
+        Left = 27
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1057#1090#1074#1086#1088#1080#1090#1080' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+        OnClick = AdmUsersAddClick
+      end
+      object AdmUsersSetPwd: TBitBtn
+        Left = 54
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1042#1089#1090#1072#1085#1086#1074#1080#1090#1080' '#1087#1072#1088#1086#1083#1100
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        OnClick = AdmUsersSetPwdClick
+      end
+      object AdmUsersLock: TBitBtn
+        Left = 81
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1047#1072#1073#1083#1086#1082#1091#1074#1072#1090#1080' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 3
+        OnClick = AdmUsersLockClick
+      end
+      object AdmUsersUnlock: TBitBtn
+        Left = 108
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1056#1086#1079#1073#1083#1086#1082#1091#1074#1072#1090#1080' '#1082#1086#1088#1080#1089#1090#1091#1074#1072#1095#1072
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 4
+        OnClick = AdmUsersUnlockClick
+      end
+    end
+    object AdmUsersResult: TStringGrid
+      Left = 1
+      Top = 50
+      Width = 769
+      Height = 400
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      PopupMenu = PPEditUser
+      TabOrder = 1
+      Visible = False
+    end
+    object Panel14: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 26
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 2
+      object Label24: TLabel
+        Left = 4
+        Top = 2
+        Width = 98
+        Height = 16
+        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object Label25: TLabel
+        Left = 116
+        Top = 2
+        Width = 46
+        Height = 16
+        Caption = '<none>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+      end
+      object Edit3: TEdit
+        Left = 312
+        Top = 1
+        Width = 209
+        Height = 24
+        TabOrder = 0
+        OnChange = FilterChange
+      end
+    end
+    object AdmUsersFiltered: TStringGrid
+      Left = 1
+      Top = 50
+      Width = 769
+      Height = 400
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      PopupMenu = PPEditUser
+      TabOrder = 3
+      OnMouseUp = FilteredGridMouseUp
     end
   end
   object SaveCfgDialog: TSaveDialog
@@ -2444,7 +2665,7 @@ object ClientForm: TClientForm
   end
   object OpenCSVDialog: TOpenDialog
     Filter = #1092#1072#1081#1083#1080' CSV|*.csv'
-    Left = 664
-    Top = 97
+    Left = 32
+    Top = 545
   end
 end
