@@ -381,15 +381,13 @@ void __fastcall TClientForm::MnCheckItemsClick(TObject *Sender)
   CheckItemsCurrentLocation->Caption = "";
   RefreshButton = nullptr;
   EditButton = CheckItemsEdit;
-  ClearResultSet(CheckItemsResult);
   PrepareCheckTable();
   CheckError->Hide();
 
-  ResultGrid = AdmLocationsResult;
-  FilteredGrid = AdmLocationsFiltered;
-  CurrentFilter = Filter;
-  CurrentFilterLabel = LbFilterField;
-  CopyRecords(ResultGrid, FilteredGrid);
+  ResultGrid = CheckItemsResult;
+  FilteredGrid = CheckItemsFiltered;
+  CurrentFilter = Edit4;
+  CurrentFilterLabel = Label33;
   CurrentFilter->Text = "";
 }
 //---------------------------------------------------------------------------
@@ -416,15 +414,13 @@ void __fastcall TClientForm::MnShowItemsClick(TObject *Sender)
   PnShowItems->Show();
   ActivePanel = PnShowItems;
   ShowItemsCurrentLocation->Caption = "";
-  ClearResultSet(ShowItemsResult);
   RefreshButton = ShowItemsRefresh;
   EditButton = ShowItemsEdit;
 
-  ResultGrid = AdmLocationsResult;
-  FilteredGrid = AdmLocationsFiltered;
-  CurrentFilter = Filter;
-  CurrentFilterLabel = LbFilterField;
-  CopyRecords(ResultGrid, FilteredGrid);
+  ResultGrid = ShowItemsResult;
+  FilteredGrid = ShowItemsFiltered;
+  CurrentFilter = Edit5;
+  CurrentFilterLabel = Label35;
   CurrentFilter->Text = "";
 }
 //---------------------------------------------------------------------------
@@ -440,14 +436,12 @@ void __fastcall TClientForm::MnShowEventsClick(TObject *Sender)
   ShowEventsDateTo->Enabled = false;
   ShowEventsInn->Text = "";
   ShowEventsSearchType->ItemIndex = 0;
-  ClearResultSet(ShowEventsResult);
   ShowEventsApply->Enabled = false;
 
-  ResultGrid = AdmLocationsResult;
-  FilteredGrid = AdmLocationsFiltered;
-  CurrentFilter = Filter;
-  CurrentFilterLabel = LbFilterField;
-  CopyRecords(ResultGrid, FilteredGrid);
+  ResultGrid = ShowEventsResult;
+  FilteredGrid = ShowEventsFiltered;
+  CurrentFilter = Edit6;
+  CurrentFilterLabel = Label37;
   CurrentFilter->Text = "";
 }
 //---------------------------------------------------------------------------
@@ -1471,8 +1465,7 @@ void __fastcall TClientForm::CopyTitles(TStringGrid *from, TStringGrid *to)
   try
 	 {
 	   to->ColCount = from->ColCount;
-       to->RowCount = 2;
-	   to->FixedRows = from->FixedRows;
+	   to->RowCount = 1;
 
 	   for (int i = 0; i < from->ColCount; i++)
 		  {
@@ -1516,16 +1509,15 @@ void __fastcall TClientForm::FilterTable(TStringGrid *from, TStringGrid *to,
 	 {
 	   ClearResultSet(to);
 	   CopyTitles(from, to);
-	   //to->RowCount = 2;
 
 	   for (int i = 1; i < from->RowCount; i++)
 		  {
 			if (from->Cells[col][i].UpperCase().Pos(text.UpperCase()))
 			  {
+				to->RowCount++;
+
 				for (int j = 0; j < from->ColCount; j++)
 				   to->Cells[j][to->RowCount - 1] = from->Cells[j][i];
-
-				to->RowCount++;
 			  }
 		  }
 	 }
@@ -1991,8 +1983,8 @@ void __fastcall TClientForm::PrepareCheckTable()
 	   CheckItemsResult->ColCount = 5;
 	   CheckItemsResult->ColWidths[0] = 0;
 	   CheckItemsResult->ColWidths[1] = 50;
-	   CheckItemsResult->ColWidths[2] = 150;
-	   CheckItemsResult->ColWidths[3] = 150;
+	   CheckItemsResult->ColWidths[2] = 250;
+	   CheckItemsResult->ColWidths[3] = 250;
 	   CheckItemsResult->ColWidths[4] = 300;
 	   CheckItemsResult->Cells[0][0] = "";
 	   CheckItemsResult->Cells[1][0] = "ID";
@@ -2507,6 +2499,8 @@ void __fastcall TClientForm::ShowEventsApplyClick(TObject *Sender)
 	}
   else
 	AskEventList(ShowEventsSearchType->ItemIndex, ShowEventsInn->Text, "-", "-");
+
+  CopyRecords(ResultGrid, FilteredGrid);
 }
 //---------------------------------------------------------------------------
 
@@ -2560,7 +2554,10 @@ void __fastcall TClientForm::ShowItemsRefreshClick(TObject *Sender)
   //запит переліку Пристроїв в локації
 
   if (ShowItemsCurrentLocation->Caption != "")
-    AskItemList(ShowItemsCurrentLocation->Tag);
+	{
+	  AskItemList(ShowItemsCurrentLocation->Tag);
+      CopyRecords(ResultGrid, FilteredGrid);
+	}
 }
 //---------------------------------------------------------------------------
 
@@ -2596,7 +2593,8 @@ void __fastcall TClientForm::CheckItemsSelectLocationClick(TObject *Sender)
 {
   Location = CheckItemsCurrentLocation;
   SelectLocationForm->Show();
-  ClearResultSet(CheckItemsResult);
+  ClearResultSet(ResultGrid);
+  CopyRecords(ResultGrid, FilteredGrid);
   PrepareCheckTable();
 }
 //---------------------------------------------------------------------------
@@ -2607,11 +2605,11 @@ void __fastcall TClientForm::CheckItemsEditClick(TObject *Sender)
 	{
 	  EditItemForm->Show();
 
-	  ItemID = CheckItemsResult->Cells[1][CurrentRowInd].ToInt();
+	  ItemID = FilteredGrid->Cells[1][CurrentRowInd].ToInt();
 
-	  EditItemForm->Inn->Text = CheckItemsResult->Cells[2][CurrentRowInd];
-	  EditItemForm->Sn->Text = CheckItemsResult->Cells[3][CurrentRowInd];
-	  EditItemForm->Model->Text = CheckItemsResult->Cells[4][CurrentRowInd];
+	  EditItemForm->Inn->Text = FilteredGrid->Cells[2][CurrentRowInd];
+	  EditItemForm->Sn->Text = FilteredGrid->Cells[3][CurrentRowInd];
+	  EditItemForm->Model->Text = FilteredGrid->Cells[4][CurrentRowInd];
 	  EditItemForm->CurrentLocation->Caption = CheckItemsCurrentLocation->Caption;
 	  EditItemForm->CurrentLocation->Tag = CheckItemsCurrentLocation->Tag;
 
@@ -2686,7 +2684,8 @@ void __fastcall TClientForm::CheckItemsAddToListClick(TObject *Sender)
 	{
 	  CheckItemInLocation(CheckItemsScannedCode->Text,
 						  CheckItemsCurrentLocation->Tag,
-						  CheckItemsResult);
+						  ResultGrid);
+	  CopyRecords(ResultGrid, FilteredGrid);
 
       CheckItemsScannedCode->Text = "";
 	}
@@ -2698,10 +2697,14 @@ void __fastcall TClientForm::CheckItemsDeleteClick(TObject *Sender)
   //видалити пристрій з відомості
   if (CurrentRowInd > 0)
 	{
-	  for (int i = CurrentRowInd; i <= CheckItemsResult->RowCount - 2; i++)
-		 CheckItemsResult->Rows[i]->Assign(CheckItemsResult->Rows[i + 1]);
+	  for (int i = CurrentRowInd; i <= FilteredGrid->RowCount - 2; i++)
+		 {
+		   FilteredGrid->Rows[i]->Assign(FilteredGrid->Rows[i + 1]);
+		   ResultGrid->Rows[i]->Assign(ResultGrid->Rows[i + 1]);
+		 }
 
-      CheckItemsResult->RowCount = CheckItemsResult->RowCount - 1;
+	  ResultGrid->RowCount = ResultGrid->RowCount - 1;
+	  FilteredGrid->RowCount = FilteredGrid->RowCount - 1;
 	}
 }
 //---------------------------------------------------------------------------
@@ -2709,27 +2712,29 @@ void __fastcall TClientForm::CheckItemsDeleteClick(TObject *Sender)
 void __fastcall TClientForm::CheckItemsResultDrawCell(TObject *Sender, int ACol, int ARow,
 													  TRect &Rect, TGridDrawState State)
 {
-  String cell_text = CheckItemsResult->Cells[ACol][ARow];
+  TStringGrid *grid = dynamic_cast<TStringGrid*>(Sender);
+
+  String cell_text = grid->Cells[ACol][ARow];
 
   Rect.SetLocation(Rect.Location.X - 3, Rect.Location.Y);
   Rect.SetWidth(Rect.Size.Width + 6);
 
-  if (CheckItemsResult->Cells[0][ARow] == "+")
-	CheckItemsResult->Canvas->Brush->Color = clGreen;
-  else if (CheckItemsResult->Cells[0][ARow] == "-")
-	CheckItemsResult->Canvas->Brush->Color = clRed;
-  else if (CheckItemsResult->Cells[0][ARow] == "?")
-	CheckItemsResult->Canvas->Brush->Color = clYellow;
-  else if (CheckItemsResult->Cells[0][ARow] == "*")
-	CheckItemsResult->Canvas->Brush->Color = clGray;
+  if (grid->Cells[0][ARow] == "+")
+	grid->Canvas->Brush->Color = clGreen;
+  else if (grid->Cells[0][ARow] == "-")
+	grid->Canvas->Brush->Color = clRed;
+  else if (grid->Cells[0][ARow] == "?")
+	grid->Canvas->Brush->Color = clYellow;
+  else if (grid->Cells[0][ARow] == "*")
+	grid->Canvas->Brush->Color = clGray;
   else
-    CheckItemsResult->Canvas->Brush->Color = clWindow;
+	grid->Canvas->Brush->Color = clWindow;
 
-  CheckItemsResult->Canvas->FillRect(Rect);
-  CheckItemsResult->Canvas->Font->Color = clBlack;
-  CheckItemsResult->Canvas->TextOut(Rect.Left + 2,
-									Rect.Top + 2,
-									CheckItemsResult->Cells[ACol][ARow]);
+  grid->Canvas->FillRect(Rect);
+  grid->Canvas->Font->Color = clBlack;
+  grid->Canvas->TextOut(Rect.Left + 2,
+						Rect.Top + 2,
+						CheckItemsResult->Cells[ACol][ARow]);
 }
 //---------------------------------------------------------------------------
 
@@ -2788,8 +2793,6 @@ void __fastcall TClientForm::FilteredGridMouseUp(TObject *Sender, TMouseButton B
 
   if (CurrentColInd >= 0)
 	CurrentFilterLabel->Caption = FilteredGrid->Cells[CurrentColInd][0];
-
-  CurrentFilter->Left = CurrentFilterLabel->Left + CurrentFilterLabel->ClientWidth + 10;
 }
 //---------------------------------------------------------------------------
 

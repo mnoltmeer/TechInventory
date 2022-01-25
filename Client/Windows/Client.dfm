@@ -17,135 +17,6 @@ object ClientForm: TClientForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 16
-  object PnShowEvents: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 7
-    object Label13: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1087#1086#1076#1110#1081
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 137
-    end
-    object ShowEventsResult: TStringGrid
-      Left = 1
-      Top = 118
-      Width = 769
-      Height = 357
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      TabOrder = 0
-    end
-    object Panel4: TPanel
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 94
-      Align = alTop
-      TabOrder = 1
-      object Label15: TLabel
-        Left = 81
-        Top = 62
-        Width = 7
-        Height = 16
-        Caption = #1047
-      end
-      object Label16: TLabel
-        Left = 209
-        Top = 62
-        Width = 14
-        Height = 16
-        Caption = #1087#1086
-      end
-      object Label14: TLabel
-        Left = 5
-        Top = 6
-        Width = 61
-        Height = 16
-        Caption = #1064#1091#1082#1072#1090#1080' '#1079#1072
-      end
-      object Label32: TLabel
-        Left = 165
-        Top = 6
-        Width = 103
-        Height = 16
-        Caption = #1042#1074#1077#1076#1110#1090#1100' '#1079#1085#1072#1095#1077#1085#1085#1103
-      end
-      object ShowEventsInn: TEdit
-        Left = 165
-        Top = 27
-        Width = 283
-        Height = 24
-        TabOrder = 0
-        OnChange = ShowEventsInnChange
-        OnKeyPress = ShowEventsInnKeyPress
-      end
-      object ShowEventsDateFrom: TDateTimePicker
-        Left = 99
-        Top = 58
-        Width = 104
-        Height = 24
-        Date = 44154.000000000000000000
-        Time = 0.639949120370147300
-        TabOrder = 1
-      end
-      object ShowEventsDateTo: TDateTimePicker
-        Left = 229
-        Top = 57
-        Width = 103
-        Height = 24
-        Date = 44154.000000000000000000
-        Time = 0.640191886574029900
-        TabOrder = 2
-      end
-      object ShowEventsApply: TButton
-        Left = 467
-        Top = 28
-        Width = 75
-        Height = 25
-        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
-        TabOrder = 3
-        OnClick = ShowEventsApplyClick
-      end
-      object ShowEventsDateFilter: TCheckBox
-        Left = 5
-        Top = 61
-        Width = 59
-        Height = 17
-        Caption = #1047#1072' '#1076#1072#1090#1091
-        TabOrder = 4
-        OnClick = ShowEventsDateFilterClick
-      end
-      object ShowEventsSearchType: TComboBox
-        Left = 5
-        Top = 28
-        Width = 154
-        Height = 24
-        ItemIndex = 0
-        TabOrder = 5
-        Text = 'ID '#1055#1088#1080#1089#1090#1088#1086#1102
-        Items.Strings = (
-          'ID '#1055#1088#1080#1089#1090#1088#1086#1102
-          #1030#1085#1074#1077#1085#1090#1072#1088#1085#1080#1084' '#1085#1086#1084#1077#1088#1086#1084
-          #1057#1077#1088#1110#1081#1085#1080#1084' '#1085#1086#1084#1077#1088#1086#1084)
-      end
-    end
-  end
   object PnAddItem: TPanel
     Left = 40
     Top = 33
@@ -527,118 +398,6 @@ object ClientForm: TClientForm
       OnClick = ReconnectClick
     end
   end
-  object PnShowItems: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 6
-    object Label17: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1055#1088#1080#1089#1090#1088#1086#1111#1074' '#1091' '#1074#1082#1072#1079#1072#1085#1110#1081' '#1051#1086#1082#1072#1094#1110#1111
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 340
-    end
-    object Panel2: TPanel
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 35
-      Align = alTop
-      TabOrder = 0
-      object ShowItemsCurrentLocation: TLabel
-        Left = 128
-        Top = 10
-        Width = 154
-        Height = 16
-        Caption = 'ShowItemsCurrentLocation'
-      end
-      object ShowItemsSelectLocation: TButton
-        Left = 2
-        Top = 6
-        Width = 120
-        Height = 25
-        Caption = #1054#1073#1088#1072#1090#1080' '#1051#1086#1082#1072#1094#1110#1102
-        TabOrder = 0
-        OnClick = ShowItemsSelectLocationClick
-      end
-      object ShowItemsRequest: TButton
-        Left = 507
-        Top = 6
-        Width = 108
-        Height = 25
-        Caption = #1054#1090#1088#1080#1084#1072#1090#1080' '#1076#1072#1085#1110
-        TabOrder = 1
-        OnClick = ShowItemsRequestClick
-      end
-    end
-    object Panel3: TPanel
-      Left = 1
-      Top = 450
-      Width = 769
-      Height = 25
-      Align = alBottom
-      TabOrder = 1
-      object ShowItemsRemove: TBitBtn
-        Left = 54
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1055#1088#1080#1089#1090#1088#1110#1081' '#1079' '#1073#1072#1079#1080' '#1076#1072#1085#1080#1093
-        Enabled = False
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = ShowItemsRemoveClick
-      end
-      object ShowItemsEdit: TBitBtn
-        Left = 27
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1056#1077#1076#1072#1075#1091#1074#1072#1090#1080' '#1076#1072#1085#1110' '#1055#1088#1080#1089#1090#1088#1086#1102
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-        OnClick = ShowItemsEditClick
-      end
-      object ShowItemsRefresh: TBitBtn
-        Left = 0
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
-        OnClick = ShowItemsRefreshClick
-      end
-    end
-    object ShowItemsResult: TStringGrid
-      Left = 1
-      Top = 59
-      Width = 769
-      Height = 391
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      PopupMenu = PPEditItem
-      TabOrder = 2
-      OnMouseUp = CheckItemResultMouseUp
-    end
-  end
   object PnCheckItem: TPanel
     Left = 40
     Top = 33
@@ -733,6 +492,7 @@ object ClientForm: TClientForm
       Width = 769
       Height = 25
       Align = alBottom
+      BevelOuter = bvNone
       TabOrder = 1
       object CheckItemRemove: TBitBtn
         Left = 54
@@ -805,6 +565,575 @@ object ClientForm: TClientForm
       TabOrder = 4
     end
   end
+  object LogPanel: TPanel
+    Left = 0
+    Top = 509
+    Width = 811
+    Height = 108
+    Align = alBottom
+    BevelOuter = bvLowered
+    TabOrder = 2
+    object ActionLog: TMemo
+      Left = 1
+      Top = 22
+      Width = 809
+      Height = 85
+      TabStop = False
+      Align = alClient
+      BevelOuter = bvRaised
+      ScrollBars = ssVertical
+      TabOrder = 0
+    end
+    object Panel1: TPanel
+      Left = 1
+      Top = 1
+      Width = 809
+      Height = 21
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 1
+      object Label6: TLabel
+        Left = 2
+        Top = 2
+        Width = 64
+        Height = 16
+        Caption = #1051#1086#1075' '#1089#1077#1072#1085#1089#1091
+      end
+      object SaveSessionLog: TButton
+        Left = 72
+        Top = 2
+        Width = 18
+        Height = 17
+        Hint = #1047#1073#1077#1088#1077#1075#1090#1080' '#1083#1086#1075' '#1091' '#1092#1072#1081#1083
+        Caption = '#'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = SaveSessionLogClick
+      end
+    end
+  end
+  object PnShowItems: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 6
+    object Label17: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1055#1088#1080#1089#1090#1088#1086#1111#1074' '#1091' '#1074#1082#1072#1079#1072#1085#1110#1081' '#1051#1086#1082#1072#1094#1110#1111
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 340
+    end
+    object Panel2: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 35
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 0
+      object ShowItemsCurrentLocation: TLabel
+        Left = 128
+        Top = 10
+        Width = 154
+        Height = 16
+        Caption = 'ShowItemsCurrentLocation'
+      end
+      object ShowItemsSelectLocation: TButton
+        Left = 2
+        Top = 6
+        Width = 120
+        Height = 25
+        Caption = #1054#1073#1088#1072#1090#1080' '#1051#1086#1082#1072#1094#1110#1102
+        TabOrder = 0
+        OnClick = ShowItemsSelectLocationClick
+      end
+      object ShowItemsRequest: TButton
+        Left = 507
+        Top = 6
+        Width = 108
+        Height = 25
+        Caption = #1054#1090#1088#1080#1084#1072#1090#1080' '#1076#1072#1085#1110
+        TabOrder = 1
+        OnClick = ShowItemsRequestClick
+      end
+    end
+    object Panel3: TPanel
+      Left = 1
+      Top = 450
+      Width = 769
+      Height = 25
+      Align = alBottom
+      BevelOuter = bvNone
+      TabOrder = 1
+      object ShowItemsRemove: TBitBtn
+        Left = 54
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1055#1088#1080#1089#1090#1088#1110#1081' '#1079' '#1073#1072#1079#1080' '#1076#1072#1085#1080#1093
+        Enabled = False
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = ShowItemsRemoveClick
+      end
+      object ShowItemsEdit: TBitBtn
+        Left = 27
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1056#1077#1076#1072#1075#1091#1074#1072#1090#1080' '#1076#1072#1085#1110' '#1055#1088#1080#1089#1090#1088#1086#1102
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+        OnClick = ShowItemsEditClick
+      end
+      object ShowItemsRefresh: TBitBtn
+        Left = 0
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        OnClick = ShowItemsRefreshClick
+      end
+    end
+    object ShowItemsResult: TStringGrid
+      Left = 1
+      Top = 79
+      Width = 769
+      Height = 371
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 2
+      Visible = False
+      ExplicitTop = 59
+      ExplicitHeight = 391
+    end
+    object ShowItemsFiltered: TStringGrid
+      Left = 1
+      Top = 79
+      Width = 769
+      Height = 371
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      PopupMenu = PPEditItem
+      TabOrder = 3
+      OnMouseUp = FilteredGridMouseUp
+      ExplicitLeft = 2
+      ExplicitTop = 67
+      ExplicitHeight = 391
+    end
+    object Panel16: TPanel
+      Left = 1
+      Top = 59
+      Width = 769
+      Height = 20
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 4
+      object Label34: TLabel
+        Left = 229
+        Top = 0
+        Width = 98
+        Height = 20
+        Align = alLeft
+        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ExplicitLeft = 241
+        ExplicitTop = 4
+        ExplicitHeight = 16
+      end
+      object Label35: TLabel
+        Left = 327
+        Top = 0
+        Width = 46
+        Height = 20
+        Align = alLeft
+        Caption = '<none>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+        ExplicitLeft = 353
+        ExplicitTop = 4
+        ExplicitHeight = 16
+      end
+      object Image7: TImage
+        Left = 0
+        Top = 0
+        Width = 20
+        Height = 20
+        Align = alLeft
+        Picture.Data = {
+          0954506E67496D61676589504E470D0A1A0A0000000D49484452000000800000
+          00800803000000F4E091F90000000467414D410000B18F0BFC61050000018050
+          4C5445000000FF9900FF9A00FF9800FF9700FF9B00FF9D00FF9600F57B00F57C
+          00F77C00F47C00F67E00F57D00F47B00F87E00FF7700FFAB00FFFF00FF9900FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800
+          FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9700FD9300FD9200FD9200FD
+          9300FF9800FF9800FF9900FF9800FE9300F67F00F67D00F67D00F67D00F67F00
+          FD9200FF9800F47B00F57C00F57C00F57C00F57B00F57C00F57C00F57C00F57C
+          00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F5
+          7C00F57C00F77D00F57C00F57C00F57C00F57C00F67D00F47C00F57C00F57C00
+          F57C00F57C00F57C00F57C00F57C00F57D00F57D00FC8F00FD9100FC9000FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800F57C00F57D00FD9100
+          FFFFFF413EC9140000007B74524E530000000000000000000000000000000000
+          00000811080A4FAECDB1530B0983F5F7905D07ADB710CB4EF45E85F351AFC5CA
+          F0FBFAF2C658050C1079F7FCF88711060C98FDA20E16B1B91923C6CD2834D8DD
+          3A48E7EA52015FF2F46F02067BF9FA89070C0EFEDE6CFD8AFE8081E65BB23703
+          FCD15FE78C1C1D41020145DF2FF300000001624B47447F48BF71E50000000970
+          48597300021BEF00021BEF0149171B830000000774494D4507E40B020D1B3B8C
+          3DBB43000002D24944415478DAEDD93D6B145114C6F1FBCC18D889B0E00B0445
+          5450110B85141629420A4929015F10C10F61A3DF412D05D17E15096229821616
+          CA22585858681110C5AC88C6882FCBE20E6B0C24B23377EE3DF7DE73672CCE94
+          33C99CDF9E9D7F180854C30704200001FC4700605B3D1CACA85C034877003501
+          80DEA6607364BA1BB850CB7CA56EE3E7970DC10600C9CE565DF395EAA4EFF2D1
+          3820DD8F73B5CD576A7175252F000EE04C8D807BA3A522A0F10DA8433855DBFC
+          CED637AA0058ABA08D85BAE627C3E562057FBF8449AC1F51678F92E1C4873DBD
+          E5F2DF01A526301D1FB076FF41AB9B0FFF9D18BFDE9A016622CEEF024FFBE3A2
+          C24F64B3381E11F0024FC6E797009398C374B4F92FF138FD6106A84CCDE368A4
+          F9AFF070CBF7C2B9F223D7C6091C8932FF351E0DFAC5939A673E3B091C8C307F
+          09B85F9AAF7D23CA4E037BD9E7BF07EE96E7EB5FC9B2F36FD963EC62DF1DCDFC
+          8A77C2083196033401F863D4046802B0C7A80BD008608E511BA019C01AA33E40
+          0B8031C68A006D00B618AB02B402B862AC0AD00EE089B132403B8025C6EA0009
+          0086180D015200C1319A02240102633406480304C5680E90080889D11C2015E0
+          1FA325402AC03B465B806480678CD600E900AF18ED013A003C622404E802708E
+          9112A013C035464A806E00B7184901BA019C62A405E80870889118A02B801C23
+          3540670031467280EE00528CF4003D009418E901FA00EC313A04E803588FF158
+          AFF2F2AE8F9FE9017A01543B3D6BF895A94F8B7DA72FC0E37F46E9E1B9EDD557
+          BFDECAE9B7128000042000010840000210800004200001084000021080000420
+          801880D59BCD02BEE1469380CE0270BD39C02FE0D9F374E8783B3EC000B896B8
+          7E7C3E80D7F6F9009EDB6703F86E9F09E0BF7D1640C8F6390041DB0F07046E3F
+          1410BCFD40C000C9D5B0ED070138B61F00E0D9BE3F20FCD90F015C7C30CFB47D
+          4FC0A5DF5CDBF7045CC615B68FEF03E03E04200001340EF80395EC6A90A3E611
+          2E0000002574455874646174653A63726561746500323032302D31312D303254
+          31333A32373A35392B30303A30307EB49C380000002574455874646174653A6D
+          6F6469667900323032302D31312D30325431333A32373A35392B30303A30300F
+          E924840000002074455874736F6674776172650068747470733A2F2F696D6167
+          656D616769636B2E6F7267BCCF1D9D00000018744558745468756D623A3A446F
+          63756D656E743A3A50616765730031A7FFBB2F00000018744558745468756D62
+          3A3A496D6167653A3A486569676874003531328F8D5381000000177445587454
+          68756D623A3A496D6167653A3A5769647468003531321C7C03DC000000197445
+          58745468756D623A3A4D696D657479706500696D6167652F706E673FB2564E00
+          000017744558745468756D623A3A4D54696D6500313630343332333637392AB1
+          878100000012744558745468756D623A3A53697A65003435393842423A1CC9BC
+          00000046744558745468756D623A3A5552490066696C653A2F2F2E2F75706C6F
+          6164732F35362F584E724946746D2F323632312F6775695F66696C7465725F69
+          636F6E5F3135373134372E706E6755BBDFA00000000049454E44AE426082}
+        Stretch = True
+      end
+      object Edit5: TEdit
+        Left = 20
+        Top = 0
+        Width = 209
+        Height = 20
+        Align = alLeft
+        TabOrder = 0
+        OnChange = FilterChange
+        ExplicitLeft = 312
+        ExplicitTop = 1
+        ExplicitHeight = 24
+      end
+    end
+  end
+  object PnShowEvents: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 7
+    object Label13: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1087#1086#1076#1110#1081
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 137
+    end
+    object ShowEventsResult: TStringGrid
+      Left = 1
+      Top = 138
+      Width = 769
+      Height = 337
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 0
+      Visible = False
+      ExplicitTop = 118
+      ExplicitHeight = 357
+    end
+    object Panel4: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 94
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 1
+      object Label15: TLabel
+        Left = 81
+        Top = 62
+        Width = 7
+        Height = 16
+        Caption = #1047
+      end
+      object Label16: TLabel
+        Left = 209
+        Top = 62
+        Width = 14
+        Height = 16
+        Caption = #1087#1086
+      end
+      object Label14: TLabel
+        Left = 5
+        Top = 6
+        Width = 61
+        Height = 16
+        Caption = #1064#1091#1082#1072#1090#1080' '#1079#1072
+      end
+      object Label32: TLabel
+        Left = 165
+        Top = 6
+        Width = 103
+        Height = 16
+        Caption = #1042#1074#1077#1076#1110#1090#1100' '#1079#1085#1072#1095#1077#1085#1085#1103
+      end
+      object ShowEventsInn: TEdit
+        Left = 165
+        Top = 27
+        Width = 283
+        Height = 24
+        TabOrder = 0
+        OnChange = ShowEventsInnChange
+        OnKeyPress = ShowEventsInnKeyPress
+      end
+      object ShowEventsDateFrom: TDateTimePicker
+        Left = 99
+        Top = 58
+        Width = 104
+        Height = 24
+        Date = 44154.000000000000000000
+        Time = 0.639949120370147300
+        TabOrder = 1
+      end
+      object ShowEventsDateTo: TDateTimePicker
+        Left = 229
+        Top = 57
+        Width = 103
+        Height = 24
+        Date = 44154.000000000000000000
+        Time = 0.640191886574029900
+        TabOrder = 2
+      end
+      object ShowEventsApply: TButton
+        Left = 467
+        Top = 28
+        Width = 75
+        Height = 25
+        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
+        TabOrder = 3
+        OnClick = ShowEventsApplyClick
+      end
+      object ShowEventsDateFilter: TCheckBox
+        Left = 5
+        Top = 61
+        Width = 59
+        Height = 17
+        Caption = #1047#1072' '#1076#1072#1090#1091
+        TabOrder = 4
+        OnClick = ShowEventsDateFilterClick
+      end
+      object ShowEventsSearchType: TComboBox
+        Left = 5
+        Top = 28
+        Width = 154
+        Height = 24
+        ItemIndex = 0
+        TabOrder = 5
+        Text = 'ID '#1055#1088#1080#1089#1090#1088#1086#1102
+        Items.Strings = (
+          'ID '#1055#1088#1080#1089#1090#1088#1086#1102
+          #1030#1085#1074#1077#1085#1090#1072#1088#1085#1080#1084' '#1085#1086#1084#1077#1088#1086#1084
+          #1057#1077#1088#1110#1081#1085#1080#1084' '#1085#1086#1084#1077#1088#1086#1084)
+      end
+    end
+    object ShowEventsFiltered: TStringGrid
+      Left = 1
+      Top = 138
+      Width = 769
+      Height = 337
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 2
+      OnMouseUp = FilteredGridMouseUp
+      ExplicitLeft = 2
+      ExplicitTop = 119
+      ExplicitHeight = 357
+    end
+    object Panel17: TPanel
+      Left = 1
+      Top = 118
+      Width = 769
+      Height = 20
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 3
+      object Label36: TLabel
+        Left = 229
+        Top = 0
+        Width = 98
+        Height = 20
+        Align = alLeft
+        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ExplicitLeft = 241
+        ExplicitTop = 3
+        ExplicitHeight = 16
+      end
+      object Label37: TLabel
+        Left = 327
+        Top = 0
+        Width = 46
+        Height = 20
+        Align = alLeft
+        Caption = '<none>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+        ExplicitLeft = 353
+        ExplicitTop = 3
+        ExplicitHeight = 16
+      end
+      object Image6: TImage
+        Left = 0
+        Top = 0
+        Width = 20
+        Height = 20
+        Align = alLeft
+        Picture.Data = {
+          0954506E67496D61676589504E470D0A1A0A0000000D49484452000000800000
+          00800803000000F4E091F90000000467414D410000B18F0BFC61050000018050
+          4C5445000000FF9900FF9A00FF9800FF9700FF9B00FF9D00FF9600F57B00F57C
+          00F77C00F47C00F67E00F57D00F47B00F87E00FF7700FFAB00FFFF00FF9900FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800
+          FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9700FD9300FD9200FD9200FD
+          9300FF9800FF9800FF9900FF9800FE9300F67F00F67D00F67D00F67D00F67F00
+          FD9200FF9800F47B00F57C00F57C00F57C00F57B00F57C00F57C00F57C00F57C
+          00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F5
+          7C00F57C00F77D00F57C00F57C00F57C00F57C00F67D00F47C00F57C00F57C00
+          F57C00F57C00F57C00F57C00F57C00F57D00F57D00FC8F00FD9100FC9000FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800F57C00F57D00FD9100
+          FFFFFF413EC9140000007B74524E530000000000000000000000000000000000
+          00000811080A4FAECDB1530B0983F5F7905D07ADB710CB4EF45E85F351AFC5CA
+          F0FBFAF2C658050C1079F7FCF88711060C98FDA20E16B1B91923C6CD2834D8DD
+          3A48E7EA52015FF2F46F02067BF9FA89070C0EFEDE6CFD8AFE8081E65BB23703
+          FCD15FE78C1C1D41020145DF2FF300000001624B47447F48BF71E50000000970
+          48597300021BEF00021BEF0149171B830000000774494D4507E40B020D1B3B8C
+          3DBB43000002D24944415478DAEDD93D6B145114C6F1FBCC18D889B0E00B0445
+          5450110B85141629420A4929015F10C10F61A3DF412D05D17E15096229821616
+          CA22585858681110C5AC88C6882FCBE20E6B0C24B23377EE3DF7DE73672CCE94
+          33C99CDF9E9D7F180854C30704200001FC4700605B3D1CACA85C034877003501
+          80DEA6607364BA1BB850CB7CA56EE3E7970DC10600C9CE565DF395EAA4EFF2D1
+          3820DD8F73B5CD576A7175252F000EE04C8D807BA3A522A0F10DA8433855DBFC
+          CED637AA0058ABA08D85BAE627C3E562057FBF8449AC1F51678F92E1C4873DBD
+          E5F2DF01A526301D1FB076FF41AB9B0FFF9D18BFDE9A016622CEEF024FFBE3A2
+          C24F64B3381E11F0024FC6E797009398C374B4F92FF138FD6106A84CCDE368A4
+          F9AFF070CBF7C2B9F223D7C6091C8932FF351E0DFAC5939A673E3B091C8C307F
+          09B85F9AAF7D23CA4E037BD9E7BF07EE96E7EB5FC9B2F36FD963EC62DF1DCDFC
+          8A77C2083196033401F863D4046802B0C7A80BD008608E511BA019C01AA33E40
+          0B8031C68A006D00B618AB02B402B862AC0AD00EE089B132403B8025C6EA0009
+          0086180D015200C1319A02240102633406480304C5680E90080889D11C2015E0
+          1FA325402AC03B465B806480678CD600E900AF18ED013A003C622404E802708E
+          9112A013C035464A806E00B7184901BA019C62A405E80870889118A02B801C23
+          3540670031467280EE00528CF4003D009418E901FA00EC313A04E803588FF158
+          AFF2F2AE8F9FE9017A01543B3D6BF895A94F8B7DA72FC0E37F46E9E1B9EDD557
+          BFDECAE9B7128000042000010840000210800004200001084000021080000420
+          801880D59BCD02BEE1469380CE0270BD39C02FE0D9F374E8783B3EC000B896B8
+          7E7C3E80D7F6F9009EDB6703F86E9F09E0BF7D1640C8F6390041DB0F07046E3F
+          1410BCFD40C000C9D5B0ED070138B61F00E0D9BE3F20FCD90F015C7C30CFB47D
+          4FC0A5DF5CDBF7045CC615B68FEF03E03E04200001340EF80395EC6A90A3E611
+          2E0000002574455874646174653A63726561746500323032302D31312D303254
+          31333A32373A35392B30303A30307EB49C380000002574455874646174653A6D
+          6F6469667900323032302D31312D30325431333A32373A35392B30303A30300F
+          E924840000002074455874736F6674776172650068747470733A2F2F696D6167
+          656D616769636B2E6F7267BCCF1D9D00000018744558745468756D623A3A446F
+          63756D656E743A3A50616765730031A7FFBB2F00000018744558745468756D62
+          3A3A496D6167653A3A486569676874003531328F8D5381000000177445587454
+          68756D623A3A496D6167653A3A5769647468003531321C7C03DC000000197445
+          58745468756D623A3A4D696D657479706500696D6167652F706E673FB2564E00
+          000017744558745468756D623A3A4D54696D6500313630343332333637392AB1
+          878100000012744558745468756D623A3A53697A65003435393842423A1CC9BC
+          00000046744558745468756D623A3A5552490066696C653A2F2F2E2F75706C6F
+          6164732F35362F584E724946746D2F323632312F6775695F66696C7465725F69
+          636F6E5F3135373134372E706E6755BBDFA00000000049454E44AE426082}
+        Stretch = True
+      end
+      object Edit6: TEdit
+        Left = 20
+        Top = 0
+        Width = 209
+        Height = 20
+        Align = alLeft
+        TabOrder = 0
+        OnChange = FilterChange
+        ExplicitLeft = 312
+        ExplicitTop = 1
+        ExplicitHeight = 24
+      end
+    end
+  end
   object PnCheckItems: TPanel
     Left = 40
     Top = 33
@@ -834,6 +1163,7 @@ object ClientForm: TClientForm
       Width = 769
       Height = 76
       Align = alTop
+      BevelOuter = bvNone
       TabOrder = 0
       object CheckItemsCurrentLocation: TLabel
         Left = 132
@@ -892,6 +1222,7 @@ object ClientForm: TClientForm
       Width = 769
       Height = 25
       Align = alBottom
+      BevelOuter = bvNone
       TabOrder = 1
       object CheckItemsSendToUnknown: TBitBtn
         Left = 54
@@ -929,456 +1260,156 @@ object ClientForm: TClientForm
     end
     object CheckItemsResult: TStringGrid
       Left = 1
+      Top = 120
+      Width = 769
+      Height = 330
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 2
+      Visible = False
+      OnMouseUp = CheckItemResultMouseUp
+      ExplicitTop = 100
+      ExplicitHeight = 350
+    end
+    object Panel15: TPanel
+      Left = 1
       Top = 100
       Width = 769
-      Height = 350
+      Height = 20
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 3
+      object Label26: TLabel
+        Left = 229
+        Top = 0
+        Width = 98
+        Height = 20
+        Align = alLeft
+        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ExplicitLeft = 241
+        ExplicitTop = 4
+        ExplicitHeight = 16
+      end
+      object Label33: TLabel
+        Left = 327
+        Top = 0
+        Width = 46
+        Height = 20
+        Align = alLeft
+        Caption = '<none>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+        ExplicitLeft = 353
+        ExplicitTop = 4
+        ExplicitHeight = 16
+      end
+      object Image5: TImage
+        Left = 0
+        Top = 0
+        Width = 20
+        Height = 20
+        Align = alLeft
+        Picture.Data = {
+          0954506E67496D61676589504E470D0A1A0A0000000D49484452000000800000
+          00800803000000F4E091F90000000467414D410000B18F0BFC61050000018050
+          4C5445000000FF9900FF9A00FF9800FF9700FF9B00FF9D00FF9600F57B00F57C
+          00F77C00F47C00F67E00F57D00F47B00F87E00FF7700FFAB00FFFF00FF9900FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800
+          FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9700FD9300FD9200FD9200FD
+          9300FF9800FF9800FF9900FF9800FE9300F67F00F67D00F67D00F67D00F67F00
+          FD9200FF9800F47B00F57C00F57C00F57C00F57B00F57C00F57C00F57C00F57C
+          00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F5
+          7C00F57C00F77D00F57C00F57C00F57C00F57C00F67D00F47C00F57C00F57C00
+          F57C00F57C00F57C00F57C00F57C00F57D00F57D00FC8F00FD9100FC9000FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800F57C00F57D00FD9100
+          FFFFFF413EC9140000007B74524E530000000000000000000000000000000000
+          00000811080A4FAECDB1530B0983F5F7905D07ADB710CB4EF45E85F351AFC5CA
+          F0FBFAF2C658050C1079F7FCF88711060C98FDA20E16B1B91923C6CD2834D8DD
+          3A48E7EA52015FF2F46F02067BF9FA89070C0EFEDE6CFD8AFE8081E65BB23703
+          FCD15FE78C1C1D41020145DF2FF300000001624B47447F48BF71E50000000970
+          48597300021BEF00021BEF0149171B830000000774494D4507E40B020D1B3B8C
+          3DBB43000002D24944415478DAEDD93D6B145114C6F1FBCC18D889B0E00B0445
+          5450110B85141629420A4929015F10C10F61A3DF412D05D17E15096229821616
+          CA22585858681110C5AC88C6882FCBE20E6B0C24B23377EE3DF7DE73672CCE94
+          33C99CDF9E9D7F180854C30704200001FC4700605B3D1CACA85C034877003501
+          80DEA6607364BA1BB850CB7CA56EE3E7970DC10600C9CE565DF395EAA4EFF2D1
+          3820DD8F73B5CD576A7175252F000EE04C8D807BA3A522A0F10DA8433855DBFC
+          CED637AA0058ABA08D85BAE627C3E562057FBF8449AC1F51678F92E1C4873DBD
+          E5F2DF01A526301D1FB076FF41AB9B0FFF9D18BFDE9A016622CEEF024FFBE3A2
+          C24F64B3381E11F0024FC6E797009398C374B4F92FF138FD6106A84CCDE368A4
+          F9AFF070CBF7C2B9F223D7C6091C8932FF351E0DFAC5939A673E3B091C8C307F
+          09B85F9AAF7D23CA4E037BD9E7BF07EE96E7EB5FC9B2F36FD963EC62DF1DCDFC
+          8A77C2083196033401F863D4046802B0C7A80BD008608E511BA019C01AA33E40
+          0B8031C68A006D00B618AB02B402B862AC0AD00EE089B132403B8025C6EA0009
+          0086180D015200C1319A02240102633406480304C5680E90080889D11C2015E0
+          1FA325402AC03B465B806480678CD600E900AF18ED013A003C622404E802708E
+          9112A013C035464A806E00B7184901BA019C62A405E80870889118A02B801C23
+          3540670031467280EE00528CF4003D009418E901FA00EC313A04E803588FF158
+          AFF2F2AE8F9FE9017A01543B3D6BF895A94F8B7DA72FC0E37F46E9E1B9EDD557
+          BFDECAE9B7128000042000010840000210800004200001084000021080000420
+          801880D59BCD02BEE1469380CE0270BD39C02FE0D9F374E8783B3EC000B896B8
+          7E7C3E80D7F6F9009EDB6703F86E9F09E0BF7D1640C8F6390041DB0F07046E3F
+          1410BCFD40C000C9D5B0ED070138B61F00E0D9BE3F20FCD90F015C7C30CFB47D
+          4FC0A5DF5CDBF7045CC615B68FEF03E03E04200001340EF80395EC6A90A3E611
+          2E0000002574455874646174653A63726561746500323032302D31312D303254
+          31333A32373A35392B30303A30307EB49C380000002574455874646174653A6D
+          6F6469667900323032302D31312D30325431333A32373A35392B30303A30300F
+          E924840000002074455874736F6674776172650068747470733A2F2F696D6167
+          656D616769636B2E6F7267BCCF1D9D00000018744558745468756D623A3A446F
+          63756D656E743A3A50616765730031A7FFBB2F00000018744558745468756D62
+          3A3A496D6167653A3A486569676874003531328F8D5381000000177445587454
+          68756D623A3A496D6167653A3A5769647468003531321C7C03DC000000197445
+          58745468756D623A3A4D696D657479706500696D6167652F706E673FB2564E00
+          000017744558745468756D623A3A4D54696D6500313630343332333637392AB1
+          878100000012744558745468756D623A3A53697A65003435393842423A1CC9BC
+          00000046744558745468756D623A3A5552490066696C653A2F2F2E2F75706C6F
+          6164732F35362F584E724946746D2F323632312F6775695F66696C7465725F69
+          636F6E5F3135373134372E706E6755BBDFA00000000049454E44AE426082}
+        Stretch = True
+      end
+      object Edit4: TEdit
+        Left = 20
+        Top = 0
+        Width = 209
+        Height = 20
+        Align = alLeft
+        TabOrder = 0
+        OnChange = FilterChange
+        ExplicitLeft = 312
+        ExplicitTop = 1
+        ExplicitHeight = 24
+      end
+    end
+    object CheckItemsFiltered: TStringGrid
+      Left = 1
+      Top = 120
+      Width = 769
+      Height = 330
       Align = alClient
       FixedCols = 0
       RowCount = 2
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       PopupMenu = PPItemOptions
-      TabOrder = 2
-      OnDrawCell = CheckItemsResultDrawCell
-      OnMouseUp = CheckItemResultMouseUp
-    end
-  end
-  object PnAdmLocations: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 9
-    object Label19: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1050#1077#1088#1091#1074#1072#1085#1085#1103' '#1051#1086#1082#1072#1094#1110#1103#1084#1080
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 189
-    end
-    object Panel6: TPanel
-      Left = 1
-      Top = 450
-      Width = 769
-      Height = 25
-      Align = alBottom
-      TabOrder = 0
-      object AdmLocationsRefresh: TBitBtn
-        Left = 0
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = AdmLocationsRefreshClick
-      end
-      object AdmLocationsAdd: TBitBtn
-        Left = 26
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1044#1086#1076#1072#1090#1080' '#1085#1086#1074#1091' '#1051#1086#1082#1072#1094#1110#1102
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 1
-        OnClick = AdmLocationsAddClick
-      end
-      object AdmLocationsEdit: TBitBtn
-        Left = 52
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1056#1077#1076#1072#1075#1091#1074#1072#1090#1080' '#1074#1083#1072#1089#1090#1080#1074#1086#1089#1090#1110' '#1051#1086#1082#1072#1094#1110#1111
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
-        OnClick = AdmLocationsEditClick
-      end
-      object AdmLocationsRemove: TBitBtn
-        Left = 78
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1051#1086#1082#1072#1094#1110#1102
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 3
-        OnClick = AdmLocationsRemoveClick
-      end
-      object AdmLocationsImportCSV: TBitBtn
-        Left = 104
-        Top = 0
-        Width = 24
-        Height = 24
-        Hint = #1030#1084#1087#1086#1088#1090#1091#1074#1072#1090#1080' '#1087#1077#1088#1077#1083#1110#1082' '#1083#1086#1082#1072#1094#1110#1081' '#1079' CSV'
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 4
-        OnClick = AdmLocationsImportCSVClick
-      end
-    end
-    object AdmLocationsResult: TStringGrid
-      Left = 1
-      Top = 50
-      Width = 769
-      Height = 400
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      PopupMenu = PPEditLoc
-      TabOrder = 1
-      Visible = False
-    end
-    object Panel11: TPanel
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 26
-      Align = alTop
-      BevelOuter = bvNone
-      TabOrder = 2
-      object Label9: TLabel
-        Left = 4
-        Top = 2
-        Width = 98
-        Height = 16
-        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-      end
-      object LbFilterField: TLabel
-        Left = 116
-        Top = 2
-        Width = 46
-        Height = 16
-        Caption = '<none>'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'Tahoma'
-        Font.Style = [fsUnderline]
-        ParentFont = False
-      end
-      object Filter: TEdit
-        Left = 312
-        Top = 1
-        Width = 209
-        Height = 24
-        TabOrder = 0
-        OnChange = FilterChange
-      end
-    end
-    object AdmLocationsFiltered: TStringGrid
-      Left = 1
-      Top = 50
-      Width = 769
-      Height = 400
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      PopupMenu = PPEditLoc
-      TabOrder = 3
-      OnMouseUp = FilteredGridMouseUp
-    end
-  end
-  object LogPanel: TPanel
-    Left = 0
-    Top = 509
-    Width = 811
-    Height = 108
-    Align = alBottom
-    BevelOuter = bvLowered
-    TabOrder = 2
-    object ActionLog: TMemo
-      Left = 1
-      Top = 22
-      Width = 809
-      Height = 85
-      TabStop = False
-      Align = alClient
-      BevelOuter = bvRaised
-      ScrollBars = ssVertical
-      TabOrder = 0
-    end
-    object Panel1: TPanel
-      Left = 1
-      Top = 1
-      Width = 809
-      Height = 21
-      Align = alTop
-      BevelOuter = bvNone
-      TabOrder = 1
-      object Label6: TLabel
-        Left = 2
-        Top = 2
-        Width = 64
-        Height = 16
-        Caption = #1051#1086#1075' '#1089#1077#1072#1085#1089#1091
-      end
-      object SaveSessionLog: TButton
-        Left = 72
-        Top = 2
-        Width = 18
-        Height = 17
-        Hint = #1047#1073#1077#1088#1077#1075#1090#1080' '#1083#1086#1075' '#1091' '#1092#1072#1081#1083
-        Caption = '#'
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
-        OnClick = SaveSessionLogClick
-      end
-    end
-  end
-  object PnAdmLogs: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 10
-    object Label20: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1083#1086#1075#1110#1074
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 133
-    end
-    object Panel7: TPanel
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 41
-      Align = alTop
-      TabOrder = 0
-      object AdmLogsDate: TDateTimePicker
-        Left = 2
-        Top = 9
-        Width = 121
-        Height = 24
-        Date = 44154.000000000000000000
-        Time = 0.640191886574029900
-        TabOrder = 0
-      end
-      object AdmLogsShow: TButton
-        Left = 140
-        Top = 8
-        Width = 75
-        Height = 25
-        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
-        TabOrder = 1
-        OnClick = AdmLogsShowClick
-      end
-    end
-    object AdmLogsResult: TStringGrid
-      Left = 1
-      Top = 91
-      Width = 769
-      Height = 384
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      TabOrder = 1
-      Visible = False
-    end
-    object Panel12: TPanel
-      Left = 1
-      Top = 65
-      Width = 769
-      Height = 26
-      Align = alTop
-      BevelOuter = bvNone
-      TabOrder = 2
-      object Label10: TLabel
-        Left = 4
-        Top = 2
-        Width = 98
-        Height = 16
-        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-      end
-      object Label12: TLabel
-        Left = 116
-        Top = 2
-        Width = 46
-        Height = 16
-        Caption = '<none>'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'Tahoma'
-        Font.Style = [fsUnderline]
-        ParentFont = False
-      end
-      object Edit1: TEdit
-        Left = 312
-        Top = 1
-        Width = 209
-        Height = 24
-        TabOrder = 0
-        OnChange = FilterChange
-      end
-    end
-    object AdmLogsFiltered: TStringGrid
-      Left = 1
-      Top = 91
-      Width = 769
-      Height = 384
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      TabOrder = 3
-      OnMouseUp = FilteredGridMouseUp
-    end
-  end
-  object PnAdmManage: TPanel
-    Left = 40
-    Top = 33
-    Width = 771
-    Height = 476
-    Align = alClient
-    TabOrder = 11
-    object Label7: TLabel
-      Left = 1
-      Top = 1
-      Width = 769
-      Height = 23
-      Align = alTop
-      Alignment = taCenter
-      Caption = #1042#1080#1082#1086#1085#1072#1085#1085#1103' '#1079#1072#1087#1080#1090#1110#1074' '#1076#1086' '#1041#1044
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -19
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ExplicitWidth = 221
-    end
-    object AdmRequestResult: TStringGrid
-      Left = 1
-      Top = 50
-      Width = 769
-      Height = 241
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
-      TabOrder = 0
-      Visible = False
-      OnMouseUp = FilteredGridMouseUp
-    end
-    object QueryText: TMemo
-      Left = 1
-      Top = 291
-      Width = 769
-      Height = 143
-      Align = alBottom
-      TabOrder = 1
-      OnKeyUp = QueryTextKeyUp
-    end
-    object Panel8: TPanel
-      Left = 1
-      Top = 434
-      Width = 769
-      Height = 41
-      Align = alBottom
-      TabOrder = 2
-      object Execute: TButton
-        Left = 0
-        Top = 6
-        Width = 140
-        Height = 25
-        Caption = #1042#1080#1082#1086#1085#1072#1090#1080' '#1079#1072#1087#1080#1090' (F9)'
-        TabOrder = 0
-        OnClick = ExecuteClick
-      end
-    end
-    object Panel13: TPanel
-      Left = 1
-      Top = 24
-      Width = 769
-      Height = 26
-      Align = alTop
-      BevelOuter = bvNone
-      TabOrder = 3
-      object Label21: TLabel
-        Left = 4
-        Top = 2
-        Width = 98
-        Height = 16
-        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-      end
-      object Label22: TLabel
-        Left = 116
-        Top = 2
-        Width = 46
-        Height = 16
-        Caption = '<none>'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'Tahoma'
-        Font.Style = [fsUnderline]
-        ParentFont = False
-      end
-      object Edit2: TEdit
-        Left = 312
-        Top = 1
-        Width = 209
-        Height = 24
-        TabOrder = 0
-        OnChange = FilterChange
-      end
-    end
-    object AdmRequestFiltered: TStringGrid
-      Left = 1
-      Top = 50
-      Width = 769
-      Height = 241
-      Align = alClient
-      FixedCols = 0
-      RowCount = 2
-      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       TabOrder = 4
+      OnDrawCell = CheckItemsResultDrawCell
       OnMouseUp = FilteredGridMouseUp
+      ExplicitLeft = 2
+      ExplicitTop = 134
+      ExplicitHeight = 324
     end
   end
   object PnAdmUsers: TPanel
@@ -1410,6 +1441,7 @@ object ClientForm: TClientForm
       Width = 769
       Height = 25
       Align = alBottom
+      BevelOuter = bvNone
       TabOrder = 0
       object AdmUsersRefresh: TBitBtn
         Left = 0
@@ -1469,9 +1501,9 @@ object ClientForm: TClientForm
     end
     object AdmUsersResult: TStringGrid
       Left = 1
-      Top = 50
+      Top = 44
       Width = 769
-      Height = 400
+      Height = 406
       Align = alClient
       FixedCols = 0
       RowCount = 2
@@ -1479,20 +1511,23 @@ object ClientForm: TClientForm
       PopupMenu = PPEditUser
       TabOrder = 1
       Visible = False
+      ExplicitTop = 50
+      ExplicitHeight = 400
     end
     object Panel14: TPanel
       Left = 1
       Top = 24
       Width = 769
-      Height = 26
+      Height = 20
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 2
       object Label24: TLabel
-        Left = 4
-        Top = 2
+        Left = 229
+        Top = 0
         Width = 98
-        Height = 16
+        Height = 20
+        Align = alLeft
         Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1500,12 +1535,16 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
+        ExplicitLeft = 241
+        ExplicitTop = 4
+        ExplicitHeight = 16
       end
       object Label25: TLabel
-        Left = 116
-        Top = 2
+        Left = 327
+        Top = 0
         Width = 46
-        Height = 16
+        Height = 20
+        Align = alLeft
         Caption = '<none>'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -1513,21 +1552,94 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = [fsUnderline]
         ParentFont = False
+        ExplicitLeft = 353
+        ExplicitTop = 4
+        ExplicitHeight = 16
+      end
+      object Image4: TImage
+        Left = 0
+        Top = 0
+        Width = 20
+        Height = 20
+        Align = alLeft
+        Picture.Data = {
+          0954506E67496D61676589504E470D0A1A0A0000000D49484452000000800000
+          00800803000000F4E091F90000000467414D410000B18F0BFC61050000018050
+          4C5445000000FF9900FF9A00FF9800FF9700FF9B00FF9D00FF9600F57B00F57C
+          00F77C00F47C00F67E00F57D00F47B00F87E00FF7700FFAB00FFFF00FF9900FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800
+          FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9700FD9300FD9200FD9200FD
+          9300FF9800FF9800FF9900FF9800FE9300F67F00F67D00F67D00F67D00F67F00
+          FD9200FF9800F47B00F57C00F57C00F57C00F57B00F57C00F57C00F57C00F57C
+          00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F5
+          7C00F57C00F77D00F57C00F57C00F57C00F57C00F67D00F47C00F57C00F57C00
+          F57C00F57C00F57C00F57C00F57C00F57D00F57D00FC8F00FD9100FC9000FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800F57C00F57D00FD9100
+          FFFFFF413EC9140000007B74524E530000000000000000000000000000000000
+          00000811080A4FAECDB1530B0983F5F7905D07ADB710CB4EF45E85F351AFC5CA
+          F0FBFAF2C658050C1079F7FCF88711060C98FDA20E16B1B91923C6CD2834D8DD
+          3A48E7EA52015FF2F46F02067BF9FA89070C0EFEDE6CFD8AFE8081E65BB23703
+          FCD15FE78C1C1D41020145DF2FF300000001624B47447F48BF71E50000000970
+          48597300021BEF00021BEF0149171B830000000774494D4507E40B020D1B3B8C
+          3DBB43000002D24944415478DAEDD93D6B145114C6F1FBCC18D889B0E00B0445
+          5450110B85141629420A4929015F10C10F61A3DF412D05D17E15096229821616
+          CA22585858681110C5AC88C6882FCBE20E6B0C24B23377EE3DF7DE73672CCE94
+          33C99CDF9E9D7F180854C30704200001FC4700605B3D1CACA85C034877003501
+          80DEA6607364BA1BB850CB7CA56EE3E7970DC10600C9CE565DF395EAA4EFF2D1
+          3820DD8F73B5CD576A7175252F000EE04C8D807BA3A522A0F10DA8433855DBFC
+          CED637AA0058ABA08D85BAE627C3E562057FBF8449AC1F51678F92E1C4873DBD
+          E5F2DF01A526301D1FB076FF41AB9B0FFF9D18BFDE9A016622CEEF024FFBE3A2
+          C24F64B3381E11F0024FC6E797009398C374B4F92FF138FD6106A84CCDE368A4
+          F9AFF070CBF7C2B9F223D7C6091C8932FF351E0DFAC5939A673E3B091C8C307F
+          09B85F9AAF7D23CA4E037BD9E7BF07EE96E7EB5FC9B2F36FD963EC62DF1DCDFC
+          8A77C2083196033401F863D4046802B0C7A80BD008608E511BA019C01AA33E40
+          0B8031C68A006D00B618AB02B402B862AC0AD00EE089B132403B8025C6EA0009
+          0086180D015200C1319A02240102633406480304C5680E90080889D11C2015E0
+          1FA325402AC03B465B806480678CD600E900AF18ED013A003C622404E802708E
+          9112A013C035464A806E00B7184901BA019C62A405E80870889118A02B801C23
+          3540670031467280EE00528CF4003D009418E901FA00EC313A04E803588FF158
+          AFF2F2AE8F9FE9017A01543B3D6BF895A94F8B7DA72FC0E37F46E9E1B9EDD557
+          BFDECAE9B7128000042000010840000210800004200001084000021080000420
+          801880D59BCD02BEE1469380CE0270BD39C02FE0D9F374E8783B3EC000B896B8
+          7E7C3E80D7F6F9009EDB6703F86E9F09E0BF7D1640C8F6390041DB0F07046E3F
+          1410BCFD40C000C9D5B0ED070138B61F00E0D9BE3F20FCD90F015C7C30CFB47D
+          4FC0A5DF5CDBF7045CC615B68FEF03E03E04200001340EF80395EC6A90A3E611
+          2E0000002574455874646174653A63726561746500323032302D31312D303254
+          31333A32373A35392B30303A30307EB49C380000002574455874646174653A6D
+          6F6469667900323032302D31312D30325431333A32373A35392B30303A30300F
+          E924840000002074455874736F6674776172650068747470733A2F2F696D6167
+          656D616769636B2E6F7267BCCF1D9D00000018744558745468756D623A3A446F
+          63756D656E743A3A50616765730031A7FFBB2F00000018744558745468756D62
+          3A3A496D6167653A3A486569676874003531328F8D5381000000177445587454
+          68756D623A3A496D6167653A3A5769647468003531321C7C03DC000000197445
+          58745468756D623A3A4D696D657479706500696D6167652F706E673FB2564E00
+          000017744558745468756D623A3A4D54696D6500313630343332333637392AB1
+          878100000012744558745468756D623A3A53697A65003435393842423A1CC9BC
+          00000046744558745468756D623A3A5552490066696C653A2F2F2E2F75706C6F
+          6164732F35362F584E724946746D2F323632312F6775695F66696C7465725F69
+          636F6E5F3135373134372E706E6755BBDFA00000000049454E44AE426082}
+        Stretch = True
       end
       object Edit3: TEdit
-        Left = 312
-        Top = 1
+        Left = 20
+        Top = 0
         Width = 209
-        Height = 24
+        Height = 20
+        Align = alLeft
         TabOrder = 0
         OnChange = FilterChange
+        ExplicitLeft = 312
+        ExplicitTop = 1
+        ExplicitHeight = 24
       end
     end
     object AdmUsersFiltered: TStringGrid
       Left = 1
-      Top = 50
+      Top = 44
       Width = 769
-      Height = 400
+      Height = 406
       Align = alClient
       FixedCols = 0
       RowCount = 2
@@ -1535,6 +1647,647 @@ object ClientForm: TClientForm
       PopupMenu = PPEditUser
       TabOrder = 3
       OnMouseUp = FilteredGridMouseUp
+      ExplicitTop = 50
+      ExplicitHeight = 400
+    end
+  end
+  object PnAdmManage: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 11
+    object Label7: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1042#1080#1082#1086#1085#1072#1085#1085#1103' '#1079#1072#1087#1080#1090#1110#1074' '#1076#1086' '#1041#1044
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 221
+    end
+    object AdmRequestResult: TStringGrid
+      Left = 1
+      Top = 44
+      Width = 769
+      Height = 247
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 0
+      Visible = False
+      OnMouseUp = FilteredGridMouseUp
+      ExplicitTop = 50
+      ExplicitHeight = 241
+    end
+    object QueryText: TMemo
+      Left = 1
+      Top = 291
+      Width = 769
+      Height = 143
+      Align = alBottom
+      TabOrder = 1
+      OnKeyUp = QueryTextKeyUp
+    end
+    object Panel8: TPanel
+      Left = 1
+      Top = 434
+      Width = 769
+      Height = 41
+      Align = alBottom
+      BevelOuter = bvNone
+      TabOrder = 2
+      object Execute: TButton
+        Left = 0
+        Top = 6
+        Width = 140
+        Height = 25
+        Caption = #1042#1080#1082#1086#1085#1072#1090#1080' '#1079#1072#1087#1080#1090' (F9)'
+        TabOrder = 0
+        OnClick = ExecuteClick
+      end
+    end
+    object Panel13: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 20
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 3
+      object Label21: TLabel
+        Left = 229
+        Top = 0
+        Width = 98
+        Height = 20
+        Align = alLeft
+        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ExplicitLeft = 241
+        ExplicitTop = 5
+        ExplicitHeight = 16
+      end
+      object Label22: TLabel
+        Left = 327
+        Top = 0
+        Width = 46
+        Height = 20
+        Align = alLeft
+        Caption = '<none>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+        ExplicitLeft = 353
+        ExplicitTop = 5
+        ExplicitHeight = 16
+      end
+      object Image3: TImage
+        Left = 0
+        Top = 0
+        Width = 20
+        Height = 20
+        Align = alLeft
+        Picture.Data = {
+          0954506E67496D61676589504E470D0A1A0A0000000D49484452000000800000
+          00800803000000F4E091F90000000467414D410000B18F0BFC61050000018050
+          4C5445000000FF9900FF9A00FF9800FF9700FF9B00FF9D00FF9600F57B00F57C
+          00F77C00F47C00F67E00F57D00F47B00F87E00FF7700FFAB00FFFF00FF9900FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800
+          FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9700FD9300FD9200FD9200FD
+          9300FF9800FF9800FF9900FF9800FE9300F67F00F67D00F67D00F67D00F67F00
+          FD9200FF9800F47B00F57C00F57C00F57C00F57B00F57C00F57C00F57C00F57C
+          00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F5
+          7C00F57C00F77D00F57C00F57C00F57C00F57C00F67D00F47C00F57C00F57C00
+          F57C00F57C00F57C00F57C00F57C00F57D00F57D00FC8F00FD9100FC9000FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800F57C00F57D00FD9100
+          FFFFFF413EC9140000007B74524E530000000000000000000000000000000000
+          00000811080A4FAECDB1530B0983F5F7905D07ADB710CB4EF45E85F351AFC5CA
+          F0FBFAF2C658050C1079F7FCF88711060C98FDA20E16B1B91923C6CD2834D8DD
+          3A48E7EA52015FF2F46F02067BF9FA89070C0EFEDE6CFD8AFE8081E65BB23703
+          FCD15FE78C1C1D41020145DF2FF300000001624B47447F48BF71E50000000970
+          48597300021BEF00021BEF0149171B830000000774494D4507E40B020D1B3B8C
+          3DBB43000002D24944415478DAEDD93D6B145114C6F1FBCC18D889B0E00B0445
+          5450110B85141629420A4929015F10C10F61A3DF412D05D17E15096229821616
+          CA22585858681110C5AC88C6882FCBE20E6B0C24B23377EE3DF7DE73672CCE94
+          33C99CDF9E9D7F180854C30704200001FC4700605B3D1CACA85C034877003501
+          80DEA6607364BA1BB850CB7CA56EE3E7970DC10600C9CE565DF395EAA4EFF2D1
+          3820DD8F73B5CD576A7175252F000EE04C8D807BA3A522A0F10DA8433855DBFC
+          CED637AA0058ABA08D85BAE627C3E562057FBF8449AC1F51678F92E1C4873DBD
+          E5F2DF01A526301D1FB076FF41AB9B0FFF9D18BFDE9A016622CEEF024FFBE3A2
+          C24F64B3381E11F0024FC6E797009398C374B4F92FF138FD6106A84CCDE368A4
+          F9AFF070CBF7C2B9F223D7C6091C8932FF351E0DFAC5939A673E3B091C8C307F
+          09B85F9AAF7D23CA4E037BD9E7BF07EE96E7EB5FC9B2F36FD963EC62DF1DCDFC
+          8A77C2083196033401F863D4046802B0C7A80BD008608E511BA019C01AA33E40
+          0B8031C68A006D00B618AB02B402B862AC0AD00EE089B132403B8025C6EA0009
+          0086180D015200C1319A02240102633406480304C5680E90080889D11C2015E0
+          1FA325402AC03B465B806480678CD600E900AF18ED013A003C622404E802708E
+          9112A013C035464A806E00B7184901BA019C62A405E80870889118A02B801C23
+          3540670031467280EE00528CF4003D009418E901FA00EC313A04E803588FF158
+          AFF2F2AE8F9FE9017A01543B3D6BF895A94F8B7DA72FC0E37F46E9E1B9EDD557
+          BFDECAE9B7128000042000010840000210800004200001084000021080000420
+          801880D59BCD02BEE1469380CE0270BD39C02FE0D9F374E8783B3EC000B896B8
+          7E7C3E80D7F6F9009EDB6703F86E9F09E0BF7D1640C8F6390041DB0F07046E3F
+          1410BCFD40C000C9D5B0ED070138B61F00E0D9BE3F20FCD90F015C7C30CFB47D
+          4FC0A5DF5CDBF7045CC615B68FEF03E03E04200001340EF80395EC6A90A3E611
+          2E0000002574455874646174653A63726561746500323032302D31312D303254
+          31333A32373A35392B30303A30307EB49C380000002574455874646174653A6D
+          6F6469667900323032302D31312D30325431333A32373A35392B30303A30300F
+          E924840000002074455874736F6674776172650068747470733A2F2F696D6167
+          656D616769636B2E6F7267BCCF1D9D00000018744558745468756D623A3A446F
+          63756D656E743A3A50616765730031A7FFBB2F00000018744558745468756D62
+          3A3A496D6167653A3A486569676874003531328F8D5381000000177445587454
+          68756D623A3A496D6167653A3A5769647468003531321C7C03DC000000197445
+          58745468756D623A3A4D696D657479706500696D6167652F706E673FB2564E00
+          000017744558745468756D623A3A4D54696D6500313630343332333637392AB1
+          878100000012744558745468756D623A3A53697A65003435393842423A1CC9BC
+          00000046744558745468756D623A3A5552490066696C653A2F2F2E2F75706C6F
+          6164732F35362F584E724946746D2F323632312F6775695F66696C7465725F69
+          636F6E5F3135373134372E706E6755BBDFA00000000049454E44AE426082}
+        Stretch = True
+      end
+      object Edit2: TEdit
+        Left = 20
+        Top = 0
+        Width = 209
+        Height = 20
+        Align = alLeft
+        TabOrder = 0
+        OnChange = FilterChange
+        ExplicitLeft = 312
+        ExplicitTop = 1
+        ExplicitHeight = 24
+      end
+    end
+    object AdmRequestFiltered: TStringGrid
+      Left = 1
+      Top = 44
+      Width = 769
+      Height = 247
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 4
+      OnMouseUp = FilteredGridMouseUp
+      ExplicitTop = 50
+      ExplicitHeight = 241
+    end
+  end
+  object PnAdmLogs: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 10
+    object Label20: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1055#1077#1088#1077#1075#1083#1103#1076' '#1083#1086#1075#1110#1074
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 133
+    end
+    object Panel7: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 41
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 0
+      object AdmLogsDate: TDateTimePicker
+        Left = 2
+        Top = 9
+        Width = 121
+        Height = 24
+        Date = 44154.000000000000000000
+        Time = 0.640191886574029900
+        TabOrder = 0
+      end
+      object AdmLogsShow: TButton
+        Left = 140
+        Top = 8
+        Width = 75
+        Height = 25
+        Caption = #1055#1086#1082#1072#1079#1072#1090#1080
+        TabOrder = 1
+        OnClick = AdmLogsShowClick
+      end
+    end
+    object AdmLogsResult: TStringGrid
+      Left = 1
+      Top = 85
+      Width = 769
+      Height = 390
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 1
+      Visible = False
+      ExplicitTop = 91
+      ExplicitHeight = 384
+    end
+    object Panel12: TPanel
+      Left = 1
+      Top = 65
+      Width = 769
+      Height = 20
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 2
+      object Label10: TLabel
+        Left = 229
+        Top = 0
+        Width = 98
+        Height = 20
+        Align = alLeft
+        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ExplicitLeft = 241
+        ExplicitTop = 4
+        ExplicitHeight = 16
+      end
+      object Label12: TLabel
+        Left = 327
+        Top = 0
+        Width = 46
+        Height = 20
+        Align = alLeft
+        Caption = '<none>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+        ExplicitLeft = 353
+        ExplicitTop = 4
+        ExplicitHeight = 16
+      end
+      object Image2: TImage
+        Left = 0
+        Top = 0
+        Width = 20
+        Height = 20
+        Align = alLeft
+        Picture.Data = {
+          0954506E67496D61676589504E470D0A1A0A0000000D49484452000000800000
+          00800803000000F4E091F90000000467414D410000B18F0BFC61050000018050
+          4C5445000000FF9900FF9A00FF9800FF9700FF9B00FF9D00FF9600F57B00F57C
+          00F77C00F47C00F67E00F57D00F47B00F87E00FF7700FFAB00FFFF00FF9900FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800
+          FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9700FD9300FD9200FD9200FD
+          9300FF9800FF9800FF9900FF9800FE9300F67F00F67D00F67D00F67D00F67F00
+          FD9200FF9800F47B00F57C00F57C00F57C00F57B00F57C00F57C00F57C00F57C
+          00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F5
+          7C00F57C00F77D00F57C00F57C00F57C00F57C00F67D00F47C00F57C00F57C00
+          F57C00F57C00F57C00F57C00F57C00F57D00F57D00FC8F00FD9100FC9000FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800F57C00F57D00FD9100
+          FFFFFF413EC9140000007B74524E530000000000000000000000000000000000
+          00000811080A4FAECDB1530B0983F5F7905D07ADB710CB4EF45E85F351AFC5CA
+          F0FBFAF2C658050C1079F7FCF88711060C98FDA20E16B1B91923C6CD2834D8DD
+          3A48E7EA52015FF2F46F02067BF9FA89070C0EFEDE6CFD8AFE8081E65BB23703
+          FCD15FE78C1C1D41020145DF2FF300000001624B47447F48BF71E50000000970
+          48597300021BEF00021BEF0149171B830000000774494D4507E40B020D1B3B8C
+          3DBB43000002D24944415478DAEDD93D6B145114C6F1FBCC18D889B0E00B0445
+          5450110B85141629420A4929015F10C10F61A3DF412D05D17E15096229821616
+          CA22585858681110C5AC88C6882FCBE20E6B0C24B23377EE3DF7DE73672CCE94
+          33C99CDF9E9D7F180854C30704200001FC4700605B3D1CACA85C034877003501
+          80DEA6607364BA1BB850CB7CA56EE3E7970DC10600C9CE565DF395EAA4EFF2D1
+          3820DD8F73B5CD576A7175252F000EE04C8D807BA3A522A0F10DA8433855DBFC
+          CED637AA0058ABA08D85BAE627C3E562057FBF8449AC1F51678F92E1C4873DBD
+          E5F2DF01A526301D1FB076FF41AB9B0FFF9D18BFDE9A016622CEEF024FFBE3A2
+          C24F64B3381E11F0024FC6E797009398C374B4F92FF138FD6106A84CCDE368A4
+          F9AFF070CBF7C2B9F223D7C6091C8932FF351E0DFAC5939A673E3B091C8C307F
+          09B85F9AAF7D23CA4E037BD9E7BF07EE96E7EB5FC9B2F36FD963EC62DF1DCDFC
+          8A77C2083196033401F863D4046802B0C7A80BD008608E511BA019C01AA33E40
+          0B8031C68A006D00B618AB02B402B862AC0AD00EE089B132403B8025C6EA0009
+          0086180D015200C1319A02240102633406480304C5680E90080889D11C2015E0
+          1FA325402AC03B465B806480678CD600E900AF18ED013A003C622404E802708E
+          9112A013C035464A806E00B7184901BA019C62A405E80870889118A02B801C23
+          3540670031467280EE00528CF4003D009418E901FA00EC313A04E803588FF158
+          AFF2F2AE8F9FE9017A01543B3D6BF895A94F8B7DA72FC0E37F46E9E1B9EDD557
+          BFDECAE9B7128000042000010840000210800004200001084000021080000420
+          801880D59BCD02BEE1469380CE0270BD39C02FE0D9F374E8783B3EC000B896B8
+          7E7C3E80D7F6F9009EDB6703F86E9F09E0BF7D1640C8F6390041DB0F07046E3F
+          1410BCFD40C000C9D5B0ED070138B61F00E0D9BE3F20FCD90F015C7C30CFB47D
+          4FC0A5DF5CDBF7045CC615B68FEF03E03E04200001340EF80395EC6A90A3E611
+          2E0000002574455874646174653A63726561746500323032302D31312D303254
+          31333A32373A35392B30303A30307EB49C380000002574455874646174653A6D
+          6F6469667900323032302D31312D30325431333A32373A35392B30303A30300F
+          E924840000002074455874736F6674776172650068747470733A2F2F696D6167
+          656D616769636B2E6F7267BCCF1D9D00000018744558745468756D623A3A446F
+          63756D656E743A3A50616765730031A7FFBB2F00000018744558745468756D62
+          3A3A496D6167653A3A486569676874003531328F8D5381000000177445587454
+          68756D623A3A496D6167653A3A5769647468003531321C7C03DC000000197445
+          58745468756D623A3A4D696D657479706500696D6167652F706E673FB2564E00
+          000017744558745468756D623A3A4D54696D6500313630343332333637392AB1
+          878100000012744558745468756D623A3A53697A65003435393842423A1CC9BC
+          00000046744558745468756D623A3A5552490066696C653A2F2F2E2F75706C6F
+          6164732F35362F584E724946746D2F323632312F6775695F66696C7465725F69
+          636F6E5F3135373134372E706E6755BBDFA00000000049454E44AE426082}
+        Stretch = True
+      end
+      object Edit1: TEdit
+        Left = 20
+        Top = 0
+        Width = 209
+        Height = 20
+        Align = alLeft
+        TabOrder = 0
+        OnChange = FilterChange
+        ExplicitLeft = 312
+        ExplicitTop = 1
+        ExplicitHeight = 24
+      end
+    end
+    object AdmLogsFiltered: TStringGrid
+      Left = 1
+      Top = 85
+      Width = 769
+      Height = 390
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 3
+      OnMouseUp = FilteredGridMouseUp
+      ExplicitTop = 91
+      ExplicitHeight = 384
+    end
+  end
+  object PnAdmLocations: TPanel
+    Left = 40
+    Top = 33
+    Width = 771
+    Height = 476
+    Align = alClient
+    TabOrder = 9
+    object Label19: TLabel
+      Left = 1
+      Top = 1
+      Width = 769
+      Height = 23
+      Align = alTop
+      Alignment = taCenter
+      Caption = #1050#1077#1088#1091#1074#1072#1085#1085#1103' '#1051#1086#1082#1072#1094#1110#1103#1084#1080
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+      ExplicitWidth = 189
+    end
+    object Panel6: TPanel
+      Left = 1
+      Top = 450
+      Width = 769
+      Height = 25
+      Align = alBottom
+      BevelOuter = bvNone
+      TabOrder = 0
+      object AdmLocationsRefresh: TBitBtn
+        Left = 0
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1054#1085#1086#1074#1080#1090#1080' '#1076#1072#1085#1110' '#1090#1072#1073#1083#1080#1094#1110
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = AdmLocationsRefreshClick
+      end
+      object AdmLocationsAdd: TBitBtn
+        Left = 26
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1044#1086#1076#1072#1090#1080' '#1085#1086#1074#1091' '#1051#1086#1082#1072#1094#1110#1102
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 1
+        OnClick = AdmLocationsAddClick
+      end
+      object AdmLocationsEdit: TBitBtn
+        Left = 52
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1056#1077#1076#1072#1075#1091#1074#1072#1090#1080' '#1074#1083#1072#1089#1090#1080#1074#1086#1089#1090#1110' '#1051#1086#1082#1072#1094#1110#1111
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        OnClick = AdmLocationsEditClick
+      end
+      object AdmLocationsRemove: TBitBtn
+        Left = 78
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1042#1080#1076#1072#1083#1080#1090#1080' '#1051#1086#1082#1072#1094#1110#1102
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 3
+        OnClick = AdmLocationsRemoveClick
+      end
+      object AdmLocationsImportCSV: TBitBtn
+        Left = 104
+        Top = 0
+        Width = 24
+        Height = 24
+        Hint = #1030#1084#1087#1086#1088#1090#1091#1074#1072#1090#1080' '#1087#1077#1088#1077#1083#1110#1082' '#1083#1086#1082#1072#1094#1110#1081' '#1079' CSV'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 4
+        OnClick = AdmLocationsImportCSVClick
+      end
+    end
+    object AdmLocationsResult: TStringGrid
+      Left = 1
+      Top = 44
+      Width = 769
+      Height = 406
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      TabOrder = 1
+      Visible = False
+      ExplicitTop = 50
+      ExplicitHeight = 400
+    end
+    object Panel11: TPanel
+      Left = 1
+      Top = 24
+      Width = 769
+      Height = 20
+      Align = alTop
+      BevelOuter = bvNone
+      TabOrder = 2
+      object Label9: TLabel
+        Left = 229
+        Top = 0
+        Width = 98
+        Height = 20
+        Align = alLeft
+        Caption = #1060#1110#1083#1100#1090#1088' '#1087#1086' '#1087#1086#1083#1102':'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ExplicitLeft = 241
+        ExplicitTop = 4
+        ExplicitHeight = 16
+      end
+      object LbFilterField: TLabel
+        Left = 327
+        Top = 0
+        Width = 46
+        Height = 20
+        Align = alLeft
+        Caption = '<none>'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = [fsUnderline]
+        ParentFont = False
+        ExplicitLeft = 353
+        ExplicitTop = 4
+        ExplicitHeight = 16
+      end
+      object Image1: TImage
+        Left = 0
+        Top = 0
+        Width = 20
+        Height = 20
+        Align = alLeft
+        Picture.Data = {
+          0954506E67496D61676589504E470D0A1A0A0000000D49484452000000800000
+          00800803000000F4E091F90000000467414D410000B18F0BFC61050000018050
+          4C5445000000FF9900FF9A00FF9800FF9700FF9B00FF9D00FF9600F57B00F57C
+          00F77C00F47C00F67E00F57D00F47B00F87E00FF7700FFAB00FFFF00FF9900FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800
+          FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9700FD9300FD9200FD9200FD
+          9300FF9800FF9800FF9900FF9800FE9300F67F00F67D00F67D00F67D00F67F00
+          FD9200FF9800F47B00F57C00F57C00F57C00F57B00F57C00F57C00F57C00F57C
+          00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F57C00F5
+          7C00F57C00F77D00F57C00F57C00F57C00F57C00F67D00F47C00F57C00F57C00
+          F57C00F57C00F57C00F57C00F57C00F57D00F57D00FC8F00FD9100FC9000FF98
+          00FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800FF
+          9800FF9800FF9800FF9800FF9800FF9800FF9800FF9800F57C00F57D00FD9100
+          FFFFFF413EC9140000007B74524E530000000000000000000000000000000000
+          00000811080A4FAECDB1530B0983F5F7905D07ADB710CB4EF45E85F351AFC5CA
+          F0FBFAF2C658050C1079F7FCF88711060C98FDA20E16B1B91923C6CD2834D8DD
+          3A48E7EA52015FF2F46F02067BF9FA89070C0EFEDE6CFD8AFE8081E65BB23703
+          FCD15FE78C1C1D41020145DF2FF300000001624B47447F48BF71E50000000970
+          48597300021BEF00021BEF0149171B830000000774494D4507E40B020D1B3B8C
+          3DBB43000002D24944415478DAEDD93D6B145114C6F1FBCC18D889B0E00B0445
+          5450110B85141629420A4929015F10C10F61A3DF412D05D17E15096229821616
+          CA22585858681110C5AC88C6882FCBE20E6B0C24B23377EE3DF7DE73672CCE94
+          33C99CDF9E9D7F180854C30704200001FC4700605B3D1CACA85C034877003501
+          80DEA6607364BA1BB850CB7CA56EE3E7970DC10600C9CE565DF395EAA4EFF2D1
+          3820DD8F73B5CD576A7175252F000EE04C8D807BA3A522A0F10DA8433855DBFC
+          CED637AA0058ABA08D85BAE627C3E562057FBF8449AC1F51678F92E1C4873DBD
+          E5F2DF01A526301D1FB076FF41AB9B0FFF9D18BFDE9A016622CEEF024FFBE3A2
+          C24F64B3381E11F0024FC6E797009398C374B4F92FF138FD6106A84CCDE368A4
+          F9AFF070CBF7C2B9F223D7C6091C8932FF351E0DFAC5939A673E3B091C8C307F
+          09B85F9AAF7D23CA4E037BD9E7BF07EE96E7EB5FC9B2F36FD963EC62DF1DCDFC
+          8A77C2083196033401F863D4046802B0C7A80BD008608E511BA019C01AA33E40
+          0B8031C68A006D00B618AB02B402B862AC0AD00EE089B132403B8025C6EA0009
+          0086180D015200C1319A02240102633406480304C5680E90080889D11C2015E0
+          1FA325402AC03B465B806480678CD600E900AF18ED013A003C622404E802708E
+          9112A013C035464A806E00B7184901BA019C62A405E80870889118A02B801C23
+          3540670031467280EE00528CF4003D009418E901FA00EC313A04E803588FF158
+          AFF2F2AE8F9FE9017A01543B3D6BF895A94F8B7DA72FC0E37F46E9E1B9EDD557
+          BFDECAE9B7128000042000010840000210800004200001084000021080000420
+          801880D59BCD02BEE1469380CE0270BD39C02FE0D9F374E8783B3EC000B896B8
+          7E7C3E80D7F6F9009EDB6703F86E9F09E0BF7D1640C8F6390041DB0F07046E3F
+          1410BCFD40C000C9D5B0ED070138B61F00E0D9BE3F20FCD90F015C7C30CFB47D
+          4FC0A5DF5CDBF7045CC615B68FEF03E03E04200001340EF80395EC6A90A3E611
+          2E0000002574455874646174653A63726561746500323032302D31312D303254
+          31333A32373A35392B30303A30307EB49C380000002574455874646174653A6D
+          6F6469667900323032302D31312D30325431333A32373A35392B30303A30300F
+          E924840000002074455874736F6674776172650068747470733A2F2F696D6167
+          656D616769636B2E6F7267BCCF1D9D00000018744558745468756D623A3A446F
+          63756D656E743A3A50616765730031A7FFBB2F00000018744558745468756D62
+          3A3A496D6167653A3A486569676874003531328F8D5381000000177445587454
+          68756D623A3A496D6167653A3A5769647468003531321C7C03DC000000197445
+          58745468756D623A3A4D696D657479706500696D6167652F706E673FB2564E00
+          000017744558745468756D623A3A4D54696D6500313630343332333637392AB1
+          878100000012744558745468756D623A3A53697A65003435393842423A1CC9BC
+          00000046744558745468756D623A3A5552490066696C653A2F2F2E2F75706C6F
+          6164732F35362F584E724946746D2F323632312F6775695F66696C7465725F69
+          636F6E5F3135373134372E706E6755BBDFA00000000049454E44AE426082}
+        Stretch = True
+      end
+      object Filter: TEdit
+        Left = 20
+        Top = 0
+        Width = 209
+        Height = 20
+        Align = alLeft
+        TabOrder = 0
+        OnChange = FilterChange
+        ExplicitLeft = 312
+        ExplicitTop = 1
+        ExplicitHeight = 24
+      end
+    end
+    object AdmLocationsFiltered: TStringGrid
+      Left = 1
+      Top = 44
+      Width = 769
+      Height = 406
+      Align = alClient
+      FixedCols = 0
+      RowCount = 2
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
+      PopupMenu = PPEditLoc
+      TabOrder = 3
+      OnMouseUp = FilteredGridMouseUp
+      ExplicitTop = 50
+      ExplicitHeight = 400
     end
   end
   object SaveCfgDialog: TSaveDialog
@@ -1802,52 +2555,29 @@ object ClientForm: TClientForm
             Image.Data = {
               89504E470D0A1A0A0000000D4948445200000020000000200806000000737A7A
               F4000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
-              00097048597300000B1300000B1301009A9C18000005764944415458479D567D
-              4C5357147FEFB6AF85B650285050A1204C183210F943F163994E8CD3892E2131
-              4B36B73FD81C26038D8AB8CCCD19D8D4C519F7A18838B28DCC45A3D940446030
-              70C088B23120EE031C1F2532B2324A4B5B0AB67D6FE7BCB60C29C22BBFE49777
-              EEB9E7DDF37BF79E7BEFA3B55A2D477903966B506C483B0BD6BBC038DE4751BF
-              01DF3337D41EA608BDC1E91206E27A0A855E9AFF413D3C8B802940062801AE02
-              164B4F9FA984E7285030BC11A0971E2FF884A9FB611FD8A16CA4E68EE5AB92DB
-              E35F7EDEC04644B4826F09535179487AEAF449B0058B10BA04AEE4F53960AB20
-              79F378C9C5708A6122F95E9B6DC0F7B52CADA8AFFF6968E96CCF6FFD6832EFD0
-              11B003F9FE39206406E64E8E60188DF5D28548C7D2A84668A9999BB70E0A9D89
-              F904CC9FDC8D058A984B80F0E46E2C40C4E304789FDC0D2F45CC5684F3251F9D
-              B0B36DC36687D8F290C32D48F949C964909C387CC404B7A6B3F00416E64C01F3
-              26BFDA613AFBEBE0E42B60470145BC97A21CC09ED51A9F4B2F3CA5780B6CC122
-              A62FC1BCD36EB03ADA20F95E3063805AE04D6035F00130F6CEC0448E6992FD05
-              6C27042C877B061E494E5354B9B9EA868C93C9D2F82827F4E79A0D4D0F8CF61D
-              A10AD1CF7B5295461F86E63F60C2C6B1175A8CEA618B23315AC594BE9EAADC0E
-              EEA9AFA4C7C76B15CFA53B20D116683E321304CFF699C9CB24E1EF5C6FB85FC2
-              71DC300E8070B05C07240F413B2349619149C82642D31B91686F5F2E37615FAF
-              DE1603B1ED6823600C1D8ED5C084E6C1D835E0FA7F262037818BA50C92BF091D
-              2A60B98516679FF04D7CB5A8B0A6F0AF5EDD3D1C641AF82F968868966F4D03F8
-              EC2ED35D173CDADAB5DD38D611594AFA2445B2C0E51671007297E2804781C18E
-              98E83A737585EFF8F7951A42711AF02947F566BECA1184A61261EA79DB38C14E
-              F95D18ADEEB20CA211E627B2632CEF058C1A2CBEF050C29849C39515E1E65BE5
-              C45513A1C01328A0D4B13CFE8AB5B8308EF2F5DD2C65483EF878C09AC1AC3941
-              D374F0963819BF63BEBB677EE26FA3BDDE6A63EB80B557DA4D1FF78FDA9FC5BE
-              1D090A1663D19E097FB9E4382597A7F185F964DC7570158BE10E4F86CF43C541
-              7CD41C88534B22D40A519BCEEC48F9B4D9A00497D1D943E13693C20CDD8D0C14
-              E30E991BB83B2E9E97410D0411D70FC4BCC91150704BB2D707044728C565D0D4
-              03F17F0039AC09105F83BE4510B318DA42108CB9A79F03822026B466EF5AE5BA
-              639B557F1C4D53B521C1EECA5AA3DC282274842B4C30BC1680C035F661C826B9
-              84A421D1069FA0599C89050970414F716C034FE7722C08DE0BE0B87F45E6815A
-              6573767370D5362B52F9534E23B10CD642DF882B4A30BC1300C9FDEFE6DD086C
-              DC93CA8CDD4F07CF562463ECDEA9FA3173957FEBDB5731868F1508AF04884C3D
-              9D127DE72E30A576BFE81AC3EA0F6F23ED8A285C069964A46D37191F9C3A8685
-              C01B01237E9D67F029B7F92FAB32ACFB2CD9AE4A7A0669587F3E1E4434419FC2
-              AFFD941563315008840B60ED1D6253AF0C4D73E23E39451335EF47D024D412FF
-              063F162C4D08C6F27E01F0AE06DC47332DF2B88C382276FBA68EEF99809BD1A3
-              6F4E01F082CB5A3858875357ECB2301F42C8D425E5868700385056C4C7394FD3
-              2F4A9B1EE27DCE371600966575D7BE6DE5AFE9975E5C830795C76135DB0C04E6
-              1ED8867F33A6BEFEE1B5FB73BF6ED4E9C6EA4606BACF3C766EA7016330F61FDD
-              58EDFEDCCB2DDA819195E0322D8D0AC1E2F4C0AC4BB07851C08AC484F072B4FF
-              EC1ACA7839B328A120FF1B2B219CFBA7C3530B4DF8F5C298F721767766516257
-              F7D04E70B12B93232FAB43FC93B17F2666158067FDC9825D61601E06F64136BF
-              01834C4168EE77680FB18CD2A308591F35FE190FC18F474B8F5E1E0AEFC8A1DD
-              033C58702C2376F6BB82A2FE033C7C8E424C357F920000000049454E44AE4260
-              82}
+              0009704859730001D8700001D87001A1D82CC2000002B0494441545847ED97CF
+              6BD36018C7F3BB495C6DAD966EB38E21EE32ED50F4A05341C4EDE0B52AFE380D
+              0441C493827F827F82E22E5E67275EBC6C52F0E4065B8596B64C44D6AD45745E
+              BAAE599AA48DEFD326A55BDA266F5AD841BFF090F757DEEF2779DEF70D2173B9
+              9C4E1CA028E37A60EA09E06BB620253205C9A8BA926B8044B6507EB79014628B
+              49613593770DE10A2091CD4BB185A4A8EB3A0931BF98720D810DD0304F0960EC
+              E11819A217082C80043230CD459E531EDF9DD421A0EC16C2B20D6545533F7ECE
+              56094227CE8F87C9D1E3010FB4D7CD918169FEE8CEC5AA6F8067A0AFB8236BAF
+              E796684956389224F5E8546417DD2B429F9D2C6F40AEA8FA4A7A935F49E7F9B5
+              F5AD12B4B535F7F2CCECFCB28A428332B4B97913B629E8681E5B56F3BF8A220A
+              01955D437405584A6E28DDCC8D61442F105D01503A86EDCC4DB985B04D811373
+              534D08B4389D425800BEAD6FA11DD090C8B38ECD4DD52160613A84D80300033E
+              C4D33C941BE6976A38E6A670209A00D001031A396F9AD3B8E6A69C42D401DA99
+              FB7B3037E50482BE3A7DFBD9FB4FA9FA87A5D5FC4D8FE6A6B6CB15F6FBC61F65
+              F2EC2873666CB09A5CFBA9AB5A95C9FEF8CDA0375C26DFC6E245B4DD348A2229
+              383EFD5E817E35F7A5D20FF3568543BE5DF4705CB1246BAB99CDDD5A4DAFF11E
+              96B17C0B8A3BB2F27236CE19D5BEEAC5C3EB0A4AC79EB96DCF81760A1E39A446
+              A726A4E733D72A10B7A627A460604035BAB1840D706AE498FCE4FE65E2C2E9B0
+              18F0891E0848DDD307572894636C082C008EA5D57B37CF511CCBB04653530C4D
+              D1D11B114214382C082C80C8D89082764AC7F58116153B7E325431AA8E840530
+              32E4B73CF97E9D18F4632D602C009AA648A3D8510C4DDA8E6915F622ECB7FE03
+              58003894C4E1E0E152E8A8777B7FA053CCF647D6E715F476F7C29C30B731ACA9
+              7FFDEF9820FE02941C1F26C93B58120000000049454E44AE426082}
           end>
       end
       item

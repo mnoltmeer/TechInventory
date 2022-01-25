@@ -38,6 +38,7 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include <IdSMTP.hpp>
 #include <IdSMTPBase.hpp>
 #include <Vcl.ExtDlgs.hpp>
+#include <Vcl.Imaging.pngimage.hpp>
 
 #include <memory>
 #define DEFAULT_CLIENT_PORT 9875
@@ -245,6 +246,28 @@ __published:	// IDE-managed Components
 	TLabel *Label25;
 	TEdit *Edit3;
 	TStringGrid *AdmUsersFiltered;
+	TStringGrid *ShowItemsFiltered;
+	TPanel *Panel15;
+	TLabel *Label26;
+	TLabel *Label33;
+	TEdit *Edit4;
+	TPanel *Panel16;
+	TLabel *Label34;
+	TLabel *Label35;
+	TEdit *Edit5;
+	TStringGrid *CheckItemsFiltered;
+	TStringGrid *ShowEventsFiltered;
+	TPanel *Panel17;
+	TLabel *Label36;
+	TLabel *Label37;
+	TEdit *Edit6;
+	TImage *Image1;
+	TImage *Image2;
+	TImage *Image3;
+	TImage *Image4;
+	TImage *Image5;
+	TImage *Image6;
+	TImage *Image7;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall MnHomeClick(TObject *Sender);
