@@ -6,7 +6,7 @@
         <AppType>Application</AppType>
         <MainSource>TIClient.cpp</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Debug</Config>
+        <Config Condition="'$(Config)'==''">Release</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
     </PropertyGroup>
@@ -259,16 +259,16 @@
         </CppCompile>
         <FormResources Include="SetPassword.dfm"/>
         <FormResources Include="SelectLocation.dfm"/>
+        <FormResources Include="EditItem.dfm"/>
         <FormResources Include="Client.dfm"/>
         <FormResources Include="ChangePassword.dfm"/>
         <FormResources Include="ChangeMail.dfm"/>
         <FormResources Include="AddUser.dfm"/>
-        <FormResources Include="EditItem.dfm"/>
         <FormResources Include="RestorePassword.dfm"/>
         <FormResources Include="Registration.dfm"/>
         <FormResources Include="Login.dfm"/>
-        <FormResources Include="EditLocation.dfm"/>
         <FormResources Include="ImportLocationPreview.dfm"/>
+        <FormResources Include="EditLocation.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

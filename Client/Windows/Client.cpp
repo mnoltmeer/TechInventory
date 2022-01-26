@@ -2091,18 +2091,21 @@ void __fastcall TClientForm::CheckItemResultMouseUp(TObject *Sender, TMouseButto
 
 void __fastcall TClientForm::CheckItemEditClick(TObject *Sender)
 {
-  EditItemForm->Show();
+  if (CheckItemScannedCode->Text != "")
+	{
+	  EditItemForm->Show();
 
-  EditItemForm->Inn->Text = CheckItemInn->Text;
-  EditItemForm->Sn->Text = CheckItemSn->Text;
-  EditItemForm->Model->Text = CheckItemModel->Text;
-  EditItemForm->CurrentLocation->Caption = CheckItemCurrentLocation->Caption;
-  EditItemForm->CurrentLocation->Tag = CheckItemCurrentLocation->Tag;
+	  EditItemForm->Inn->Text = CheckItemInn->Text;
+	  EditItemForm->Sn->Text = CheckItemSn->Text;
+	  EditItemForm->Model->Text = CheckItemModel->Text;
+	  EditItemForm->CurrentLocation->Caption = CheckItemCurrentLocation->Caption;
+	  EditItemForm->CurrentLocation->Tag = CheckItemCurrentLocation->Tag;
 
-  EditItemForm->Inn->Hint = EditItemForm->Inn->Text;
-  EditItemForm->Sn->Hint = EditItemForm->Sn->Text;
-  EditItemForm->Model->Hint = EditItemForm->Model->Text;
-  EditItemForm->CurrentLocation->Hint = IntToStr(EditItemForm->CurrentLocation->Tag);
+	  EditItemForm->Inn->Hint = EditItemForm->Inn->Text;
+	  EditItemForm->Sn->Hint = EditItemForm->Sn->Text;
+	  EditItemForm->Model->Hint = EditItemForm->Model->Text;
+	  EditItemForm->CurrentLocation->Hint = IntToStr(EditItemForm->CurrentLocation->Tag);
+	}
 }
 //---------------------------------------------------------------------------
 
@@ -2170,10 +2173,13 @@ void __fastcall TClientForm::CheckItemScannedCodeKeyPress(TObject *Sender, Syste
 
 void __fastcall TClientForm::CheckItemShowHistoryClick(TObject *Sender)
 {
-  MnShowEvents->Click();
-  ShowEventsInn->Text = IntToStr(ItemID);
-  ShowEventsSearchType->ItemIndex = 0;
-  ShowEventsApply->Click();
+  if (CheckItemScannedCode->Text != "")
+	{
+	  MnShowEvents->Click();
+	  ShowEventsInn->Text = IntToStr(ItemID);
+	  ShowEventsSearchType->ItemIndex = 0;
+	  ShowEventsApply->Click();
+	}
 }
 //---------------------------------------------------------------------------
 

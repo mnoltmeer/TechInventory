@@ -724,8 +724,6 @@ object ClientForm: TClientForm
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       TabOrder = 2
       Visible = False
-      ExplicitTop = 59
-      ExplicitHeight = 391
     end
     object ShowItemsFiltered: TStringGrid
       Left = 1
@@ -739,9 +737,6 @@ object ClientForm: TClientForm
       PopupMenu = PPEditItem
       TabOrder = 3
       OnMouseUp = FilteredGridMouseUp
-      ExplicitLeft = 2
-      ExplicitTop = 67
-      ExplicitHeight = 391
     end
     object Panel16: TPanel
       Left = 1
@@ -764,8 +759,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        ExplicitLeft = 241
-        ExplicitTop = 4
         ExplicitHeight = 16
       end
       object Label35: TLabel
@@ -781,8 +774,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = [fsUnderline]
         ParentFont = False
-        ExplicitLeft = 353
-        ExplicitTop = 4
         ExplicitHeight = 16
       end
       object Image7: TImage
@@ -859,8 +850,6 @@ object ClientForm: TClientForm
         Align = alLeft
         TabOrder = 0
         OnChange = FilterChange
-        ExplicitLeft = 312
-        ExplicitTop = 1
         ExplicitHeight = 24
       end
     end
@@ -899,8 +888,6 @@ object ClientForm: TClientForm
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       TabOrder = 0
       Visible = False
-      ExplicitTop = 118
-      ExplicitHeight = 357
     end
     object Panel4: TPanel
       Left = 1
@@ -1008,9 +995,6 @@ object ClientForm: TClientForm
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       TabOrder = 2
       OnMouseUp = FilteredGridMouseUp
-      ExplicitLeft = 2
-      ExplicitTop = 119
-      ExplicitHeight = 357
     end
     object Panel17: TPanel
       Left = 1
@@ -1033,8 +1017,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        ExplicitLeft = 241
-        ExplicitTop = 3
         ExplicitHeight = 16
       end
       object Label37: TLabel
@@ -1050,8 +1032,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = [fsUnderline]
         ParentFont = False
-        ExplicitLeft = 353
-        ExplicitTop = 3
         ExplicitHeight = 16
       end
       object Image6: TImage
@@ -1128,8 +1108,6 @@ object ClientForm: TClientForm
         Align = alLeft
         TabOrder = 0
         OnChange = FilterChange
-        ExplicitLeft = 312
-        ExplicitTop = 1
         ExplicitHeight = 24
       end
     end
@@ -1270,8 +1248,6 @@ object ClientForm: TClientForm
       TabOrder = 2
       Visible = False
       OnMouseUp = CheckItemResultMouseUp
-      ExplicitTop = 100
-      ExplicitHeight = 350
     end
     object Panel15: TPanel
       Left = 1
@@ -1294,8 +1270,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        ExplicitLeft = 241
-        ExplicitTop = 4
         ExplicitHeight = 16
       end
       object Label33: TLabel
@@ -1311,8 +1285,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = [fsUnderline]
         ParentFont = False
-        ExplicitLeft = 353
-        ExplicitTop = 4
         ExplicitHeight = 16
       end
       object Image5: TImage
@@ -1389,8 +1361,6 @@ object ClientForm: TClientForm
         Align = alLeft
         TabOrder = 0
         OnChange = FilterChange
-        ExplicitLeft = 312
-        ExplicitTop = 1
         ExplicitHeight = 24
       end
     end
@@ -1407,9 +1377,6 @@ object ClientForm: TClientForm
       TabOrder = 4
       OnDrawCell = CheckItemsResultDrawCell
       OnMouseUp = FilteredGridMouseUp
-      ExplicitLeft = 2
-      ExplicitTop = 134
-      ExplicitHeight = 324
     end
   end
   object PnAdmUsers: TPanel
@@ -1511,8 +1478,6 @@ object ClientForm: TClientForm
       PopupMenu = PPEditUser
       TabOrder = 1
       Visible = False
-      ExplicitTop = 50
-      ExplicitHeight = 400
     end
     object Panel14: TPanel
       Left = 1
@@ -1535,8 +1500,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        ExplicitLeft = 241
-        ExplicitTop = 4
         ExplicitHeight = 16
       end
       object Label25: TLabel
@@ -1552,8 +1515,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = [fsUnderline]
         ParentFont = False
-        ExplicitLeft = 353
-        ExplicitTop = 4
         ExplicitHeight = 16
       end
       object Image4: TImage
@@ -1630,8 +1591,6 @@ object ClientForm: TClientForm
         Align = alLeft
         TabOrder = 0
         OnChange = FilterChange
-        ExplicitLeft = 312
-        ExplicitTop = 1
         ExplicitHeight = 24
       end
     end
@@ -1647,8 +1606,6 @@ object ClientForm: TClientForm
       PopupMenu = PPEditUser
       TabOrder = 3
       OnMouseUp = FilteredGridMouseUp
-      ExplicitTop = 50
-      ExplicitHeight = 400
     end
   end
   object PnAdmManage: TPanel
@@ -1686,8 +1643,6 @@ object ClientForm: TClientForm
       TabOrder = 0
       Visible = False
       OnMouseUp = FilteredGridMouseUp
-      ExplicitTop = 50
-      ExplicitHeight = 241
     end
     object QueryText: TMemo
       Left = 1
@@ -1737,8 +1692,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        ExplicitLeft = 241
-        ExplicitTop = 5
         ExplicitHeight = 16
       end
       object Label22: TLabel
@@ -1754,8 +1707,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = [fsUnderline]
         ParentFont = False
-        ExplicitLeft = 353
-        ExplicitTop = 5
         ExplicitHeight = 16
       end
       object Image3: TImage
@@ -1832,8 +1783,6 @@ object ClientForm: TClientForm
         Align = alLeft
         TabOrder = 0
         OnChange = FilterChange
-        ExplicitLeft = 312
-        ExplicitTop = 1
         ExplicitHeight = 24
       end
     end
@@ -1848,8 +1797,6 @@ object ClientForm: TClientForm
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       TabOrder = 4
       OnMouseUp = FilteredGridMouseUp
-      ExplicitTop = 50
-      ExplicitHeight = 241
     end
   end
   object PnAdmLogs: TPanel
@@ -1913,8 +1860,6 @@ object ClientForm: TClientForm
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       TabOrder = 1
       Visible = False
-      ExplicitTop = 91
-      ExplicitHeight = 384
     end
     object Panel12: TPanel
       Left = 1
@@ -1937,8 +1882,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        ExplicitLeft = 241
-        ExplicitTop = 4
         ExplicitHeight = 16
       end
       object Label12: TLabel
@@ -1954,8 +1897,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = [fsUnderline]
         ParentFont = False
-        ExplicitLeft = 353
-        ExplicitTop = 4
         ExplicitHeight = 16
       end
       object Image2: TImage
@@ -2032,8 +1973,6 @@ object ClientForm: TClientForm
         Align = alLeft
         TabOrder = 0
         OnChange = FilterChange
-        ExplicitLeft = 312
-        ExplicitTop = 1
         ExplicitHeight = 24
       end
     end
@@ -2048,8 +1987,6 @@ object ClientForm: TClientForm
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       TabOrder = 3
       OnMouseUp = FilteredGridMouseUp
-      ExplicitTop = 91
-      ExplicitHeight = 384
     end
   end
   object PnAdmLocations: TPanel
@@ -2150,8 +2087,6 @@ object ClientForm: TClientForm
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing, goRowSelect]
       TabOrder = 1
       Visible = False
-      ExplicitTop = 50
-      ExplicitHeight = 400
     end
     object Panel11: TPanel
       Left = 1
@@ -2174,8 +2109,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
-        ExplicitLeft = 241
-        ExplicitTop = 4
         ExplicitHeight = 16
       end
       object LbFilterField: TLabel
@@ -2191,8 +2124,6 @@ object ClientForm: TClientForm
         Font.Name = 'Tahoma'
         Font.Style = [fsUnderline]
         ParentFont = False
-        ExplicitLeft = 353
-        ExplicitTop = 4
         ExplicitHeight = 16
       end
       object Image1: TImage
@@ -2269,8 +2200,6 @@ object ClientForm: TClientForm
         Align = alLeft
         TabOrder = 0
         OnChange = FilterChange
-        ExplicitLeft = 312
-        ExplicitTop = 1
         ExplicitHeight = 24
       end
     end
@@ -2286,8 +2215,6 @@ object ClientForm: TClientForm
       PopupMenu = PPEditLoc
       TabOrder = 3
       OnMouseUp = FilteredGridMouseUp
-      ExplicitTop = 50
-      ExplicitHeight = 400
     end
   end
   object SaveCfgDialog: TSaveDialog
