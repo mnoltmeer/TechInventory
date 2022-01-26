@@ -56,6 +56,10 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include <IdSMTP.hpp>
 #include <IdSMTPBase.hpp>
 
+#include <memory>
+
+#include "..\..\work-functions\QueryManager.h"
+
 #define ROLE_ADMIN true
 #define ROLE_USER false
 #define DEFAULT_SERVER_PORT 9874
@@ -126,6 +130,8 @@ __published:	// IDE-managed Components
 	void __fastcall FormShow(TObject *Sender);
 
 private:	// User declarations
+    std::unique_ptr<TQueryManager> FQueryManager;
+
     void __fastcall StartServer();
 	void __fastcall StopServer();
     void __fastcall ConnectToDB();

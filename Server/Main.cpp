@@ -38,6 +38,9 @@ __fastcall TServerForm::TServerForm(TComponent* Owner)
 	   DateStart = Date().CurrentDate();
 
 	   LogFile = DateToStr(DateStart) + ".log";
+
+	   FQueryManager.reset(new TQueryManager(StatConnection));
+       FQueryManager->LoadFromFile(AppPath + "\\queries.xml");
 	 }
   catch (Exception &e)
 	 {
@@ -55,6 +58,12 @@ void __fastcall TServerForm::WriteLog(String record)
 				+ "]"
 				+ " : "
 				+ record;
+
+  if (Date().CurrentDate() > DateStart)
+	{
+      DateStart = Date().CurrentDate();
+	  LogFile = DateToStr(DateStart) + ".log";
+    }
 
   SaveLog(LogDir + "\\" + LogFile, record);
   SendToLog(rec + "\r\n", Log);
@@ -222,40 +231,35 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
 	   if (login == "")
 		 throw Exception("Порожній логін");
 
-	   String sqltext = "SELECT ID, PASS, ROLE, MAIL, LOCKED FROM AGENTS WHERE LOGIN = :login";
+	   TManagedQuery *query = FQueryManager->ItemsByID["Authorisation"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["login"]->AsString = login;
+	   query->Execute();
 
-	   tmp_query->ParamByName("login")->AsString = login;
-
-	   tmp_query->Prepare();
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount == 1)
+	   if (query->RecordCount == 1)
 		 {
-		   tmp_query->First();
+		   query->First();
 
-		   if (tmp_query->FieldByName("PASS")->AsString == pass)
+		   if (query->Fields["PASS"]->AsString == pass)
 			 {
-			   res.ID = tmp_query->FieldByName("ID")->AsInteger;
-			   res.Role = tmp_query->FieldByName("ROLE")->AsString;
-			   res.Mail = tmp_query->FieldByName("MAIL")->AsString;
-			   res.Locked = tmp_query->FieldByName("LOCKED")->AsInteger;
+			   res.ID = query->Fields["ID"]->AsInteger;
+			   res.Role = query->Fields["ROLE"]->AsString;
+			   res.Mail = query->Fields["MAIL"]->AsString;
+			   res.Locked = query->Fields["LOCKED"]->AsInteger;
 			 }
 		   else
 			 res.ID = -1;
 		 }
-	   else if (tmp_query->RecordCount > 1)
+	   else if (query->RecordCount > 1)
 		 res.ID = -1;
 	   else
 		 res.ID = -1;
 
-	   tmp_query->Close();
+       query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -276,26 +280,19 @@ bool __fastcall TServerForm::IsLoginFree(const String &login)
 	   if (login == "")
 		 throw Exception("Порожній логін");
 
-	   String sqltext = "SELECT ID FROM AGENTS WHERE LOGIN = :login";
+	   TManagedQuery *query = FQueryManager->ItemsByID["IsLoginFree"];
 
-       std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["login"]->AsString = login;
+	   query->Execute();
 
-	   tmp_query->ParamByName("login")->AsString = login;
-
-	   tmp_query->Prepare();
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount > 0)
+	   if (query->RecordCount > 0)
 		 res = false;
 	   else
 		 res = true;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -340,31 +337,23 @@ bool __fastcall TServerForm::Registration(const String &login,
 		   locked = 1;
 		 }
 
-	   String sqltext = "INSERT INTO AGENTS VALUES (GEN_ID(GEN_AGENTS_ID, 1), \
-	   :login, :pass, :mail, :role, :lock)";
+	   TManagedQuery *query = FQueryManager->ItemsByID["Registration"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["login"]->AsString = login;
+	   query->Params["pass"]->AsString = pass;
+	   query->Params["mail"]->AsString = mail;
+	   query->Params["role"]->AsString = role;
+	   query->Params["lock"]->AsInteger = locked;
+	   query->Execute();
 
-	   tmp_query->ParamByName("login")->AsString = login;
-	   tmp_query->ParamByName("pass")->AsString = pass;
-	   tmp_query->ParamByName("mail")->AsString = mail;
-	   tmp_query->ParamByName("role")->AsString = role;
-	   tmp_query->ParamByName("lock")->AsInteger = locked;
-
-	   tmp_query->Prepare();
-	   tmp_query->Execute();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RowsAffected > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -385,27 +374,20 @@ bool __fastcall TServerForm::SetUserPassword(int user_id, const String &new_pass
        if (new_password == "")
 		 throw Exception("Порожній пароль");
 
-	   String sqltext = "UPDATE AGENTS SET PASS = :pass WHERE ID = :userid";
+	   TManagedQuery *query = FQueryManager->ItemsByID["SetUserPassword"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["userid"]->AsInteger = user_id;
+	   query->Params["pass"]->AsString = new_password;
+	   query->Execute();
 
-	   tmp_query->ParamByName("userid")->AsInteger = user_id;
-	   tmp_query->ParamByName("pass")->AsString = new_password;
-
-	   tmp_query->Prepare();
-	   tmp_query->Execute();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RowsAffected > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -426,27 +408,20 @@ bool __fastcall TServerForm::ValidUserPassword(int user_id, const String &passwo
        if (password == "")
 		 throw Exception("Порожній пароль");
 
-	   String sqltext = "SELECT ID FROM AGENTS WHERE ID = :userid AND PASS = :pass AND LOCKED = 0";
+	   TManagedQuery *query = FQueryManager->ItemsByID["ValidUserPassword"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["userid"]->AsInteger = user_id;
+	   query->Params["pass"]->AsString = password;
+	   query->Execute();
 
-	   tmp_query->ParamByName("userid")->AsInteger = user_id;
-	   tmp_query->ParamByName("pass")->AsString = password;
-
-	   tmp_query->Prepare();
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -467,27 +442,20 @@ bool __fastcall TServerForm::SetUserMail(int user_id, const String &new_mail)
 	   if (new_mail == "")
 		 throw Exception("Порожня адреса ел. пошти");
 
-	   String sqltext = "UPDATE AGENTS SET MAIL = :mail WHERE ID = :userid";
+	   TManagedQuery *query = FQueryManager->ItemsByID["SetUserMail"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["userid"]->AsInteger = user_id;
+	   query->Params["mail"]->AsString = new_mail;
+	   query->Execute();
 
-	   tmp_query->ParamByName("userid")->AsInteger = user_id;
-	   tmp_query->ParamByName("mail")->AsString = new_mail;
-
-	   tmp_query->Prepare();
-	   tmp_query->Execute();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RowsAffected > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -505,38 +473,29 @@ TStringStream* __fastcall TServerForm::GetItem(int item_id)
 
   try
 	 {
-	   String sqltext = "SELECT itm.INN, itm.SN, itm.MODEL, ag.LOGIN, \
-itm.LOCATION_ID, loc.IND || ' ' || loc.ADDRESS as LOCATION FROM Items itm \
-LEFT JOIN Agents ag ON itm.LAST_AGENT_ID = ag.ID \
-LEFT JOIN LOCATIONS loc ON loc.ID = itm.LOCATION_ID \
-WHERE itm.ID = :itemid";
+	   TManagedQuery *query = FQueryManager->ItemsByID["GetItem"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["itemid"]->AsInteger = item_id;
+	   query->Execute();
 
-	   tmp_query->ParamByName("itemid")->AsInteger = item_id;
-
-	   tmp_query->Prepare();
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount == 0)
+	   if (query->RecordCount == 0)
 		 res = CreateAnswer("NODATA");
 	   else
 		 {
 		   std::unique_ptr<TStringList> data(new TStringList());
 
-		   tmp_query->First();
+		   query->First();
 
-		   data->Add(tmp_query->FieldByName("INN")->AsString);
-		   data->Add(tmp_query->FieldByName("SN")->AsString);
-		   data->Add(tmp_query->FieldByName("MODEL")->AsString);
-		   data->Add(tmp_query->FieldByName("LOGIN")->AsString);
-           data->Add(tmp_query->FieldByName("LOCATION_ID")->AsString);
-		   data->Add(tmp_query->FieldByName("LOCATION")->AsString);
+		   data->Add(query->Fields["INN"]->AsString);
+		   data->Add(query->Fields["SN"]->AsString);
+		   data->Add(query->Fields["MODEL"]->AsString);
+		   data->Add(query->Fields["LOGIN"]->AsString);
+		   data->Add(query->Fields["LOCATION_ID"]->AsString);
+		   data->Add(query->Fields["LOCATION"]->AsString);
 
 		   for (int i = 0; i < data->Count; i++)
 			  {
@@ -551,7 +510,7 @@ WHERE itm.ID = :itemid";
 		   res = CreateAnswer("SUCCESS", "", data.get());
 		 }
 
-	   tmp_query->Close();
+       query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -570,36 +529,24 @@ bool __fastcall TServerForm::SetItem(int item_id, const String &inn, const Strin
 
   try
      {
-	   String sqltext = "UPDATE ITEMS SET INN = :inn, \
-SN = :sn, \
-MODEL = :model, \
-LOCATION_ID = :location, \
-LAST_AGENT_ID = :agent \
-WHERE ID = :itemid";
+	   TManagedQuery *query = FQueryManager->ItemsByID["SetItem"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["itemid"]->AsInteger = item_id;
+	   query->Params["inn"]->AsString = inn;
+	   query->Params["sn"]->AsString = sn;
+	   query->Params["model"]->AsString = model;
+	   query->Params["location"]->AsInteger = location_id;
+	   query->Params["agent"]->AsInteger = agent_id;
+	   query->Execute();
 
-	   tmp_query->ParamByName("itemid")->AsInteger = item_id;
-	   tmp_query->ParamByName("inn")->AsString = inn;
-	   tmp_query->ParamByName("sn")->AsString = sn;
-	   tmp_query->ParamByName("model")->AsString = model;
-	   tmp_query->ParamByName("location")->AsInteger = location_id;
-       tmp_query->ParamByName("agent")->AsInteger = agent_id;
-
-	   tmp_query->Prepare();
-	   tmp_query->Execute();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RowsAffected > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -617,35 +564,32 @@ TStringStream* __fastcall TServerForm::GetLocationList()
 
   try
 	 {
-	   String sqltext = "SELECT * FROM LOCATIONS ORDER BY ID";
+	   TManagedQuery *query = FQueryManager->ItemsByID["GetLocationList"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Execute();
 
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount == 0)
+	   if (query->RecordCount == 0)
 		 res = CreateAnswer("NODATA");
 	   else
 		 {
 		   std::unique_ptr<TStringList> data(new TStringList());
 		   std::unique_ptr<TStringList> row(new TStringList());
 
-		   tmp_query->First();
+		   query->First();
 
 		   String str;
 
-		   while (!tmp_query->Eof)
+		   while (!query->Eof)
 			 {
 			   row->Clear();
 
-			   row->Add(tmp_query->FieldByName("ID")->AsString);
-			   row->Add(tmp_query->FieldByName("IND")->AsString);
-			   row->Add(tmp_query->FieldByName("ADDRESS")->AsString);
+			   row->Add(query->Fields["ID"]->AsString);
+			   row->Add(query->Fields["IND"]->AsString);
+			   row->Add(query->Fields["ADDRESS"]->AsString);
 
 			   for (int i = 0; i < row->Count; i++)
 				  {
@@ -657,7 +601,7 @@ TStringStream* __fastcall TServerForm::GetLocationList()
 
 			   data->Add(str);
 
-			   tmp_query->Next();
+			   query->Next();
 			 }
 
 		   String titles = "<Title size='0'>ID</Title>\
@@ -667,7 +611,7 @@ TStringStream* __fastcall TServerForm::GetLocationList()
 		   res = CreateAnswer("SUCCESS", titles, data.get());
 		 }
 
-	   tmp_query->Close();
+	   query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -685,26 +629,19 @@ bool __fastcall TServerForm::RemoveItem(int item_id)
 
   try
      {
-	   String sqltext = "DELETE FROM ITEMS WHERE ID = :itemid";
+	   TManagedQuery *query = FQueryManager->ItemsByID["RemoveItem"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["itemid"]->AsInteger = item_id;
+	   query->Execute();
 
-	   tmp_query->ParamByName("itemid")->AsInteger = item_id;
-
-	   tmp_query->Prepare();
-	   tmp_query->Execute();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RowsAffected > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -722,30 +659,22 @@ bool __fastcall TServerForm::AddEvent(int event_id, int item_id, int agent_id)
 
   try
      {
-	   String sqltext = "INSERT INTO CHANGES (ID, DATE_ADD, ITEM_ID, AGENT_ID, OPERATION_ID) \
-VALUES (GEN_ID(GEN_CHANGES_ID, 1), :date, :item, :agent, :operation)";
+	   TManagedQuery *query = FQueryManager->ItemsByID["AddEvent"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["date"]->AsDateTime = Date().CurrentDateTime();
+	   query->Params["item"]->AsInteger = item_id;
+	   query->Params["agent"]->AsInteger = agent_id;
+	   query->Params["operation"]->AsInteger = event_id;
+	   query->Execute();
 
-	   tmp_query->ParamByName("date")->AsDateTime = Date().CurrentDateTime();
-	   tmp_query->ParamByName("item")->AsInteger = item_id;
-	   tmp_query->ParamByName("agent")->AsInteger = agent_id;
-	   tmp_query->ParamByName("operation")->AsInteger = event_id;
-
-	   tmp_query->Prepare();
-	   tmp_query->Execute();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RowsAffected > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -766,19 +695,12 @@ TStringStream* __fastcall TServerForm::GetEventList(int search_type,
 
   try
 	 {
-       std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   TManagedQuery *query = FQueryManager->ItemsByID["GetEventList"];
 
-	   String sqltext = "SELECT chn.DATE_ADD, \
-itm.INN || ', ' || itm.SN || ', ' || itm.Model as ITEM, \
-ag.LOGIN as AGENT, \
-op.CAPTION as OPERATION \
-FROM CHANGES chn \
-JOIN ITEMS itm on chn.ITEM_ID = itm.ID \
-JOIN AGENTS ag ON chn.AGENT_ID = ag.ID \
-JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
 
 	   switch (search_type)
 		 {
@@ -786,8 +708,8 @@ JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
 			 {
 			   if (item > 0)
 				 {
-				   tmp_query->SQL->Text += " WHERE chn.ITEM_ID = :item";
-				   tmp_query->ParamByName("item")->AsInteger = item.ToInt();
+				   query->Text += " WHERE chn.ITEM_ID = :item";
+				   query->Params["item"]->AsInteger = item.ToInt();
 				 }
 
                break;
@@ -796,8 +718,8 @@ JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
 			 {
 			   if (item > 0)
 				 {
-				   tmp_query->SQL->Text += " WHERE chn.ITEM_ID = (SELECT DISTINCT(ID) FROM ITEMS WHERE INN = :item)";
-				   tmp_query->ParamByName("item")->AsString = item;
+				   query->Text += " WHERE chn.ITEM_ID = (SELECT DISTINCT(ID) FROM ITEMS WHERE INN = :item)";
+				   query->Params["item"]->AsString = item;
 				 }
 
                break;
@@ -806,8 +728,8 @@ JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
 			 {
 			   if (item > 0)
 				 {
-				   tmp_query->SQL->Text += " WHERE chn.ITEM_ID = (SELECT DISTINCT(ID) FROM ITEMS WHERE SN = :item)";
-				   tmp_query->ParamByName("item")->AsString = item;
+				   query->Text += " WHERE chn.ITEM_ID = (SELECT DISTINCT(ID) FROM ITEMS WHERE SN = :item)";
+				   query->Params["item"]->AsString = item;
 				 }
 
                break;
@@ -821,38 +743,33 @@ JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
 		   fr = fr + StrToTime("00:00:01");
 		   to = to + StrToTime("23:59:59");
 
-		   tmp_query->SQL->Text += " AND chn.DATE_ADD BETWEEN :fr AND :to";
+		   query->Text += " AND chn.DATE_ADD BETWEEN :fr AND :to";
 
-           tmp_query->ParamByName("fr")->AsDateTime = fr;
-		   tmp_query->ParamByName("to")->AsDateTime = to;
+		   query->Params["fr"]->AsDateTime = fr;
+		   query->Params["to"]->AsDateTime = to;
 		 }
 
-	   tmp_tr->StartTransaction();
+	   query->Execute();
 
-
-       tmp_query->Prepare();
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount == 0)
+	   if (query->RecordCount == 0)
 		 res = CreateAnswer("NODATA");
 	   else
 		 {
 		   std::unique_ptr<TStringList> data(new TStringList());
 		   std::unique_ptr<TStringList> row(new TStringList());
 
-		   tmp_query->First();
+		   query->First();
 
 		   String str;
 
-		   while (!tmp_query->Eof)
+		   while (!query->Eof)
 			 {
 			   row->Clear();
 
-			   row->Add(tmp_query->FieldByName("DATE_ADD")->AsString);
-			   row->Add(tmp_query->FieldByName("ITEM")->AsString);
-			   row->Add(tmp_query->FieldByName("OPERATION")->AsString);
-			   row->Add(tmp_query->FieldByName("AGENT")->AsString);
+			   row->Add(query->Fields["DATE_ADD"]->AsString);
+			   row->Add(query->Fields["ITEM"]->AsString);
+			   row->Add(query->Fields["OPERATION"]->AsString);
+			   row->Add(query->Fields["AGENT"]->AsString);
 
 			   for (int i = 0; i < row->Count; i++)
 				  {
@@ -864,7 +781,7 @@ JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
 
 			   data->Add(str);
 
-			   tmp_query->Next();
+			   query->Next();
 			 }
 
 		   String titles = "<Title size='150'>Дата</Title>\
@@ -875,7 +792,7 @@ JOIN OPERATIONS op on chn.OPERATION_ID = op.ID";
 		   res = CreateAnswer("SUCCESS", titles, data.get());
 		 }
 
-	   tmp_query->Close();
+	   query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -893,45 +810,35 @@ TStringStream* __fastcall TServerForm::GetItemList(int loc_id)
 
   try
 	 {
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   TManagedQuery *query = FQueryManager->ItemsByID["GetItemList"];
 
-	   String sqltext = "SELECT itm.ID, \
-itm.INN, itm.SN, itm.Model, ag.LOGIN as AGENT \
-FROM ITEMS itm \
-JOIN AGENTS ag ON itm.LAST_AGENT_ID = ag.ID \
-WHERE itm.LOCATION_ID = :location";
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["location"]->AsInteger = loc_id;
+	   query->Execute();
 
-	   tmp_query->ParamByName("location")->AsInteger = loc_id;
-
-	   tmp_tr->StartTransaction();
-
-       tmp_query->Prepare();
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount == 0)
+	   if (query->RecordCount == 0)
 		 res = CreateAnswer("NODATA");
 	   else
 		 {
 		   std::unique_ptr<TStringList> data(new TStringList());
 		   std::unique_ptr<TStringList> row(new TStringList());
 
-		   tmp_query->First();
+		   query->First();
 
 		   String str;
 
-		   while (!tmp_query->Eof)
+		   while (!query->Eof)
 			 {
                row->Clear();
 
-			   row->Add(tmp_query->FieldByName("ID")->AsString);
-			   row->Add(tmp_query->FieldByName("INN")->AsString);
-			   row->Add(tmp_query->FieldByName("SN")->AsString);
-			   row->Add(tmp_query->FieldByName("MODEL")->AsString);
-			   row->Add(tmp_query->FieldByName("AGENT")->AsString);
+			   row->Add(query->Fields["ID"]->AsString);
+			   row->Add(query->Fields["INN"]->AsString);
+			   row->Add(query->Fields["SN"]->AsString);
+			   row->Add(query->Fields["MODEL"]->AsString);
+			   row->Add(query->Fields["AGENT"]->AsString);
 
 			   for (int i = 0; i < row->Count; i++)
 				  {
@@ -943,7 +850,7 @@ WHERE itm.LOCATION_ID = :location";
 
 			   data->Add(str);
 
-               tmp_query->Next();
+			   query->Next();
 			 }
 
 		   String titles = "<Title size='0'>ID</Title>\
@@ -955,7 +862,7 @@ WHERE itm.LOCATION_ID = :location";
 		   res = CreateAnswer("SUCCESS", titles, data.get());
 		 }
 
-	   tmp_query->Close();
+	   query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -976,26 +883,19 @@ bool __fastcall TServerForm::IsInnFree(const String &inn)
 	   if (inn == "")
 		 throw Exception("Порожній інвентарний номер");
 
-	   String sqltext = "SELECT ID FROM ITEMS WHERE INN = :inn";
+	   TManagedQuery *query = FQueryManager->ItemsByID["IsInnFree"];
 
-       std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["inn"]->AsString = inn;
+	   query->Execute();
 
-	   tmp_query->ParamByName("inn")->AsString = inn;
-
-	   tmp_query->Prepare();
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount > 0)
+	   if (query->RecordCount > 0)
 		 res = false;
 	   else
 		 res = true;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -1013,26 +913,19 @@ bool __fastcall TServerForm::CheckItemID(int id)
 
   try
 	 {
-	   String sqltext = "SELECT ID FROM ITEMS WHERE ID = :id";
+	   TManagedQuery *query = FQueryManager->ItemsByID["CheckItemID"];
 
-       std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["id"]->AsInteger = id;
+	   query->Execute();
 
-	   tmp_query->ParamByName("id")->AsInteger = id;
-
-	   tmp_query->Prepare();
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount > 0)
+	   if (query->RecordCount > 0)
 		 res = false;
 	   else
 		 res = true;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -1051,31 +944,24 @@ bool __fastcall TServerForm::AddItem(int item_id, const String &inn, const Strin
 
   try
 	 {
-	   String sqltext = "INSERT INTO ITEMS VALUES(:itemid, :inn, :sn, :model, :location, :agent)";
+	   TManagedQuery *query = FQueryManager->ItemsByID["AddItem"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["itemid"]->AsInteger = item_id;
+	   query->Params["inn"]->AsString = inn;
+	   query->Params["sn"]->AsString = sn;
+	   query->Params["model"]->AsString = model;
+	   query->Params["location"]->AsInteger = location_id;
+	   query->Params["agent"]->AsInteger = agent_id;
+	   query->Execute();
 
-	   tmp_query->ParamByName("itemid")->AsInteger = item_id;
-	   tmp_query->ParamByName("inn")->AsString = inn;
-	   tmp_query->ParamByName("sn")->AsString = sn;
-	   tmp_query->ParamByName("model")->AsString = model;
-	   tmp_query->ParamByName("location")->AsInteger = location_id;
-       tmp_query->ParamByName("agent")->AsInteger = agent_id;
-
-	   tmp_query->Prepare();
-	   tmp_query->Execute();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RowsAffected > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -1093,38 +979,35 @@ TStringStream* __fastcall TServerForm::GetUserList()
 
   try
 	 {
-	   String sqltext = "SELECT ID, LOGIN, MAIL, ROLE, LOCKED FROM AGENTS ORDER BY LOGIN";
+	   TManagedQuery *query = FQueryManager->ItemsByID["GetUserList"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Execute();
 
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount == 0)
+	   if (query->RecordCount == 0)
 		 res = CreateAnswer("NODATA");
 	   else
 		 {
 		   std::unique_ptr<TStringList> data(new TStringList());
 		   std::unique_ptr<TStringList> row(new TStringList());
 
-		   tmp_query->First();
+		   query->First();
 
 		   String str;
 
-		   while (!tmp_query->Eof)
+		   while (!query->Eof)
 			 {
                row->Clear();
 
-			   row->Add(tmp_query->FieldByName("ID")->AsString);
-			   row->Add(tmp_query->FieldByName("LOGIN")->AsString);
-			   row->Add(tmp_query->FieldByName("MAIL")->AsString);
-			   row->Add(tmp_query->FieldByName("ROLE")->AsString);
+			   row->Add(query->Fields["ID"]->AsString);
+			   row->Add(query->Fields["LOGIN"]->AsString);
+			   row->Add(query->Fields["MAIL"]->AsString);
+			   row->Add(query->Fields["ROLE"]->AsString);
 
-			   if (tmp_query->FieldByName("LOCKED")->AsInteger)
+			   if (query->Fields["LOCKED"]->AsInteger)
 				 row->Add("Ні");
 			   else
                  row->Add("Так");
@@ -1139,7 +1022,7 @@ TStringStream* __fastcall TServerForm::GetUserList()
 
 			   data->Add(str);
 
-               tmp_query->Next();
+			   query->Next();
 			 }
 
 		   String titles = "<Title size='0'>ID</Title>\
@@ -1151,7 +1034,7 @@ TStringStream* __fastcall TServerForm::GetUserList()
 		   res = CreateAnswer("SUCCESS", titles, data.get());
 		 }
 
-	   tmp_query->Close();
+	   query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -1169,27 +1052,20 @@ bool __fastcall TServerForm::ControlUser(int user_id, int lock)
 
   try
 	 {
-	   String sqltext = "UPDATE AGENTS SET LOCKED = :locked WHERE ID = :userid";
+	   TManagedQuery *query = FQueryManager->ItemsByID["ControlUser"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["userid"]->AsInteger = user_id;
+	   query->Params["locked"]->AsInteger = lock;
+	   query->Execute();
 
-	   tmp_query->ParamByName("userid")->AsInteger = user_id;
-	   tmp_query->ParamByName("locked")->AsInteger = lock;
-
-	   tmp_query->Prepare();
-	   tmp_query->Execute();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RowsAffected > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -1207,26 +1083,19 @@ bool __fastcall TServerForm::RemoveLocation(int location_id)
 
   try
      {
-	   String sqltext = "DELETE FROM LOCATIONS WHERE ID = :locid";
+	   TManagedQuery *query = FQueryManager->ItemsByID["RemoveLocation"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["locid"]->AsInteger = location_id;
+	   query->Execute();
 
-	   tmp_query->ParamByName("locid")->AsInteger = location_id;
-
-	   tmp_query->Prepare();
-	   tmp_query->Execute();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RowsAffected > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -1244,27 +1113,20 @@ bool __fastcall TServerForm::AddLocation(const String &index, const String &name
 
   try
 	 {
-	   String sqltext = "INSERT INTO LOCATIONS VALUES (GEN_ID(GEN_LOCS_ID, 1), :index, :name)";
+	   TManagedQuery *query = FQueryManager->ItemsByID["AddLocation"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["index"]->AsString = index;
+	   query->Params["name"]->AsString = name;
+	   query->Execute();
 
-	   tmp_query->ParamByName("index")->AsString = index;
-       tmp_query->ParamByName("name")->AsString = name;
-
-	   tmp_query->Prepare();
-	   tmp_query->Execute();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RowsAffected > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -1282,33 +1144,26 @@ bool __fastcall TServerForm::EditLocation(int location_id, const String &index, 
 
   try
 	 {
-	   String sqltext = "UPDATE LOCATIONS SET IND = :index, ADDRESS = :name WHERE ID = :locid";
+       TManagedQuery *query = FQueryManager->ItemsByID["EditLocation"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["locid"]->AsInteger = location_id;
+	   query->Params["index"]->AsString = index;
+	   query->Params["name"]->AsString = name;
+	   query->Execute();
 
-       tmp_query->ParamByName("locid")->AsInteger = location_id;
-	   tmp_query->ParamByName("index")->AsString = index;
-       tmp_query->ParamByName("name")->AsString = name;
-
-	   tmp_query->Prepare();
-	   tmp_query->Execute();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RowsAffected > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
-
-	   tmp_query->Close();
 	 }
   catch (Exception &e)
 	 {
 	   res = false;
-	   WriteLog("{(): " + e.ToString());
+	   WriteLog("EditLocation(): " + e.ToString());
 	 }
 
   return res;
@@ -1428,26 +1283,21 @@ bool __fastcall TServerForm::CheckUserMail(const String &mail)
 	   if (mail == "")
 		 throw Exception("Порожня адреса ел. пошти");
 
-	   String sqltext = "SELECT ID FROM AGENTS WHERE MAIL = :mail";
+	   TManagedQuery *query = FQueryManager->ItemsByID["CheckUserMail"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["mail"]->AsString = mail;
+	   query->Execute();
 
-	   tmp_query->ParamByName("mail")->AsString = mail;
-
-	   tmp_query->Prepare();
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount > 0)
+	   if (query->RecordCount > 0)
 		 res = true;
 	   else
 		 res = false;
 
-	   tmp_query->Close();
+	   query->Close();
 	 }
   catch (Exception &e)
 	 {
@@ -1465,29 +1315,24 @@ int __fastcall TServerForm::GetUserID(const String &login)
 
   try
 	 {
-	   String sqltext = "SELECT ID FROM AGENTS WHERE LOGIN = :login";
+	   TManagedQuery *query = FQueryManager->ItemsByID["GetUserID"];
 
-	   std::unique_ptr<TFDTransaction> tmp_tr(CreateNewTransactionObj());
-	   std::unique_ptr<TFDQuery> tmp_query(CreateNewQueryObj(tmp_tr.get()));
+	   if (!query)
+		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   tmp_tr->StartTransaction();
-	   tmp_query->SQL->Add(sqltext);
+	   query->Init();
+	   query->Params["login"]->AsString = login;
+	   query->Execute();
 
-	   tmp_query->ParamByName("login")->AsString = login;
-
-	   tmp_query->Prepare();
-	   tmp_query->Open();
-	   tmp_tr->Commit();
-
-	   if (tmp_query->RecordCount == 0)
+	   if (query->RecordCount == 0)
 		 res = -1;
 	   else
 		 {
-		   tmp_query->First();
-		   res = tmp_query->FieldByName("ID")->AsInteger;
+		   query->First();
+		   res = query->Fields["ID"]->AsInteger;
          }
 
-	   tmp_query->Close();
+	   query->Close();
 	 }
   catch (Exception &e)
 	 {

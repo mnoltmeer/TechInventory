@@ -1,0 +1,127 @@
+<QueryManager>
+
+	<Query ID = "Authorisation">
+		<Text>SELECT ID, PASS, ROLE, MAIL, LOCKED FROM AGENTS WHERE LOGIN = :login</Text>
+	</Query>
+	
+	<Query ID = "IsLoginFree">
+		<Text>SELECT ID FROM AGENTS WHERE LOGIN = :login</Text>
+	</Query>
+	
+	
+	<Query ID = "Registration">
+		<Text>INSERT INTO AGENTS VALUES (GEN_ID(GEN_AGENTS_ID, 1), :login, :pass, :mail, :role, :lock)</Text>
+	</Query>
+	
+	
+	<Query ID = "SetUserPassword">
+		<Text>UPDATE AGENTS SET PASS = :pass WHERE ID = :userid</Text>
+	</Query>
+	
+	
+	<Query ID = "ValidUserPassword">
+		<Text>SELECT ID FROM AGENTS WHERE ID = :userid AND PASS = :pass AND LOCKED = 0</Text>
+	</Query>
+	
+	
+	<Query ID = "SetUserMail">
+		<Text>UPDATE AGENTS SET MAIL = :mail WHERE ID = :userid</Text>
+	</Query>
+	
+	
+	<Query ID = "GetItem">
+		<Text>SELECT itm.INN, itm.SN, itm.MODEL, ag.LOGIN, 
+itm.LOCATION_ID, loc.IND || ' ' || loc.ADDRESS as LOCATION FROM Items itm 
+LEFT JOIN Agents ag ON itm.LAST_AGENT_ID = ag.ID 
+LEFT JOIN LOCATIONS loc ON loc.ID = itm.LOCATION_ID 
+WHERE itm.ID = :itemid
+		</Text>
+	</Query>
+	
+	
+	<Query ID = "SetItem">
+		<Text>UPDATE ITEMS SET INN = :inn, 
+SN = :sn, 
+MODEL = :model, 
+LOCATION_ID = :location, 
+LAST_AGENT_ID = :agent 
+WHERE ID = :itemid
+		</Text>
+	</Query>
+	
+	<Query ID = "GetLocationList">
+		<Text>SELECT * FROM LOCATIONS ORDER BY ID</Text>
+	</Query>
+	
+	<Query ID = "RemoveItem">
+		<Text>DELETE FROM ITEMS WHERE ID = :itemid</Text>
+	</Query>
+	
+	<Query ID = "AddEvent">
+		<Text>INSERT INTO CHANGES (ID, DATE_ADD, ITEM_ID, AGENT_ID, OPERATION_ID) 
+VALUES (GEN_ID(GEN_CHANGES_ID, 1), :date, :item, :agent, :operation)
+		</Text>
+	</Query>
+	
+	<Query ID = "GetEventList">
+		<Text>SELECT chn.DATE_ADD, 
+itm.INN || ', ' || itm.SN || ', ' || itm.Model as ITEM, 
+ag.LOGIN as AGENT, 
+op.CAPTION as OPERATION 
+FROM CHANGES chn 
+JOIN ITEMS itm on chn.ITEM_ID = itm.ID 
+JOIN AGENTS ag ON chn.AGENT_ID = ag.ID 
+JOIN OPERATIONS op on chn.OPERATION_ID = op.ID
+		</Text>
+	</Query>
+	
+	<Query ID = "GetItemList">
+		<Text>SELECT itm.ID, 
+itm.INN, itm.SN, itm.Model, ag.LOGIN as AGENT 
+FROM ITEMS itm 
+JOIN AGENTS ag ON itm.LAST_AGENT_ID = ag.ID 
+WHERE itm.LOCATION_ID = :location
+		</Text>
+	</Query>
+	
+	<Query ID = "IsInnFree">
+		<Text>SELECT ID FROM ITEMS WHERE INN = :inn</Text>
+	</Query>
+	
+	<Query ID = "CheckItemID">
+		<Text>SELECT ID FROM ITEMS WHERE ID = :id</Text>
+	</Query>
+	
+	<Query ID = "AddItem">
+		<Text>INSERT INTO ITEMS VALUES(:itemid, :inn, :sn, :model, :location, :agent)</Text>
+	</Query>
+	
+	<Query ID = "GetUserList">
+		<Text>SELECT ID, LOGIN, MAIL, ROLE, LOCKED FROM AGENTS ORDER BY LOGIN</Text>
+	</Query>
+	
+	<Query ID = "ControlUser">
+		<Text>UPDATE AGENTS SET LOCKED = :locked WHERE ID = :userid</Text>
+	</Query>
+	
+	<Query ID = "RemoveLocation">
+		<Text>DELETE FROM LOCATIONS WHERE ID = :locid</Text>
+	</Query>
+	
+	<Query ID = "AddLocation">
+		<Text>INSERT INTO LOCATIONS VALUES (GEN_ID(GEN_LOCS_ID, 1), :index, :name)</Text>
+	</Query>
+	
+	<Query ID = "EditLocation">
+		<Text>UPDATE LOCATIONS SET IND = :index, ADDRESS = :name WHERE ID = :locid</Text>
+	</Query>
+	
+	<Query ID = "CheckUserMail">
+		<Text>SELECT ID FROM AGENTS WHERE MAIL = :mail</Text>
+	</Query>
+	
+	<Query ID = "GetUserID">
+		<Text>SELECT ID FROM AGENTS WHERE LOGIN = :login</Text>
+	</Query>
+		
+</QueryManager>
