@@ -9,7 +9,6 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include "..\..\..\work-functions\MyFunc.h"
 #include "..\..\..\work-functions\Cypher.h"
 #include "..\..\..\work-functions\TCPRequester.h"
-#include "..\..\..\work-functions\ImportExport.h"
 #include "TICServiceThread.h"
 #include "Login.h"
 #include "ChangePassword.h"
@@ -624,7 +623,7 @@ void __fastcall TClientForm::SetUIImages()
 	   PPAddLocation->Bitmap = PanelImages->GetBitmap(21, 16, 16);
 	   PPAddLocation->Bitmap->Transparent = true;
 
-	   AdmLocationsImportCSV->Glyph = PanelImages->GetBitmap(19, 16, 16);
+	   AdmLocationsImportCSV->Glyph = PanelImages->GetBitmap(19, 18, 18);
 	   AdmLocationsImportCSV->Glyph->Transparent = true;
 
 	   PPEditLocation->Bitmap = PanelImages->GetBitmap(11, 16, 16);
@@ -653,6 +652,48 @@ void __fastcall TClientForm::SetUIImages()
 	   AdmUsersRefresh->Glyph = PanelImages->GetBitmap(13, 18, 18);
 	   AdmUsersRefresh->Glyph->Transparent = true;
 	   AdmUsersRefresh->Glyph->TransparentColor = clBlack;
+
+	   AdmManageExportCSV->Glyph = PanelImages->GetBitmap(22, 18, 18);
+	   AdmManageExportCSV->Glyph->Transparent = true;
+
+	   AdmManageExportExcel->Glyph = PanelImages->GetBitmap(20, 18, 18);
+	   AdmManageExportExcel->Glyph->Transparent = true;
+
+	   AdmUsersExportCSV->Glyph = PanelImages->GetBitmap(22, 18, 18);
+	   AdmUsersExportCSV->Glyph->Transparent = true;
+
+	   AdmUsersExportExcel->Glyph = PanelImages->GetBitmap(20, 18, 18);
+	   AdmUsersExportExcel->Glyph->Transparent = true;
+
+	   AdmLogsExportCSV->Glyph = PanelImages->GetBitmap(22, 18, 18);
+	   AdmLogsExportCSV->Glyph->Transparent = true;
+
+	   AdmLogsExportExcel->Glyph = PanelImages->GetBitmap(20, 18, 18);
+	   AdmLogsExportExcel->Glyph->Transparent = true;
+
+	   AdmLocationsExportCSV->Glyph = PanelImages->GetBitmap(22, 18, 18);
+	   AdmLocationsExportCSV->Glyph->Transparent = true;
+
+	   AdmLocationsExportExcel->Glyph = PanelImages->GetBitmap(20, 18, 18);
+	   AdmLocationsExportExcel->Glyph->Transparent = true;
+
+	   CheckItemsExportCSV->Glyph = PanelImages->GetBitmap(22, 18, 18);
+	   CheckItemsExportCSV->Glyph->Transparent = true;
+
+	   CheckItemsExportExcel->Glyph = PanelImages->GetBitmap(20, 18, 18);
+	   CheckItemsExportExcel->Glyph->Transparent = true;
+
+	   ShowItemsExportCSV->Glyph = PanelImages->GetBitmap(22, 18, 18);
+	   ShowItemsExportCSV->Glyph->Transparent = true;
+
+	   ShowItemsExportExcel->Glyph = PanelImages->GetBitmap(20, 18, 18);
+	   ShowItemsExportExcel->Glyph->Transparent = true;
+
+	   ShowEventsExportCSV->Glyph = PanelImages->GetBitmap(22, 18, 18);
+	   ShowEventsExportCSV->Glyph->Transparent = true;
+
+	   ShowEventsExportExcel->Glyph = PanelImages->GetBitmap(20, 18, 18);
+	   ShowEventsExportExcel->Glyph->Transparent = true;
 
 	   PPSetPwd->Bitmap = PanelImages->GetBitmap(16, 16, 16);
 	   PPSetPwd->Bitmap->Transparent = true;
@@ -1598,6 +1639,78 @@ void __fastcall TClientForm::ImportLocations(const String &file, TStringGrid *gr
   catch (Exception &e)
 	 {
 	   AddActionLog("Помилка імпорту переліку локацій з файлу: " + e.ToString());
+	 }
+}
+//---------------------------------------------------------------------------
+
+TDataHolder* __fastcall TClientForm::ImportDataToHolder(TStringGrid *grid)
+{
+  TDataHolder *res;
+
+  try
+	 {
+	   res = new TDataHolder();
+
+	   for (int i = 0; i < grid->RowCount; i++)
+		  {
+			TStructuredData *row = res->Add();
+
+			for (int j = 0; j < grid->ColCount; j++)
+			   row->Add(grid->Cells[j][i]);
+		  }
+	 }
+  catch (Exception &e)
+	 {
+       res = nullptr;
+	   AddActionLog("Помилка збереження даних у TDataHolder: " + e.ToString());
+	 }
+
+  return res;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ExportDataExcel(const String &file, TStringGrid *grid)
+{
+  try
+	 {
+	   std::unique_ptr<TDataHolder> holder(ImportDataToHolder(grid));
+
+	   try
+		  {
+			holder->ExportXLS(file);
+		  }
+	   catch (Exception &e)
+		  {
+			e.Message = "Помилка запису у файл: " + e.Message;
+			throw e;
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка експорту даних: " + e.ToString());
+	 }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::ExportDataCSV(const String &file, TStringGrid *grid)
+{
+  try
+	 {
+	   std::unique_ptr<TDataHolder> holder(ImportDataToHolder(grid));
+
+	   try
+		  {
+			holder->ExportCSV(file, ";");
+		  }
+	   catch (Exception &e)
+		  {
+			e.Message = "Помилка запису у файл: " + e.Message;
+			throw e;
+		  }
+	 }
+  catch (Exception &e)
+	 {
+	   AddActionLog("Помилка експорту даних: " + e.ToString());
 	 }
 }
 //---------------------------------------------------------------------------
@@ -2768,6 +2881,36 @@ void __fastcall TClientForm::QueryTextKeyUp(TObject *Sender, WORD &Key, TShiftSt
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TClientForm::AdmManageExportExcelClick(TObject *Sender)
+{
+  String old_fltr = SaveCfgDialog->Filter;
+
+  try
+	 {
+	   SaveCfgDialog->Filter = "файли Excel|*.xlsx";
+
+	   if (SaveCfgDialog->Execute())
+		 ExportDataExcel(SaveCfgDialog->FileName, FilteredGrid);
+	 }
+  __finally {SaveCfgDialog->Filter = old_fltr; SaveCfgDialog->FileName = "";}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TClientForm::AdmManageExportCSVClick(TObject *Sender)
+{
+  String old_fltr = SaveCfgDialog->Filter;
+
+  try
+	 {
+	   SaveCfgDialog->Filter = "файли CSV|*.csv";
+
+	   if (SaveCfgDialog->Execute())
+		 ExportDataCSV(SaveCfgDialog->FileName, FilteredGrid);
+	 }
+  __finally {SaveCfgDialog->Filter = old_fltr; SaveCfgDialog->FileName = "";}
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TClientForm::SaveSessionLogClick(TObject *Sender)
 {
   SaveCfgDialog->InitialDir = AppPath;
@@ -2801,5 +2944,3 @@ void __fastcall TClientForm::FilteredGridMouseUp(TObject *Sender, TMouseButton B
 	CurrentFilterLabel->Caption = FilteredGrid->Cells[CurrentColInd][0];
 }
 //---------------------------------------------------------------------------
-
-

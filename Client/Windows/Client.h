@@ -41,6 +41,9 @@ Copyright 2020-2021 Maxim Noltmeer (m.noltmeer@gmail.com)
 #include <Vcl.Imaging.pngimage.hpp>
 
 #include <memory>
+
+#include "..\..\..\work-functions\ImportExport.h"
+
 #define DEFAULT_CLIENT_PORT 9875
 #define DEFAULT_SERVER_PORT 9874
 #define LOCK 1
@@ -268,6 +271,22 @@ __published:	// IDE-managed Components
 	TImage *Image5;
 	TImage *Image6;
 	TImage *Image7;
+	TBitBtn *AdmManageExportCSV;
+	TBitBtn *AdmManageExportExcel;
+	TBitBtn *AdmLocationsExportCSV;
+	TBitBtn *AdmLocationsExportExcel;
+	TPanel *Panel18;
+	TBitBtn *AdmLogsExportCSV;
+	TBitBtn *AdmLogsExportExcel;
+	TBitBtn *AdmUsersExportCSV;
+	TBitBtn *AdmUsersExportExcel;
+	TBitBtn *CheckItemsExportCSV;
+	TBitBtn *CheckItemsExportExcel;
+	TPanel *Panel19;
+	TBitBtn *ShowEventsExportCSV;
+	TBitBtn *ShowEventsExportExcel;
+	TBitBtn *ShowItemsExportCSV;
+	TBitBtn *ShowItemsExportExcel;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall MnHomeClick(TObject *Sender);
@@ -343,6 +362,8 @@ __published:	// IDE-managed Components
 	void __fastcall FilterChange(TObject *Sender);
 	void __fastcall FilteredGridMouseUp(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y);
+	void __fastcall AdmManageExportExcelClick(TObject *Sender);
+	void __fastcall AdmManageExportCSVClick(TObject *Sender);
 
 private:	// User declarations
 	void __fastcall HideAllPanels();
@@ -354,6 +375,9 @@ private:	// User declarations
 	String __fastcall EncryptData(TMemoryStream *crypted_data, const char *pass);
 	const char* __fastcall GenHashKey();
 	void __fastcall ImportLocations(const String &file, TStringGrid *grid);
+    TDataHolder* __fastcall ImportDataToHolder(TStringGrid *grid);
+	void __fastcall ExportDataExcel(const String &file, TStringGrid *grid);
+	void __fastcall ExportDataCSV(const String &file, TStringGrid *grid);
 
 public:		// User declarations
 	__fastcall TClientForm(TComponent* Owner);
