@@ -236,7 +236,6 @@ UserInfo __fastcall TServerForm::Authorisation(const String &login, const String
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["login"]->AsString = login;
 	   query->Execute();
 
@@ -285,7 +284,6 @@ bool __fastcall TServerForm::IsLoginFree(const String &login)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["login"]->AsString = login;
 	   query->Execute();
 
@@ -342,7 +340,6 @@ bool __fastcall TServerForm::Registration(const String &login,
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["login"]->AsString = login;
 	   query->Params["pass"]->AsString = pass;
 	   query->Params["mail"]->AsString = mail;
@@ -379,7 +376,6 @@ bool __fastcall TServerForm::SetUserPassword(int user_id, const String &new_pass
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["userid"]->AsInteger = user_id;
 	   query->Params["pass"]->AsString = new_password;
 	   query->Execute();
@@ -413,7 +409,6 @@ bool __fastcall TServerForm::ValidUserPassword(int user_id, const String &passwo
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["userid"]->AsInteger = user_id;
 	   query->Params["pass"]->AsString = password;
 	   query->Execute();
@@ -447,7 +442,6 @@ bool __fastcall TServerForm::SetUserMail(int user_id, const String &new_mail)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["userid"]->AsInteger = user_id;
 	   query->Params["mail"]->AsString = new_mail;
 	   query->Execute();
@@ -478,7 +472,6 @@ TStringStream* __fastcall TServerForm::GetItem(int item_id)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["itemid"]->AsInteger = item_id;
 	   query->Execute();
 
@@ -534,7 +527,6 @@ bool __fastcall TServerForm::SetItem(int item_id, const String &inn, const Strin
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["itemid"]->AsInteger = item_id;
 	   query->Params["inn"]->AsString = inn;
 	   query->Params["sn"]->AsString = sn;
@@ -569,7 +561,6 @@ TStringStream* __fastcall TServerForm::GetLocationList()
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Execute();
 
 	   if (query->RecordCount == 0)
@@ -634,7 +625,6 @@ bool __fastcall TServerForm::RemoveItem(int item_id)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["itemid"]->AsInteger = item_id;
 	   query->Execute();
 
@@ -664,7 +654,6 @@ bool __fastcall TServerForm::AddEvent(int event_id, int item_id, int agent_id)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["date"]->AsDateTime = Date().CurrentDateTime();
 	   query->Params["item"]->AsInteger = item_id;
 	   query->Params["agent"]->AsInteger = agent_id;
@@ -699,8 +688,6 @@ TStringStream* __fastcall TServerForm::GetEventList(int search_type,
 
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
-
-	   query->Init();
 
 	   switch (search_type)
 		 {
@@ -815,7 +802,6 @@ TStringStream* __fastcall TServerForm::GetItemList(int loc_id)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["location"]->AsInteger = loc_id;
 	   query->Execute();
 
@@ -888,7 +874,6 @@ bool __fastcall TServerForm::IsInnFree(const String &inn)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["inn"]->AsString = inn;
 	   query->Execute();
 
@@ -918,7 +903,6 @@ bool __fastcall TServerForm::CheckItemID(int id)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["id"]->AsInteger = id;
 	   query->Execute();
 
@@ -949,7 +933,6 @@ bool __fastcall TServerForm::AddItem(int item_id, const String &inn, const Strin
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["itemid"]->AsInteger = item_id;
 	   query->Params["inn"]->AsString = inn;
 	   query->Params["sn"]->AsString = sn;
@@ -984,7 +967,6 @@ TStringStream* __fastcall TServerForm::GetUserList()
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Execute();
 
 	   if (query->RecordCount == 0)
@@ -1057,7 +1039,6 @@ bool __fastcall TServerForm::ControlUser(int user_id, int lock)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["userid"]->AsInteger = user_id;
 	   query->Params["locked"]->AsInteger = lock;
 	   query->Execute();
@@ -1088,7 +1069,6 @@ bool __fastcall TServerForm::RemoveLocation(int location_id)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["locid"]->AsInteger = location_id;
 	   query->Execute();
 
@@ -1118,7 +1098,6 @@ bool __fastcall TServerForm::AddLocation(const String &index, const String &name
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["index"]->AsString = index;
 	   query->Params["name"]->AsString = name;
 	   query->Execute();
@@ -1149,7 +1128,6 @@ bool __fastcall TServerForm::EditLocation(int location_id, const String &index, 
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["locid"]->AsInteger = location_id;
 	   query->Params["index"]->AsString = index;
 	   query->Params["name"]->AsString = name;
@@ -1288,7 +1266,6 @@ bool __fastcall TServerForm::CheckUserMail(const String &mail)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["mail"]->AsString = mail;
 	   query->Execute();
 
@@ -1320,7 +1297,6 @@ int __fastcall TServerForm::GetUserID(const String &login)
 	   if (!query)
 		 throw Exception("Не вдалось ініціювати SQL-запит");
 
-	   query->Init();
 	   query->Params["login"]->AsString = login;
 	   query->Execute();
 
